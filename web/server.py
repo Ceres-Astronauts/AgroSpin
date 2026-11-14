@@ -76,25 +76,25 @@ def _decision_experto_local(diag: Dict[str, Any], escenario_lluvia: str, priorid
     decisiones: List[str] = []
     if diag["meses_suelo_desnudo"] >= 4:
         decisiones.append(
-            "Implantar un cultivo de servicio invernal (centeno o vicia) para frenar la voladura de suelo franco-arenoso y bajar la temperatura superficial."
+            "Evaluar junto a un conocedor del lote la implantación de un cultivo de servicio invernal (centeno o vicia) para frenar la voladura de suelo franco-arenoso y bajar la temperatura superficial."
         )
     else:
         decisiones.append(
-            "Mantener la cobertura actual y evitar labranzas que expongan el suelo al viento de invierno."
+            "Revisar en el lote cómo mantener la cobertura actual y evitar labranzas que expongan el suelo al viento de invierno."
         )
 
     humedad = diag["estado_hidrico"]["humedad_efectiva"]
     if humedad < 0.14 or escenario_lluvia == "seco":
         decisiones.append(
-            "Priorizar cultivos rústicos o de ciclo corto, ajustar a la baja la densidad de siembra y evitar inversiones altas en fertilización nitrogenada hasta confirmar recarga."
+            "Analizar con criterio local la conveniencia de cultivos rústicos o de ciclo corto, ajustar la densidad de siembra y validar si conviene postergar fertilización nitrogenada hasta confirmar recarga."
         )
     else:
         decisiones.append(
-            "Aprovechar la reserva hídrica disponible para sostener el cultivo principal, monitoreando el perfil a 30–60 cm antes de definir refertilización."
+            "Verificar la reserva hídrica real del lote a 30–60 cm antes de definir densidad de siembra o refertilización."
         )
 
     if prioridad == "agua":
-        decisiones.append("Cortar el cultivo de servicio temprano (fin de invierno) para no consumir el agua útil del cultivo de verano.")
+        decisiones.append("Definir en campo la fecha de corte del cultivo de servicio (fin de invierno) para no comprometer el agua útil del cultivo de verano.")
     return decisiones
 
 
