@@ -5,10 +5,10 @@ Field Shift es un asistente de decisión para comparar rotaciones de cultivo en 
 ## Qué está verificado
 | Componente | Estado | Evidencia |
 |---|---|---|
-| Precipitación y clima diario (NASA POWER, 1991–2025) | Adquirido y chequeado mecánicamente (completitud y rangos) | `e2-mechanical-checks.md` |
-| Humedad de suelo (NASA SMAP L4 SPL4SMGP.008, 2015–2025, 3 puntos) | `sm_surface` y `sm_rootzone` con E1 aprobado; agregación diaria verificada | `e2-mechanical-checks.md` |
-| Catálogo de cultivos | Coeficientes Kc y profundidad de raíz con cita FAO-56; ciclos y ensayos con cita; lo que falta marcado `NO_VERIFICADO` | `crop-catalog.yml` |
-| Diseño del motor de comparación | Documentado, sin implementación de ranking | `p6-minimal-engine-design.md` |
+| Precipitación y clima diario (NASA POWER, 1991–2025) | Adquirido y chequeado mecánicamente (completitud y rangos) | [`docs/challenge/e2-mechanical-checks.md`](docs/challenge/e2-mechanical-checks.md) |
+| Humedad de suelo (NASA SMAP L4 SPL4SMGP.008, 2015–2025, 3 puntos) | `sm_surface` y `sm_rootzone` con E1 aprobado; agregación diaria verificada | [`docs/challenge/e2-mechanical-checks.md`](docs/challenge/e2-mechanical-checks.md) |
+| Catálogo de cultivos | Coeficientes Kc y profundidad de raíz con cita FAO-56; ciclos y ensayos con cita; lo que falta marcado `NO_VERIFICADO` | [`docs/challenge/crop-catalog.yml`](docs/challenge/crop-catalog.yml) |
+| Diseño del motor de comparación | Documentado, sin implementación de ranking | [`docs/challenge/p6-minimal-engine-design.md`](docs/challenge/p6-minimal-engine-design.md) |
 
 ## Qué está bloqueado, y por qué
 - **No hay ranking ni recomendación de rotación.** La validación científica (E2) está abierta: falta comparar con datos independientes de estación o campo.

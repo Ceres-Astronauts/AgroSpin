@@ -44,6 +44,7 @@ data/features/
 data/exports/
 data/cache/
 data/processed/
+intakes/
 
 # Credentials
 credentials/
