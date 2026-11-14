@@ -9,15 +9,16 @@ import pandas as pd
 import streamlit as st
 import yaml
 
-# Asegurar importación de módulos en src/
+# Rutas canónicas del repositorio
 REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from src.decision.motor_rotacion import simular_escenarios
-from src.data_access import cargar_serie_nasa_power
 
-CATALOG = REPOSITORY_ROOT / "docs" / "challenge" / "crop-catalog.yml"
+CATALOG_YAML = REPOSITORY_ROOT / "docs" / "challenge" / "crop-catalog.yml"
 LOTES_DEFAULT = REPOSITORY_ROOT / "data" / "lotes_piloto.json"
+POWER_DEFAULT = REPOSITORY_ROOT / "data" / "power_daily_point_19910101_20251231.json"
+CULTIVOS_CSV = REPOSITORY_ROOT / "data" / "cultivos_evaluacion_san_luis.csv"
 
 st.set_page_config(
     page_title="Field Shift — Ceres Agronauts",
@@ -30,6 +31,29 @@ st.set_page_config(
 st.title("🌱 Field Shift — Ceres Agronauts")
 st.caption("Sistema de apoyo a la toma de decisiones para rotación de cultivos | Zona piloto: Villa Mercedes (San Luis)")
 
+# Funciones cacheadas de lectura de datos locales
+@st.cache_data
+def load_precip_local() -> tuple[pd.DataFrame | None, int, str]:
+    """Carga la serie temporal diaria de NASA POWER desde el dataset local del repositorio."""
+    target_path = pathlib.Path(os.environ.get("FIELD_SHIFT_POWER_JSON", str(POWER_DEFAULT)))
+    if not target_path.is_file():
+        return None, 0, f"No encontrado: {target_path.name}"
+    
+    try:
+        data = json.loads(target_path.read_text(encoding="utf-8"))
+        series = data["properties"]["parameter"]["PRECTOTCORR"]
+        frame = pd.DataFrame({
+            "date": pd.to_datetime(list(series.keys()), format="%Y%m%d"),
+            "precip_mm": list(series.values()),
+        })
+        fill_mask = frame["precip_mm"].eq(-999.0)
+        discarded = int(fill_mask.sum())
+        clean_frame = frame.loc[~fill_mask].sort_values("date")
+        return clean_frame, discarded, f"Dataset local ({target_path.name})"
+    except Exception as exc:
+        return None, 0, f"Error: {exc}"
+
+
 # Cargar lotes de prueba / calibración
 lotes_data = []
 if LOTES_DEFAULT.is_file():
@@ -39,7 +63,7 @@ if LOTES_DEFAULT.is_file():
     except Exception as e:
         st.error(f"Error cargando lotes piloto: {e}")
 
-# Sidebar interactivo (Diseño unificado)
+# Sidebar interactivo
 st.sidebar.header("⚙️ Parámetros del Productor")
 
 nombres_lotes = {l["nombre"]: l for l in lotes_data}
@@ -76,7 +100,7 @@ clima = st.sidebar.select_slider(
 
 ganaderia = st.sidebar.checkbox("Integro ganadería (aporte forrajero / pastoreo)")
 
-# Módulo Mecatrónica: Calibración terrestre con telemetría in-situ
+# Módulo Mecatrónica: Telemetría in-situ
 st.sidebar.markdown("---")
 st.sidebar.subheader("📡 Módulo Mecatrónica")
 usar_sonda = st.sidebar.checkbox("Calibración con nodo terrestre (ESP32 + Sondas)")
@@ -89,11 +113,11 @@ if usar_sonda:
         "60cm": st.sidebar.slider("Sonda 60 cm (reserva subsuperficial)", 0.05, 0.40, 0.25, step=0.01),
     }
 
-# Tabs principales de la aplicación unificada
+# Tabs principales
 tab_sim, tab_env, tab_cat, tab_sol = st.tabs([
     "🔄 Simulador de Rotaciones",
     "🛰️ Contexto Ambiental (NASA / INTA)",
-    "📖 Catálogo de Cultivos",
+    "📖 Catálogo y Matriz Agronómica",
     "📝 Solicitud de Parcela"
 ])
 
@@ -133,14 +157,13 @@ with tab_env:
     st.subheader("Series Históricas y Observaciones Satelitales")
     st.caption("Punto de referencia: EEA INTA San Luis / Villa Mercedes (-33.6500, -65.3667)")
 
-    with st.spinner("Consultando serie de NASA POWER (local o Google Drive)..."):
-        frame_power, discarded_fill, fuente_power = cargar_serie_nasa_power()
+    frame_power, discarded_fill, fuente_power = load_precip_local()
 
     if frame_power is not None and not frame_power.empty:
-        st.success(f"Fuente de datos activa: **{fuente_power}**")
+        st.success(f"Origen de datos: **{fuente_power}** (independiente de red y nube)")
         st.caption(
             f"Precipitación corregida (PRECTOTCORR) 1991–2025. Registros limpios: {len(frame_power):,} días. "
-            f"Valores fill -999.0 descartados: {discarded_fill}."
+            f"Valores fill (-999.0) descartados: {discarded_fill}."
         )
         
         # Agrupación mensual
@@ -154,21 +177,17 @@ with tab_env:
         
         col_m1, col_m2 = st.columns(2)
         col_m1.metric("Total de días registrados", f"{len(frame_power):,}")
-        col_m2.metric("Promedio anual estimado", f"{round(frame_power['precip_mm'].sum() / (len(frame_power)/365.25))} mm/año")
+        col_m2.metric("Promedio anual histórico", f"{round(frame_power['precip_mm'].sum() / (len(frame_power)/365.25))} mm/año")
     else:
-        st.warning(
-            "No se pudo cargar la serie completa de NASA POWER directamente. "
-            "Puedes conectar el archivo fijando la variable de entorno FIELD_SHIFT_POWER_JSON "
-            "o asegurar la conexión con el Google Drive configurado."
-        )
+        st.warning(f"No se pudo cargar la serie meteorológica: {fuente_power}")
 
-# ----------------- TAB 3: CATÁLOGO DE CULTIVOS -----------------
+# ----------------- TAB 3: CATÁLOGO Y MATRIZ AGRONÓMICA -----------------
 with tab_cat:
     st.subheader("Catálogo de Especies y Coeficientes de Cultivo (Kc)")
     columns = ["cultivo", "Kc mid", "Kc end", "Zr (m)", "ventana de siembra", "estado"]
-    if CATALOG.is_file():
+    if CATALOG_YAML.is_file():
         try:
-            catalog = yaml.safe_load(CATALOG.read_text(encoding="utf-8"))
+            catalog = yaml.safe_load(CATALOG_YAML.read_text(encoding="utf-8"))
             rows = []
             for crop in catalog.get("crops", []):
                 params = crop.get("parameters", {})
@@ -189,8 +208,16 @@ with tab_cat:
             st.dataframe(pd.DataFrame(rows, columns=columns), use_container_width=True)
         except Exception as e:
             st.error(f"Error parseando catálogo YAML: {e}")
-    else:
-        st.warning("Catálogo YAML no encontrado en docs/challenge/crop-catalog.yml")
+
+    if CULTIVOS_CSV.is_file():
+        st.markdown("---")
+        st.subheader("Evaluación Multicriterio de Rotaciones en San Luis")
+        st.caption("Matriz experta del equipo para Villa Mercedes y Cuenca del Morro (Temperatura, Agua, Heladas, Rastrojo)")
+        try:
+            df_eval = pd.read_csv(CULTIVOS_CSV)
+            st.dataframe(df_eval.dropna(how="all"), use_container_width=True)
+        except Exception as e:
+            st.warning(f"No se pudo cargar la matriz de evaluación: {e}")
 
 # ----------------- TAB 4: SOLICITUD DE PARCELA (INTAKE) -----------------
 with tab_sol:
