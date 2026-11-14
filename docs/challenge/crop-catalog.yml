@@ -1,0 +1,244 @@
+version: 1
+catalog_id: field_shift_minimal_crop_catalog
+status: DRAFT_PARTIAL_PARAMETERS_KC_ZR_CYCLE_SOWING_PARTIAL
+created_at: 2026-11-14
+scope:
+  anchor: EEA INTA San Luis (Villa Mercedes, -33.6500, -65.3667)
+  purpose: candidate crops for rotation comparison; parameters are not usable until extracted and validated
+rule:
+  usable_in_model: false
+  note: Kc values come from FAO-56 Table 12 only; Zr (FAO-56 Table 22) is loaded; sowing windows are verified only for maize and sorghum (trial-specific); cycle days and yield means come from Riglos 2023
+    as trial means; rotations remain NO_VERIFICADO. A crop becomes usable only when its water, cycle and rotation parameters are extracted from a registered source and validated at the required E level.
+    Presence in a source is not a parameter.
+priority_criteria:
+  1: local_evidence_registered_in_field_shift_context
+  2: regional_prominence_in_secondary_sources
+  3: relevance_to_water_stress_rotation_decision
+crops:
+- rank: 1
+  crop_id: CROP-MAIZ
+  common_name: maíz
+  local_evidence:
+  - source: inta-san-luis-crop-trials
+    document: Ensayos agricolas en la provincia de San Luis - Maiz, Soja, Sorgo, Algodon (2022-2023)
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: principal cultivo de la provincia según fuentes secundarias
+  parameters:
+    cycle_and_stages:
+      source: Riglos 2023, UBA doctoral thesis (PDF p.40-41, p.60, p.117), https://ri.agro.uba.ar/files/download/tesis/doctorado/2024riglosmiguelmaximiliano.pdf, sha256 ccb83ee212348fad85fd84ff529601fe4769224450e133d11ea6977568405111
+      days_to_maturity: 122 days to physiological maturity (DK 72-10)
+      yield_reference: maize 954 g/m2 mean grain yield (3 sites x 2 seasons x 2 dates)
+      scope: multi-site trial mean, not a regional rule
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini: NO_VERIFICADO
+      kc_mid: 1.2
+      kc_end: 0.60-0.35 (footnote 11)
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: 1.0-1.7
+      depletion_fraction_p: 0.55
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window:
+      source: Lujan & Riglos 2024, UNSL thesis, Villa Mercedes EEA San Luis, 1 campaign (2018/19), rainfed (https://dspace.fica.unsl.edu.ar/bitstreams/8782a593-103e-4b31-a677-9f4f53394f35/download)
+      scope: single trial, not a regional rule
+      early: second half of October (FS1)
+      late: first half of December (FS2)
+      grain_yield_g_m2: maize 301 vs sorghum 257.9 (P<=0.10)
+      additional_source: 'Riglos 2023 (p.40): FS1 second half October, FS2 first half December; 2016/17 and 2017/18 at Villa Mercedes, Manfredi, Pergamino'
+  status: BLOCKED_PARAMETERS_NOT_EXTRACTED
+  next_action: extract cycle, Kc and water-stress traits from the 2022-2023 INTA trial document
+- rank: 2
+  crop_id: CROP-SOJA
+  common_name: soja
+  local_evidence:
+  - source: inta-san-luis-crop-trials
+    document: Ensayos agricolas en la provincia de San Luis - Maiz, Soja, Sorgo, Algodon (2022-2023)
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: expansión hacia el este semiárido según fuentes secundarias
+  parameters:
+    cycle_and_stages:
+      source: Riglos 2023, UBA doctoral thesis (PDF p.40-41, p.60, p.117), https://ri.agro.uba.ar/files/download/tesis/doctorado/2024riglosmiguelmaximiliano.pdf, sha256 ccb83ee212348fad85fd84ff529601fe4769224450e133d11ea6977568405111
+      days_to_maturity: 131 days to physiological maturity (NA 5009)
+      yield_reference: soybean 291 g/m2 mean grain yield
+      scope: multi-site trial mean, not a regional rule
+      additional_sources:
+      - source: Tello M. 2024, UNSL final thesis, soybean with foliar biostimulant, Villa Mercedes (https://dspace.fica.unsl.edu.ar/server/api/core/bitstreams/13aaa231-002b-4cd2-bd9b-0de8761c4d12/content),
+          sha256 57163f283c18ac55f46e6161974e0bccfcffba5c58bf1c1cb15d2d20f6944961
+        scope: single season 2021/22, single sowing date 16 Nov 2021, cultivar 50i17 IPRO STS (group V short); not a sowing window
+        observed: cycle shortened to 123 days sowing to R8 by an early frost during grain filling; mean 1000-grain weight 125 g
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini: NO_VERIFICADO
+      kc_mid: 1.15
+      kc_end: 0.5
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: 0.6-1.3
+      depletion_fraction_p: 0.5
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window: NO_VERIFICADO (thesis gives simulation scenarios only)
+  status: BLOCKED_PARAMETERS_NOT_EXTRACTED
+  next_action: extract cycle, Kc and water-stress traits from the 2022-2023 INTA trial document
+- rank: 3
+  crop_id: CROP-GIRASOL
+  common_name: girasol
+  local_evidence:
+  - source: none_registered
+    document: INTA San Luis hybrid trials (secondary mentions only)
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: eje microrregional según fuentes secundarias
+  parameters:
+    cycle_and_stages: null
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini: NO_VERIFICADO
+      kc_mid: 1.0-1.15 (footnote 9)
+      kc_end: 0.35
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: 0.8-1.5
+      depletion_fraction_p: 0.45
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window: NO_VERIFICADO
+  status: BLOCKED_NO_LOCAL_SOURCE_REGISTERED
+  next_action: acquire and register the INTA San Luis sunflower trial documents
+- rank: 4
+  crop_id: CROP-SORGO
+  common_name: sorgo granífero
+  local_evidence:
+  - source: inta-san-luis-crop-trials
+    document: Ensayos agricolas en la provincia de San Luis - Maiz, Soja, Sorgo, Algodon (2022-2023)
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: cultivo extensivo importante según INTA San Luis (secundario)
+  parameters:
+    cycle_and_stages:
+      source: Riglos 2023, UBA doctoral thesis (PDF p.40-41, p.60, p.117), https://ri.agro.uba.ar/files/download/tesis/doctorado/2024riglosmiguelmaximiliano.pdf, sha256 ccb83ee212348fad85fd84ff529601fe4769224450e133d11ea6977568405111
+      days_to_maturity: 140 or 122 days depending on hybrid (VDH 314 / ADV 1200)
+      yield_reference: sorghum 739 g/m2 mean grain yield
+      scope: multi-site trial mean, not a regional rule
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini: NO_VERIFICADO
+      kc_mid: 1.00-1.10
+      kc_end: 0.55
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: 1.0-2.0
+      depletion_fraction_p: 0.55
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window:
+      source: Lujan & Riglos 2024, UNSL thesis, Villa Mercedes EEA San Luis, 1 campaign (2018/19), rainfed (https://dspace.fica.unsl.edu.ar/bitstreams/8782a593-103e-4b31-a677-9f4f53394f35/download)
+      scope: single trial, not a regional rule
+      early: second half of October (FS1)
+      late: first half of December (FS2)
+      grain_yield_g_m2: maize 301 vs sorghum 257.9 (P<=0.10)
+      additional_source: 'Riglos 2023 (p.40): FS1 second half October, FS2 first half December; 2016/17 and 2017/18 at Villa Mercedes, Manfredi, Pergamino'
+  status: BLOCKED_PARAMETERS_NOT_EXTRACTED
+  next_action: extract cycle, Kc and drought-response traits from the 2022-2023 INTA trial document
+- rank: 5
+  crop_id: CROP-TRIGO
+  common_name: trigo
+  local_evidence:
+  - source: none_registered
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: uso menor según fuentes secundarias
+  parameters:
+    cycle_and_stages: null
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini_winter_nonfrozen_soil: 0.7
+      kc_ini_winter_frozen_soil: 0.4
+      kc_mid: 1.15
+      kc_end: 0.25-0.40 (footnote 10)
+      note: spring wheat kc_ini not legible in table
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: spring 1.0-1.5; winter 1.5-1.8
+      depletion_fraction_p: 0.55
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window: NO_VERIFICADO
+  status: BLOCKED_NO_LOCAL_SOURCE_REGISTERED
+  next_action: identify and register a local wheat trial or production source
+- rank: 6
+  crop_id: CROP-MANI
+  common_name: maní
+  local_evidence:
+  - source: none_registered
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: histórico en la zona; menor presencia actual según fuentes secundarias
+  parameters:
+    cycle_and_stages:
+      source: Riglos 2023, UBA doctoral thesis (PDF p.40-41, p.60, p.117), https://ri.agro.uba.ar/files/download/tesis/doctorado/2024riglosmiguelmaximiliano.pdf, sha256 ccb83ee212348fad85fd84ff529601fe4769224450e133d11ea6977568405111
+      days_to_maturity: 140 days to physiological maturity (ASEM 400 INTA)
+      yield_reference: peanut 250 g/m2 mean grain yield
+      scope: multi-site trial mean, not a regional rule
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini: NO_VERIFICADO
+      kc_mid: 1.15
+      kc_end: 0.6
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: 0.5-1.0
+      depletion_fraction_p: 0.5
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window: NO_VERIFICADO (thesis gives simulation scenarios only)
+  status: BLOCKED_NO_LOCAL_SOURCE_REGISTERED
+  next_action: identify and register a local peanut source
+- rank: 7
+  crop_id: CROP-ALFALFA
+  common_name: alfalfa
+  local_evidence:
+  - source: none_registered
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: pastura; mencionada en estudios de carbono de suelo en Villa Mercedes
+  parameters:
+    cycle_and_stages: null
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      variant: averaged cutting effects
+      kc_ini: 0.4
+      kc_mid: 0.95
+      kc_end: 0.9
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: hay 1.0-2.0; seed 1.0-3.0
+      depletion_fraction_p: 0.55
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window: NO_VERIFICADO
+  status: BLOCKED_NO_LOCAL_SOURCE_REGISTERED
+  next_action: decide whether a perennial pasture belongs in the rotation model at all
+- rank: 8
+  crop_id: CROP-CEBADA
+  common_name: cebada
+  local_evidence:
+  - source: none_registered
+    status: PARTIAL_KC_TABLE12_ZR_SIEMBRA_ROTACION_NO_VERIFICADO
+  regional_prominence: alternativa de cosecha fina según boletín INTA (secundario)
+  parameters:
+    cycle_and_stages: null
+    crop_coefficients_kc:
+      source: FAO-56 Chapter 6 Table 12 (https://www.fao.org/4/x0490e/x0490e0b.htm)
+      kc_ini: NO_VERIFICADO
+      kc_mid: 1.15
+      kc_end: 0.25
+    rooting_depth:
+      source: FAO-56 Chapter 8 Table 22 (https://www.fao.org/4/x0490e/x0490e0e.htm)
+      zr_m: 1.0-1.5
+      depletion_fraction_p: 0.55
+    water_stress_response: null
+    rotation_compatibility: null
+    sowing_window: NO_VERIFICADO
+  status: BLOCKED_NO_LOCAL_SOURCE_REGISTERED
+  next_action: identify and register the INTA barley bulletin
+excluded_from_catalog_for_now:
+- crop: algodón
+  reason: present in the local INTA trial document but not among the requested candidates; add if the team agrees
