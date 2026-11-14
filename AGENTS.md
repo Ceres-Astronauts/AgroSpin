@@ -1,0 +1,7 @@
+# AI collaboration and branch rules
+
+- Before any commit, push, or pull request, identify the human user's GitHub login and confirm the intended repository and branch. Do not infer the identity from an AI agent name or a shared machine. If the identity is unclear, ask the user.
+- The user's working branch is `usuario/<GitHub-login>` using the account's exact login. An AI may commit or push only to that user's branch, and only with that user's explicit approval for the specific commit or push. Inspect the branch and changes first; never switch a dirty shared checkout in a way that affects another person's work.
+- Do not commit, push, merge, rebase, or otherwise integrate changes into `main`, or modify `main` protection, on behalf of any other user. Only RavenEibu may authorize and perform integration into `main`; an AI acting for RavenEibu still needs RavenEibu's explicit approval for that specific action.
+- Review and pull requests may be prepared without merging. Do not impersonate another user, use another user's credentials, or bypass protections. Respect stricter repository, data, and security rules.
+- These instructions do not enforce access control. Repository permissions and branch protection are authoritative. If the user's branch is not writable, report the limitation rather than working around it. Other users' branches are not automatically isolated from a user with repository write permission.

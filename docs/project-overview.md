@@ -75,7 +75,7 @@ Field Shift execution is validated against a defined workstation compatibility e
 - **Expected but Not Yet Validated:** Other modern Linux x86_64 distributions
 - **Hardware Architecture:** Linux x86_64
 - **Operating System:** CachyOS (tested) / compatible modern Linux userspace (glibc 2.38+)
-- **Storage / Mount Baseline:** Canonical portable mount at `/mnt/field-shift`
+- **Storage / Mount Baseline:** Use the configured portable dataset storage location
 - **Python Tooling:** Managed via `uv` with strictly frozen dependencies (`uv.lock`)
 - **Python Version:** 3.13
 - **Geospatial System Libraries:** GDAL 3.13+, PROJ 9.9+, GEOS 3.15+
@@ -83,7 +83,7 @@ Field Shift execution is validated against a defined workstation compatibility e
 ### Installation & Verification
 ```bash
 # Clone the repository
-git clone https://github.com/RavenEibu/field-shift.git
+git clone https://github.com/Ceres-Astronauts/field-shift.git
 cd field-shift
 
 # Synchronize reproducible virtual environment
