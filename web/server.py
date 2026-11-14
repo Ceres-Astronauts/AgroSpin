@@ -72,6 +72,59 @@ def _clasificar_semaforo(score: float) -> Literal["recomendado", "precaucion", "
     return "no_recomendado"
 
 
+def _decision_experto_local(diag: Dict[str, Any], escenario_lluvia: str, prioridad: str) -> List[str]:
+    decisiones: List[str] = []
+    if diag["meses_suelo_desnudo"] >= 4:
+        decisiones.append(
+            "Implantar un cultivo de servicio invernal (centeno o vicia) para frenar la voladura de suelo franco-arenoso y bajar la temperatura superficial."
+        )
+    else:
+        decisiones.append(
+            "Mantener la cobertura actual y evitar labranzas que expongan el suelo al viento de invierno."
+        )
+
+    humedad = diag["estado_hidrico"]["humedad_efectiva"]
+    if humedad < 0.14 or escenario_lluvia == "seco":
+        decisiones.append(
+            "Priorizar cultivos rústicos o de ciclo corto, ajustar a la baja la densidad de siembra y evitar inversiones altas en fertilización nitrogenada hasta confirmar recarga."
+        )
+    else:
+        decisiones.append(
+            "Aprovechar la reserva hídrica disponible para sostener el cultivo principal, monitoreando el perfil a 30–60 cm antes de definir refertilización."
+        )
+
+    if prioridad == "agua":
+        decisiones.append("Cortar el cultivo de servicio temprano (fin de invierno) para no consumir el agua útil del cultivo de verano.")
+    return decisiones
+
+
+def _analisis_tecnico_detallado(diag: Dict[str, Any], escenario_lluvia: str) -> List[Dict[str, str]]:
+    hum = diag["estado_hidrico"]
+    return [
+        {
+            "titulo": "Balance hídrico y escenario pluviométrico",
+            "detalle": (
+                f"Proyección anual de {diag['lluvia_anual_proyectada_mm']} mm bajo escenario '{escenario_lluvia}'. "
+                "En suelos franco-arenosos de Villa Mercedes, la baja capacidad de retención exige sincronizar la demanda máxima del cultivo con el trimestre húmedo."
+            ),
+        },
+        {
+            "titulo": "Perfil de humedad e incertidumbre de medición",
+            "detalle": (
+                f"Humedad efectiva estimada: {hum['humedad_efectiva']} m³/m³ ({hum['fuente']}, incertidumbre ±{hum['incertidumbre_pct']}%). "
+                f"{hum.get('nota', '')}"
+            ),
+        },
+        {
+            "titulo": "Cobertura vegetal y estrés térmico estival",
+            "detalle": (
+                f"Se registran {diag['meses_suelo_desnudo']} meses con suelo descubierto (NDVI < 0.25) y un pico térmico superficial ECOSTRESS de {diag['pico_termico_ecostress_c']} °C. "
+                "La falta de rastrojo acelera la evaporación directa y la degradación estructural por erosión eólica."
+            ),
+        },
+    ]
+
+
 @app.get("/")
 def home() -> FileResponse:
     return FileResponse(str(STATIC_DIR / "index.html"))
@@ -133,6 +186,8 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
                 "score": score,
                 "resumen": item.get("riesgo_humano", ""),
                 "alertas": item.get("alertas_escenario", []),
+                "evidencia": item.get("evidencia", ""),
+                "lagunas_info": item.get("lagunas_info", ""),
             }
         )
 
@@ -141,6 +196,8 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         "suelo": diag["suelo"],
         "alerta_principal": diag["alerta_principal"],
         "tarjetas": tarjetas,
+        "decision_experto": _decision_experto_local(diag, req.escenario_lluvia, req.prioridad),
+        "analisis_tecnico": _analisis_tecnico_detallado(diag, req.escenario_lluvia),
         "detalle_tecnico": {
             "lluvia_anual_proyectada_mm": diag["lluvia_anual_proyectada_mm"],
             "humedad_efectiva_m3_m3": diag["estado_hidrico"]["humedad_efectiva"],
