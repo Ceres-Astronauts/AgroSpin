@@ -71,7 +71,7 @@ To ground the methodology in real-world agriculture, Field Shift anchors its MVP
 
 Field Shift execution is validated against a defined workstation compatibility envelope:
 
-- **Tested Environments:** Mars and Vulcanus controlled Linux x86_64 workstations (CachyOS, glibc 2.38+)
+- **Tested Environments:** controlled Linux x86_64 workstations (CachyOS, glibc 2.38+)
 - **Expected but Not Yet Validated:** Other modern Linux x86_64 distributions
 - **Hardware Architecture:** Linux x86_64
 - **Operating System:** CachyOS (tested) / compatible modern Linux userspace (glibc 2.38+)
@@ -120,4 +120,4 @@ field-shift/
 
 ## 7. License & Open Source Governance
 
-Field Shift is open-source software licensed under the [MIT License](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+Field Shift is open-source software licensed under the [MIT License](../LICENSE). See [CONTRIBUTING.md](../CONTRIBUTING.md) and [SECURITY.md](../SECURITY.md).
