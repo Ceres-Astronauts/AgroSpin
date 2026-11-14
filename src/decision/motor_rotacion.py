@@ -1,11 +1,13 @@
 """
 Motor de simulacion y evaluacion de rotaciones de cultivos para Field Shift.
 Adaptado para la zona piloto Villa Mercedes (San Luis) y Corredor Rio Cuarto - Villa Mercedes.
-Integra calibracion satelital (NASA SMAP / POWER / ECOSTRESS) con telemetria terrestre (ESP32 / REM).
+Integra calibracion satelital (NASA SMAP / POWER / ECOSTRESS) con telemetria terrestre (sonda de suelo 10, 30 y 60 cm).
 
-Actualizado segun validacion E2 (Angie Mendez - Analisis Funcional y Calidad de Datos):
-- Correccion de minima satelital (sesgo frio local REM vs NASA POWER: -1.04 C / margen helada 1.5 C).
-- Deteccion de sobreestimacion historica de precipitacion satelital (+20.0% promedio) y advertencia de riesgo hidrico.
+Reglas funcionales consolidadas (Angie Mendez - Analisis Funcional y Calidad de Datos):
+- Calibracion termica de minimas satelitales (-1.04 C) para deteccion de heladas agrometeorologicas.
+- Sonda local de humedad de perfil disponible (10, 30 y 60 cm): fusion ponderada con satelite SMAP.
+- Precipitacion: sin pluviometro en lote, se toma el promedio entre el dato bruto de NASA POWER y el valor
+  calibrado local (promedio ponderado conservador / compromiso intermedio), informando el desvio sin saturar la UI.
 """
 
 from typing import Any, Dict, List, Optional
@@ -62,32 +64,31 @@ def calibrar_humedad_suelo(
 ) -> Dict[str, Any]:
     """
     SMAP L4 mide humedad superficial (~0-5 cm, sm_surface) con alta incertidumbre en suelos arenosos.
-    Si se dispone de nodo terrestre (ESP32 con sensores capacitivos a 10, 30 y 60 cm),
-    se pondera el perfil radicular efectivo y se reduce la incertidumbre.
+    El agricultor cuenta con sonda en lote a 10, 30 y 60 cm.
+    Se pondera el perfil radicular efectivo (20% a 10cm, 45% a 30cm, 35% a 60cm)
+    y se fusiona con la tendencia satelital (75% sonda local + 25% SMAP).
     """
     if not lecturas_sonda_cm:
         return {
             "humedad_efectiva": round(humedad_smap_superficial, 3),
             "fuente": "Solo Satelite NASA SMAP (0-5 cm)",
             "incertidumbre_pct": 28,
-            "nota": "Dato superficial satelital. Se recomienda contrastar con perfil profundo o sonda en lote."
+            "nota": "Dato superficial satelital. Se recomienda ingresar lecturas de sonda de suelo (10, 30 y 60 cm)."
         }
     
-    # Ponderacion zona radicular efectiva: 20% a 10cm, 45% a 30cm, 35% a 60cm
     perfil_real = (
         0.20 * lecturas_sonda_cm.get("10cm", 0.15) +
         0.45 * lecturas_sonda_cm.get("30cm", 0.20) +
         0.35 * lecturas_sonda_cm.get("60cm", 0.22)
     )
-    # Fusion hibrida: 75% telemetria in-situ + 25% tendencia satelital SMAP
     humedad_calibrada = 0.75 * perfil_real + 0.25 * humedad_smap_superficial
     desvio = round((humedad_calibrada - humedad_smap_superficial) * 100, 1)
     
     return {
         "humedad_efectiva": round(humedad_calibrada, 3),
-        "fuente": "Fusion Hibrida (NASA SMAP + Nodo Terrestre ESP32)",
+        "fuente": "Sonda de Perfil (10-30-60 cm) + NASA SMAP",
         "incertidumbre_pct": 7,
-        "nota": f"Desvio corregido respecto a satelite: {desvio}%"
+        "nota": f"Perfil calibrado con medicion in-situ (desvio satelite: {desvio}%)"
     }
 
 
@@ -101,14 +102,12 @@ def evaluar_riesgo_termico_heladas(
     Aplica margen precautorio de 1.5 C para alertas agrometeorologicas (< 3 C en abrigo = riesgo helada en suelo).
     """
     if origen_dato == "satelital_nasa_power":
-        # Si la minima satelital es de reanalisis/POWER, estimar la minima real en dosel/suelo
         temp_min_estimada_suelo = round(temp_min_satelital - 1.04, 1)
         margen_seguridad = 1.5
     else:
         temp_min_estimada_suelo = round(temp_min_satelital, 1)
         margen_seguridad = 0.0
 
-    # Umbral agronomico de helada en abrigo meteorologico vs suelo (< 3.0 C)
     riesgo_helada = temp_min_estimada_suelo <= (3.0 + margen_seguridad)
     helada_severa = temp_min_estimada_suelo <= 0.0
 
@@ -132,37 +131,27 @@ def simular_escenarios(
     prioridad_usuario: str,
     tiene_ganaderia: bool,
     escenario_lluvia: str = "normal",
-    lecturas_sonda: Optional[Dict[str, float]] = None,
-    calibrar_precipitacion_satelital: bool = True
+    lecturas_sonda: Optional[Dict[str, float]] = None
 ) -> Dict[str, Any]:
     """
     Simula y compara las estrategias de rotacion para un lote dado.
     
-    :param datos_lote: Diccionario con series o agregados (lluvia_gpm_mm, humedad_suelo_smap, etc.)
-    :param prioridad_usuario: 'suelo' | 'agua' | 'renta'
-    :param tiene_ganaderia: bool
-    :param escenario_lluvia: 'seco' (-25% lluvia) | 'normal' | 'humedo' (+20% lluvia)
-    :param lecturas_sonda: dict con lecturas '10cm', '30cm', '60cm' (m3/m3)
-    :param calibrar_precipitacion_satelital: si es True, corrige el factor de sobreestimacion del +20% de NASA POWER
+    Precipitacion: al no disponer de pluviometro en lote, el motor calcula la media
+    entre el valor bruto de NASA POWER y el valor calibrado local (reduccion del 20%
+    por sobreestimacion sistematica observada en Villa Mercedes).
     """
     factores_clima = {"seco": 0.75, "normal": 1.0, "humedo": 1.20}
     factor_clima = factores_clima.get(escenario_lluvia, 1.0)
     
     lluvias_raw = datos_lote.get("lluvia_gpm_mm", [665 / 12] * 12)
-    lluvia_bruta_anual = sum(lluvias_raw)
+    lluvia_satelital_bruta = sum(lluvias_raw)
     
-    # Manejo agronomico de la precipitacion satelital:
-    # La validacion E2 (2015-2025) demostro que NASA POWER sobreestima la lluvia de lote en +20.0% (+1.340 mm en 11 anos).
-    # Si se calibra, se ajusta al equivalente pluviometrico real (lluvia / 1.20).
-    if calibrar_precipitacion_satelital:
-        factor_ajuste_precip = 1.0 / 1.20  # Remueve el 20% de exceso historico
-        lluvia_base = lluvia_bruta_anual * factor_ajuste_precip
-        nota_precip = "Calibrada (-20% sobreestimacion historica satelital detectada en validacion E2)"
-    else:
-        lluvia_base = lluvia_bruta_anual
-        nota_precip = "Dato crudo satelital (Atencion: NASA POWER sobreestima en promedio +20% en Villa Mercedes)"
-
-    lluvia_proyectada = lluvia_base * factor_clima
+    # Calculo de la media de precipitacion (NASA POWER bruto vs Calibrado local -20%)
+    lluvia_calibrada_local = lluvia_satelital_bruta * (1.0 / 1.20)
+    lluvia_media_consenso = (lluvia_satelital_bruta + lluvia_calibrada_local) / 2.0
+    
+    # Proyeccion segun escenario climatico (seco, normal o humedo)
+    lluvia_proyectada = lluvia_media_consenso * factor_clima
     
     ndvi_series = datos_lote.get("ndvi_sentinel2", [0.3] * 12)
     meses_desnudos = sum(1 for ndvi in ndvi_series if ndvi < 0.25)
@@ -170,7 +159,6 @@ def simular_escenarios(
     temps = datos_lote.get("temp_superficial_ecostress_c", [35.0])
     temp_max_verano = max(temps)
     
-    # Evaluacion de minimas termicas y heladas (minima historica de lote o estandar invernal de Villa Mercedes)
     temp_min_sat = datos_lote.get("temp_min_invierno_c", 4.2)
     analisis_heladas = evaluar_riesgo_termico_heladas(temp_min_sat)
     
@@ -183,8 +171,8 @@ def simular_escenarios(
         "lote": datos_lote.get("nombre", "Lote Piloto"),
         "suelo": datos_lote.get("suelo", "Franco-arenoso"),
         "lluvia_anual_proyectada_mm": round(lluvia_proyectada),
-        "lluvia_satelital_bruta_mm": round(lluvia_bruta_anual * factor_clima),
-        "ajuste_precipitacion_nota": nota_precip,
+        "lluvia_satelital_bruta_mm": round(lluvia_satelital_bruta * factor_clima),
+        "lluvia_calibrada_minima_mm": round(lluvia_calibrada_local * factor_clima),
         "meses_suelo_desnudo": meses_desnudos,
         "pico_termico_ecostress_c": temp_max_verano,
         "analisis_heladas": analisis_heladas,
@@ -200,12 +188,12 @@ def simular_escenarios(
         score = 50.0
         alertas_dinamicas: List[str] = []
 
-        # 1. Balance hidrico calibrado
+        # 1. Balance hidrico basado en la media consensuada
         deficit_mm = est["consumo_agua_mm"] - lluvia_proyectada
         if deficit_mm > 0:
             score -= (deficit_mm * 0.12)
             alertas_dinamicas.append(
-                f"Deficit hidrico proyectado de {round(deficit_mm)} mm bajo escenario {escenario_lluvia} ({nota_precip})."
+                f"Deficit hidrico proyectado de {round(deficit_mm)} mm bajo escenario {escenario_lluvia}."
             )
         else:
             score += 10
@@ -217,7 +205,7 @@ def simular_escenarios(
                 "CRITICO: En ano seco adelantar secado de centeno/vicia para preservar agua util para el maiz."
             )
 
-        # 3. Respuesta a la humedad calibrada de perfil
+        # 3. Respuesta a la humedad calibrada de perfil de sonda
         hum_perfil = humedad_info["humedad_efectiva"]
         if hum_perfil < 0.14:
             if key == "cobertura_fijacion":
