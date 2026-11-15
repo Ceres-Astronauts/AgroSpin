@@ -35,6 +35,13 @@ The `origin` field differentiates ground observations (`OBSERVED_*`), estimates 
 - Regional data, including POWER and GAEZ, cannot be presented as direct parcel measurements merely because they are resampled.
 - The repository contains an **interactive rotation-comparison simulator with scoring logic**, but the scores and rankings are **prototype outputs, not field-validated agronomic recommendations**.
 
+
+### Interpretation of numeric uncertainty and scenario adjustments
+
+The current rotation simulator uses fixed uncertainty labels (including **±28%**) and scoring adjustments to handle missing or sparse field-scale evidence in the study area. **These are engineering heuristics and scenario parameters**, not statistically estimated confidence intervals, calibrated prediction errors, or universally valid agronomic thresholds. The value ±28% does not have a demonstrated sampling distribution or independently validated coverage probability. It must be presented as an **illustrative uncertainty flag**, not as a probability or measured error bound.
+
+Likewise, the simulator's weighted scores represent a prototype comparative rubric. Field data gaps explain why heuristics were introduced, but do not by themselves justify their numerical magnitudes. Independent soil samples and agronomic field validation are needed before such numbers can support operational decisions.
+
 ## Public project documentation
 
 - [MVP data guide](data/reference/mvp-homogeneous/README.md), [manifest](data/reference/mvp-homogeneous/manifest.json), and [checksums](data/reference/mvp-homogeneous/SHA256SUMS)
