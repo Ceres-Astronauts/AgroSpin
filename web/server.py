@@ -19,7 +19,7 @@ from src.decision.motor_rotacion import simular_escenarios  # noqa: E402
 LOTES_DEFAULT = REPOSITORY_ROOT / "data" / "lotes_piloto.json"
 STATIC_DIR = pathlib.Path(__file__).resolve().parent / "static"
 
-app = FastAPI(title="Field Shift — Ceres Agronauts", version="1.0.0")
+app = FastAPI(title="Field Shift — Ceres Agronauts", version="2.0.0")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 _HUMEDAD_PRESETS: Dict[str, Dict[str, float]] = {
@@ -31,6 +31,9 @@ _HUMEDAD_PRESETS: Dict[str, Dict[str, float]] = {
 
 class EvaluacionRequest(BaseModel):
     lote_id: str = Field(default="villa_mercedes_centro")
+    textura: Literal["franco_arenoso", "limoso", "desconocido"] = "franco_arenoso"
+    napa_pendiente: Literal["sin_napa", "napa_cercana", "pendiente_anegamiento"] = "sin_napa"
+    regimen_agua: Literal["secano", "riego"] = "secano"
     humedad_estado: Literal["seco", "normal", "humedo", "sonda"] = "normal"
     sonda_10cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
     sonda_30cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
@@ -38,6 +41,8 @@ class EvaluacionRequest(BaseModel):
     estado_lote: Literal["rastrojo", "desnudo", "pastura"] = "rastrojo"
     escenario_lluvia: Literal["seco", "normal", "humedo"] = "normal"
     prioridad: Literal["agua", "renta", "suelo"] = "suelo"
+    horizonte: Literal["corto", "mediano", "largo"] = "mediano"
+    sistema_productivo: Literal["agricola", "mixto", "contratista"] = "agricola"
     tiene_ganaderia: bool = False
 
 
@@ -64,62 +69,69 @@ def _cargar_lotes() -> List[Dict[str, Any]]:
     ]
 
 
-def _clasificar_semaforo(score: float) -> Literal["recomendado", "precaucion", "no_recomendado"]:
-    if score >= 65:
+def _clasificar_semaforo(score: float, tiene_alerta_roja: bool) -> Literal["recomendado", "precaucion", "no_recomendado"]:
+    if tiene_alerta_roja or score < 50:
+        return "no_recomendado"
+    if score >= 68:
         return "recomendado"
-    if score >= 45:
-        return "precaucion"
-    return "no_recomendado"
+    return "precaucion"
 
 
-def _decision_experto_local(diag: Dict[str, Any], escenario_lluvia: str, prioridad: str) -> List[str]:
-    decisiones: List[str] = []
-    if diag["meses_suelo_desnudo"] >= 4:
-        decisiones.append(
-            "Evaluar junto a un conocedor del lote la implantación de un cultivo de servicio invernal (centeno o vicia) para frenar la voladura de suelo franco-arenoso y bajar la temperatura superficial."
+def _puntos_a_evaluar_en_lote(diag: Dict[str, Any], req: EvaluacionRequest) -> List[str]:
+    puntos: List[str] = []
+    suelo = diag["evaluacion_suelo"]
+    if diag["meses_suelo_desnudo"] >= 4 or req.estado_lote == "desnudo":
+        puntos.append(
+            "Evaluar junto a un conocedor del lote cómo cubrir el suelo en invierno (por ejemplo con vicia + centeno) para frenar la voladura por vientos de agosto-septiembre."
+        )
+    if req.napa_pendiente == "napa_cercana":
+        puntos.append(
+            "Verificar profundidad y salinidad de la napa freática en el lote: si está en ascenso (como en Cuenca del Morro), analizar si conviene alfalfa plurianual como bomba biológica."
+        )
+    elif req.napa_pendiente == "pendiente_anegamiento":
+        puntos.append(
+            "Revisar zonas bajas y escurrimiento ante lluvias torrenciales; evaluar especies tolerantes a encharcamiento temporal o cobertura viva permanente."
+        )
+
+    if req.regimen_agua == "secano" and (req.escenario_lluvia == "seco" or diag["estado_hidrico"]["humedad_efectiva"] < 0.16):
+        puntos.append(
+            "Confirmar agua útil real a 1–2 metros de profundidad antes de sembrar: en secano con baja reserva, evitar doble cultivo anual y ajustar fecha/densidad."
         )
     else:
-        decisiones.append(
-            "Revisar en el lote cómo mantener la cobertura actual y evitar labranzas que expongan el suelo al viento de invierno."
+        puntos.append(
+            "Validar fecha de corte/secado primaveral de coberturas (30–45 días antes del cultivo estival) para no competir con las lluvias de primavera."
         )
 
-    humedad = diag["estado_hidrico"]["humedad_efectiva"]
-    if humedad < 0.14 or escenario_lluvia == "seco":
-        decisiones.append(
-            "Analizar con criterio local la conveniencia de cultivos rústicos o de ciclo corto, ajustar la densidad de siembra y validar si conviene postergar fertilización nitrogenada hasta confirmar recarga."
-        )
-    else:
-        decisiones.append(
-            "Verificar la reserva hídrica real del lote a 30–60 cm antes de definir densidad de siembra o refertilización."
-        )
-
-    if prioridad == "agua":
-        decisiones.append("Definir en campo la fecha de corte del cultivo de servicio (fin de invierno) para no comprometer el agua útil del cultivo de verano.")
-    return decisiones
+    if req.textura == "desconocido":
+        puntos.append("Realizar análisis granulométrico (textura), pH y profundidad efectiva del lote antes de definir fertilización o cultivos sensibles.")
+    return puntos
 
 
-def _analisis_tecnico_detallado(diag: Dict[str, Any], escenario_lluvia: str) -> List[Dict[str, str]]:
+def _analisis_tecnico_detallado(diag: Dict[str, Any], req: EvaluacionRequest) -> List[Dict[str, str]]:
     hum = diag["estado_hidrico"]
+    suelo = diag["evaluacion_suelo"]
     return [
         {
-            "titulo": "Balance hídrico y escenario pluviométrico",
+            "titulo": "1. Evaluación física e hídrica del suelo",
             "detalle": (
-                f"Proyección anual de {diag['lluvia_anual_proyectada_mm']} mm bajo escenario '{escenario_lluvia}'. "
-                "En suelos franco-arenosos de Villa Mercedes, la baja capacidad de retención exige sincronizar la demanda máxima del cultivo con el trimestre húmedo."
+                f"Textura declarada: {suelo['capacidad_retencion']}. Régimen: {req.regimen_agua}. "
+                f"Estado de reserva: {suelo['estado_reserva']}. "
+                + " ".join(suelo["riesgos_suelo"])
             ),
         },
         {
-            "titulo": "Perfil de humedad e incertidumbre de medición",
+            "titulo": "2. Balance hídrico e incertidumbre de humedad",
             "detalle": (
-                f"Humedad efectiva estimada: {hum['humedad_efectiva']} m³/m³ ({hum['fuente']}, incertidumbre ±{hum['incertidumbre_pct']}%). "
+                f"Lluvia proyectada: {diag['lluvia_anual_proyectada_mm']} mm/año (escenario '{req.escenario_lluvia}'). "
+                f"Humedad efectiva calibrada: {hum['humedad_efectiva']} m³/m³ ({hum['fuente']}, incertidumbre ±{hum['incertidumbre_pct']}%). "
                 f"{hum.get('nota', '')}"
             ),
         },
         {
-            "titulo": "Cobertura vegetal y estrés térmico estival",
+            "titulo": "3. Cobertura, estrés térmico y ventana de heladas",
             "detalle": (
-                f"Se registran {diag['meses_suelo_desnudo']} meses con suelo descubierto (NDVI < 0.25) y un pico térmico superficial ECOSTRESS de {diag['pico_termico_ecostress_c']} °C. "
-                "La falta de rastrojo acelera la evaporación directa y la degradación estructural por erosión eólica."
+                f"Se estiman {diag['meses_suelo_desnudo']} meses con baja cobertura (NDVI < 0.25) y pico térmico superficial de {diag['pico_termico_ecostress_c']} °C. "
+                "En Villa Mercedes las heladas agrometeorológicas (<3 °C) promedian del 29/03 (±24 d) al 09/11 (±19 d), condicionando siembras de segunda."
             ),
         },
     ]
@@ -169,25 +181,40 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
     sim = simular_escenarios(
         datos_lote=datos_lote,
         prioridad_usuario=req.prioridad,
-        tiene_ganaderia=req.tiene_ganaderia,
+        tiene_ganaderia=req.tiene_ganaderia or req.sistema_productivo == "mixto",
         escenario_lluvia=req.escenario_lluvia,
         lecturas_sonda=lecturas_sonda,
+        textura=req.textura,
+        napa_pendiente=req.napa_pendiente,
+        regimen_agua=req.regimen_agua,
+        estado_lote=req.estado_lote,
+        horizonte=req.horizonte,
+        sistema_productivo=req.sistema_productivo,
     )
 
     diag = sim["diagnostico_lote"]
     tarjetas = []
     for item in sim["comparativa_rotaciones"]:
         score = item["puntaje_idoneidad"]
-        semaforo = _clasificar_semaforo(score)
+        alertas_rojas = item.get("alertas_rojas", [])
+        semaforo = _clasificar_semaforo(score, len(alertas_rojas) > 0)
         tarjetas.append(
             {
+                "id": item["id"],
                 "nombre": item["nombre"],
+                "secuencia": item["secuencia"],
+                "horizonte_label": item["horizonte_label"],
                 "semaforo": semaforo,
                 "score": score,
-                "resumen": item.get("riesgo_humano", ""),
+                "score_base": item["score_base_dimensiones"],
+                "ajuste_contextual": item["ajuste_contextual"],
+                "resumen": item["resumen_campo"],
+                "cuando_rotar": item["cuando_rotar"],
+                "criterio_terminacion": item["criterio_terminacion"],
+                "alertas_rojas": alertas_rojas,
                 "alertas": item.get("alertas_escenario", []),
-                "evidencia": item.get("evidencia", ""),
-                "lagunas_info": item.get("lagunas_info", ""),
+                "dimensiones": item["dimensiones"],
+                "fuentes": item["fuentes"],
             }
         )
 
@@ -196,8 +223,9 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         "suelo": diag["suelo"],
         "alerta_principal": diag["alerta_principal"],
         "tarjetas": tarjetas,
-        "decision_experto": _decision_experto_local(diag, req.escenario_lluvia, req.prioridad),
-        "analisis_tecnico": _analisis_tecnico_detallado(diag, req.escenario_lluvia),
+        "puntos_evaluar": _puntos_a_evaluar_en_lote(diag, req),
+        "analisis_tecnico": _analisis_tecnico_detallado(diag, req),
+        "pesos_aplicados": diag["pesos_aplicados"],
         "detalle_tecnico": {
             "lluvia_anual_proyectada_mm": diag["lluvia_anual_proyectada_mm"],
             "humedad_efectiva_m3_m3": diag["estado_hidrico"]["humedad_efectiva"],
