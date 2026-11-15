@@ -210,40 +210,59 @@
               <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.858" data-lon="-65.182">Justo Daract</button>
             </div>
 
-            <!-- Recuadro intuitivo de selección de capas del mapa -->
-            <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-3 space-y-2">
+            <!-- Recuadro intuitivo de selección de capas del mapa con nombres claros -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-3.5 space-y-2.5 shadow-sm">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Map Layers &amp; Sensor Overlays</span>
-                <span class="text-[10px] text-slate-500 font-medium">Toggle thematic layers</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Capas del Mapa / Map Layers</span>
+                <span class="text-[10px] text-slate-500 font-medium">Selecciona qué información ver sobre el lote</span>
               </div>
               <div class="grid grid-cols-2 gap-2 text-xs">
-                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
-                  <input type="checkbox" id="chk-layer-stations" checked class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
-                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
-                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500 shrink-0"></span>
-                    Weather Stations (19)
-                  </span>
+                <!-- Capa 1: Lluvia y Temperatura -->
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-sky-400 cursor-pointer transition select-none shadow-xs">
+                  <input type="checkbox" id="chk-layer-stations" checked class="mt-0.5 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
+                  <div class="space-y-0.5">
+                    <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
+                      Lluvia y Clima
+                    </span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Estaciones de lluvia y olas de calor</span>
+                  </div>
                 </label>
-                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
-                  <input type="checkbox" id="chk-layer-sisinta" class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
-                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
-                    SISINTA Soil Profiles
-                  </span>
+
+                <!-- Capa 2: Humedad y Calidad del Suelo -->
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-violet-400 cursor-pointer transition select-none shadow-xs">
+                  <input type="checkbox" id="chk-layer-sisinta" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500" />
+                  <div class="space-y-0.5">
+                    <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
+                      Humedad del Suelo
+                    </span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Agua útil y perfiles INTA (SISINTA)</span>
+                  </div>
                 </label>
-                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
-                  <input type="checkbox" id="chk-layer-susceptibility" class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
-                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
-                    <span class="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0"></span>
-                    Topographic Susceptibility
-                  </span>
+
+                <!-- Capa 3: Riesgo de Inundación / Napa -->
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-rose-400 cursor-pointer transition select-none shadow-xs">
+                  <input type="checkbox" id="chk-layer-susceptibility" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500" />
+                  <div class="space-y-0.5">
+                    <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
+                      Riesgo de Anegamiento
+                    </span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Bajos, lagunas y ascenso de napa</span>
+                  </div>
                 </label>
-                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
-                  <input type="checkbox" id="chk-layer-slope" class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
-                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
-                    SRTM 500m Slope (%)
-                  </span>
+
+                <!-- Capa 4: Relieve y Pendiente -->
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none shadow-xs">
+                  <input type="checkbox" id="chk-layer-slope" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+                  <div class="space-y-0.5">
+                    <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                      Relieve y Pendiente
+                    </span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Elevación SRTM y riesgo de escurrimiento</span>
+                  </div>
                 </label>
               </div>
             </div>
@@ -840,12 +859,7 @@
     const slopeLayer = L.layerGroup();
     const canvasRenderer = L.canvas({ padding: 0.3 });
 
-    L.control.layers(null, {
-      "Ground weather stations (19)": stationsLayer,
-      "INTA SISINTA soil profiles": sisintaLayer,
-      "Topographic susceptibility (UNVALIDATED)": susceptibilityLayer,
-      "SRTM 500m slope (%)": slopeLayer,
-    }, { collapsed: true }).addTo(fieldMap);
+// Control flotante viejo removido para dejar exclusivamente el recuadro superior
 
     // Sincronización intuitiva del recuadro superior de capas
     const chkStations = document.getElementById("chk-layer-stations");
