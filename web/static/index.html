@@ -379,6 +379,7 @@
           <div id="panel-tecnica" class="hidden space-y-4">
             <div id="metricas-tecnicas" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm"></div>
             <div id="balance-fao56" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3"></div>
+            <div id="contexto-mvp-ampliado" class="hidden space-y-4"></div>
             <div id="dimensiones-faltantes" class="bg-amber-50/90 rounded-2xl border border-amber-200 p-4 sm:p-5 shadow-sm space-y-2"></div>
             <div id="problematicas-tecnicas" class="space-y-3"></div>
             <div id="tarjetas-tecnicas" class="space-y-3"></div>
@@ -505,13 +506,94 @@
       tarjetaTerreno.innerHTML = `<p class="text-rose-700 font-medium">${mensajeError}</p>`;
     }
 
-    // Pines informativos de estaciones terrestres
-    L.circleMarker([-33.7167, -65.3667], { radius: 6, color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.9 })
-      .addTo(mapa)
-      .bindPopup("<strong>SMN 87448 — Villa Reynolds</strong><br/>Estación meteorológica observada");
-    L.circleMarker([-33.1612, -64.357], { radius: 6, color: "#0369a1", fillColor: "#0ea5e9", fillOpacity: 0.9 })
-      .addTo(mapa)
-      .bindPopup("<strong>PIHC 30109 — Río Cuarto</strong><br/>Estación pluviométrica observada");
+    // Capas interactivas del MVP homogéneo (19 estaciones, SISINTA, Susceptibilidad NO_VALIDADA y Pendiente 500m)
+    const capaEstaciones = L.layerGroup().addTo(mapa);
+    const capaSisinta = L.layerGroup();
+    const capaSusceptibilidad = L.layerGroup();
+    const capaPendiente = L.layerGroup();
+    const canvasRenderer = L.canvas({ padding: 0.3 });
+
+    L.control.layers(null, {
+      "Estaciones terrestres (19)": capaEstaciones,
+      "Perfiles de suelo INTA SISINTA": capaSisinta,
+      "Susceptibilidad topográfica (NO_VALIDADA)": capaSusceptibilidad,
+      "Pendiente SRTM 500m (%)": capaPendiente,
+    }, { collapsed: true }).addTo(mapa);
+
+    fetch("/api/mapa/capas")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((capas) => {
+        if (!capas) return;
+        (capas.estaciones || []).forEach((st) => {
+          const okObs = String(st.estado_validacion).startsWith("OBSERVADO");
+          const limitada = String(st.estado_validacion).includes("LIMITACIONES") || String(st.estado_validacion).includes("meses");
+          const color = !okObs ? "#dc2626" : (limitada ? "#d97706" : "#0284c7");
+          L.circleMarker([st.lat, st.lon], {
+            radius: 5.5,
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.85,
+            weight: 1.5,
+          })
+            .bindPopup(
+              `<strong>${st.nombre}</strong> (${st.estacion_id})<br/>` +
+              `Red: ${st.red}<br/>` +
+              `Variables: ${st.variables}<br/>` +
+              `Estado: <strong>${st.estado_validacion}</strong>`
+            )
+            .addTo(capaEstaciones);
+        });
+
+        (capas.sisinta || []).forEach((p) => {
+          const completo = p.estado_completitud === "COMPLETO";
+          const texTxt = (p.arcilla_pct != null || p.limo_pct != null || p.arena_pct != null)
+            ? `Arcilla: ${p.arcilla_pct ?? "-"}% · Limo: ${p.limo_pct ?? "-"}% · Arena: ${p.arena_pct ?? "-"}%`
+            : "Sin granulometría completa";
+          L.circleMarker([p.lat, p.lon], {
+            radius: 4.5,
+            color: "#6d28d9",
+            fillColor: completo ? "#7c3aed" : "#a78bfa",
+            fillOpacity: completo ? 0.9 : 0.65,
+            weight: 1,
+          })
+            .bindPopup(
+              `<strong>Perfil SISINTA #${p.no_registro ?? "s/n"}</strong><br/>` +
+              `Horizonte: ${p.prof_sup_cm ?? 0}–${p.prof_inf_cm ?? "?"} cm<br/>` +
+              `${texTxt}<br/>` +
+              `pH: ${p.ph_agua ?? "-"} · CO: ${p.carbono_organico_pct ?? "-"}% · Agua útil: ${p.agua_util_calc_pct ?? "-"}%<br/>` +
+              `Estado: <strong>${p.estado_completitud}</strong>`
+            )
+            .addTo(capaSisinta);
+        });
+
+        (capas.grilla_500m || []).forEach(([lat, lon, susc, pend]) => {
+          const suscColor = susc >= 0.6 ? "#dc2626" : (susc >= 0.35 ? "#f59e0b" : "#10b981");
+          L.circleMarker([lat, lon], {
+            renderer: canvasRenderer,
+            radius: 5,
+            stroke: false,
+            fillColor: suscColor,
+            fillOpacity: 0.45,
+          })
+            .bindPopup(
+              `<strong>Susceptibilidad topográfica: ${susc}</strong><br/>` +
+              `Etiqueta: NO_VALIDADA (índice TWI, no es mapa de inundación)`
+            )
+            .addTo(capaSusceptibilidad);
+
+          const pendColor = pend >= 3.0 ? "#b91c1c" : (pend >= 1.5 ? "#f59e0b" : "#059669");
+          L.circleMarker([lat, lon], {
+            renderer: canvasRenderer,
+            radius: 5,
+            stroke: false,
+            fillColor: pendColor,
+            fillOpacity: 0.45,
+          })
+            .bindPopup(`<strong>Pendiente SRTM 500m: ${pend}%</strong>`)
+            .addTo(capaPendiente);
+        });
+      })
+      .catch(() => {});
 
     const drawnItems = new L.FeatureGroup();
     mapa.addLayer(drawnItems);
@@ -552,7 +634,16 @@
         inputLon.value = info.coordenadas.lon.toFixed(4);
 
         const t = info.terreno;
+        const ctx = info.contexto_mvp || {};
+        const sis = ctx.sisinta_cercano || null;
         const estLluvia = (info.provenance.estaciones_lluvia || []).map((e) => `${e.nombre} (${e.distancia_km} km)`).join(" · ");
+        const sisHtml = sis ? `
+          <div class="text-[11px] bg-white border border-emerald-200 rounded-lg p-2 text-slate-700 space-y-0.5">
+            <div class="font-semibold text-slate-800">Referencia visual INTA SISINTA más cercana (a ${sis.distancia_km} km · ${sis.estado_completitud}):</div>
+            <div>Horizonte ${sis.prof_sup_cm ?? 0}–${sis.prof_inf_cm ?? "?"} cm · Arcilla ${sis.arcilla_pct ?? "-"}% / Limo ${sis.limo_pct ?? "-"}% / Arena ${sis.arena_pct ?? "-"}% · pH ${sis.ph_agua ?? "-"} · CO ${sis.carbono_organico_pct ?? "-"}%.</div>
+            <div class="text-slate-500">Solo informativo: confirmá la textura real del lote en el paso 2.</div>
+          </div>` : "";
+
         tarjetaTerreno.innerHTML = `
           <div class="flex items-center justify-between gap-2">
             <span class="font-bold text-emerald-950">Datos detectados del terreno</span>
@@ -565,6 +656,7 @@
             <div><span class="text-slate-500">Lluvia anual:</span> <strong>${t.lluvia_anual_mm} mm</strong></div>
             <div><span class="text-slate-500">Humedad SMAP:</span> <strong>${t.sm_surface_media} m³/m³</strong></div>
             <div><span class="text-slate-500">Tmin transición:</span> <strong>${t.tmin_transicion_c} °C</strong></div>
+            ${t.susceptibilidad_topografica != null ? `<div><span class="text-slate-500">Susceptibilidad TWI:</span> <strong>${t.susceptibilidad_topografica}</strong> <span class="text-[10px] text-amber-800">(NO_VALIDADA)</span></div>` : ""}
           </div>
           <div class="flex flex-wrap gap-1.5 pt-0.5">
             <span class="text-[11px] bg-white border border-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md font-medium">
@@ -574,6 +666,7 @@
               Humedad superficial detectada: <strong>${HUMEDAD_LABELS[autoHumedadEstado] || autoHumedadEstado}</strong>
             </span>
           </div>
+          ${sisHtml}
           <div class="text-[11px] text-emerald-900"><strong>Estaciones:</strong> ${estLluvia}</div>
           <div class="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-2"><strong>Aviso de escala:</strong> ${info.advertencia_escala}</div>
         `;
@@ -822,6 +915,48 @@
           <div class="text-xs text-amber-950 bg-amber-50 border border-amber-200 rounded-xl p-3"><strong>Nota metodológica FAO-56:</strong> ${fao.advertencia_fao56 || ""}</div>
           <div class="text-xs text-sky-950 bg-sky-50 border border-sky-200 rounded-xl p-3"><strong>Alcance de SMAP (0–5 cm):</strong> ${fao.advertencia_smap || ""}</div>
         `;
+
+        const mvpBox = document.getElementById("contexto-mvp-ampliado");
+        const mvp = data.contexto_mvp;
+        if (mvp && (mvp.clima_historica_celda || (mvp.gaez_cultivos || []).length || mvp.sisinta_cercano)) {
+          mvpBox.classList.remove("hidden");
+          const ch = mvp.clima_historica_celda;
+          const enso = ch && ch.enso_ultimo ? `${ch.enso_ultimo.fase_enso} (ONI ${ch.enso_ultimo.oni_anomalia_c} °C en ${ch.enso_ultimo.anio_mes})` : null;
+          const climaHtml = ch ? `
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-bold text-slate-900 text-sm">Clima histórico de la celda, ETo FAO-56 y ventana real de heladas</h3>
+                <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">${ch.origen}</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs tabular-nums">
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Precip. media (1991–2025)</span><strong>${ch.precip_anual_media_mm} mm</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">ETo FAO-56 anual media</span><strong>${ch.eto_anual_media_mm} mm</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Balance histórico (P - ETo)</span><strong>${ch.balance_p_eto_medio_mm} mm</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Primera helada otoño</span><strong>${ch.primera_helada_otono_media ?? "-"}</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Última helada primavera</span><strong>${ch.ultima_helada_primavera_media ?? "-"}</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Días libres de heladas</span><strong>${ch.dias_libres_heladas_medio ?? "-"} días</strong></div>
+              </div>
+              ${enso ? `<p class="text-xs text-slate-600"><strong>ENSO NOAA más reciente:</strong> ${enso} · Días medios de estrés térmico (>35 °C): <strong>${ch.dias_estres_termico_medio} días/año</strong>.</p>` : ""}
+            </div>` : "";
+
+          const gaez = mvp.gaez_cultivos || [];
+          const gaezHtml = gaez.length ? `
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-bold text-slate-900 text-sm">Aptitud y rendimiento alcanzable FAO GAEZ v4 (1981–2010)</h3>
+                <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">${mvp.gaez_origen || "REGIONAL_GAEZ_V4_SIN_CODEBOOK"}</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs tabular-nums">
+                ${gaez.map((g) => `<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200"><strong class="text-slate-900 block">${g.cultivo}</strong><span class="text-slate-600">Clase aptitud: ${g.clase_aptitud ?? "-"} (1=mejor)</span><span class="block text-slate-700 font-medium">Rinde: ${g.rendimiento_alcanzable_kg_ha ?? "-"} kg/ha</span></div>`).join("")}
+              </div>
+              <p class="text-[11px] text-slate-500">Referencia regional a escala 1/12° sin codebook local; no altera el puntaje base de la rúbrica.</p>
+            </div>` : "";
+
+          mvpBox.innerHTML = climaHtml + gaezHtml;
+        } else {
+          mvpBox.classList.add("hidden");
+          mvpBox.innerHTML = "";
+        }
 
         const faltantes = data.dimensiones_faltantes || [];
         document.getElementById("dimensiones-faltantes").innerHTML = `

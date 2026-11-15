@@ -483,6 +483,7 @@ def simular_escenarios(
         "estacion_pluviometrica_ref": lluvia_info["estacion_referencia"],
         "suelo": suelo_eval["capacidad_retencion"],
         "evaluacion_suelo": suelo_eval,
+        "contexto_mvp": datos_lote.get("contexto_mvp"),
         "profundidad_efectiva_cm": profundidad_efectiva_cm,
         "tolerancia_perdidas": tolerancia_perdidas,
         "lluvia_anual_proyectada_mm": lluvia_proyectada,
