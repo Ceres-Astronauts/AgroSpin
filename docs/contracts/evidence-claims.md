@@ -1,6 +1,6 @@
 # Evidence and Claim Strength Model
 
-Field Shift separates evidence acquisition from scientific/agronomic interpretation and recommendation authority.
+AgroSpin separates evidence acquisition from scientific/agronomic interpretation and recommendation authority.
 
 ## Evidence layers
 

@@ -1,4 +1,4 @@
-# Field Shift Contracts
+# AgroSpin Contracts
 
 These contracts define product boundaries that implementations must preserve. They are intentionally separated by responsibility so data, decision logic, visualization, and the local assistant do not collapse into one opaque layer.
 

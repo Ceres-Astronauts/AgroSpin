@@ -1,6 +1,6 @@
 # Decision Model
 
-Field Shift separates environmental evidence from agronomic interpretation and final rotation evaluation.
+AgroSpin separates environmental evidence from agronomic interpretation and final rotation evaluation.
 
 The decision engine remains inspectable. A user or contributor must be able to trace why one rotation was evaluated differently from another.
 
@@ -73,7 +73,7 @@ A numeric score or ranking is **optional**, not required.
 
 ## Scoring
 
-Field Shift prefers transparent qualitative/categorical comparison when a numeric score would create artificial precision.
+AgroSpin prefers transparent qualitative/categorical comparison when a numeric score would create artificial precision.
 
 If scores are used, every material component must have:
 

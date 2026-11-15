@@ -1,6 +1,6 @@
-# Field Shift — Data Access and Downloads
+# AgroSpin — Data Access and Downloads
 
-This file centralizes the authoritative access points for the current Field Shift MVP data stack.
+This file centralizes the authoritative access points for the current AgroSpin MVP data stack.
 
 > Do not commit large downloaded datasets to Git. Keep raw files locally under `data/raw/` and preserve retrieval metadata in version-controlled manifests.
 

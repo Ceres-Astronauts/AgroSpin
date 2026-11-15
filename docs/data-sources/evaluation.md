@@ -1,6 +1,6 @@
 # Satellite and Supporting Data Sources — Multi-Attribute Evaluation
 
-This document provides the current architectural evaluation of NASA Earth Observation datasets and Argentine supporting sources for the Field Shift agricultural decision-support system.
+This document provides the current architectural evaluation of NASA Earth Observation datasets and Argentine supporting sources for the AgroSpin agricultural decision-support system.
 
 It separates three different questions:
 
@@ -27,7 +27,7 @@ Rather than computing arbitrary pseudo-scientific percentages, sources are quali
 
 ## 2. Current MVP evaluation matrix
 
-| Source / product | Intended Field Shift role | Acquisition state at cutoff 2026-11-01 | Validation state | Important limitations entering formal Validate |
+| Source / product | Intended AgroSpin role | Acquisition state at cutoff 2026-11-01 | Validation state | Important limitations entering formal Validate |
 |---|---|---|---|---|
 | **NASA POWER Daily AG** | Long historical regional meteorological context | **ACQUIRED / FROZEN** | **Formal V1–V7 mapping pending; prior acquisition evidence reusable** | Product/variable spatial support must remain explicit. `PRECTOTCORR` is regional/reanalysis-scale evidence, not parcel rainfall. Meteorology and solar variables may have different native support. |
 | **NASA SMAP L4 SPL4SMGP.008** | Regional modeled surface/root-zone soil-moisture context | **ACQUIRED via AppEEARS / FROZEN** | **E1 passed for `sm_surface` and `sm_rootzone`; `sm_rootzone_pctl` unusable; E2/V5–V7 pending** | Historical AppEEARS baseline is 2015-03-31→2025-12-31, 94,296 rows, no point/timestamp duplicates. Modeled soil moisture is not plant-available water. Native grid is regional, not parcel truth. Do not fabricate percentiles from fill-only `pctl`. |
@@ -67,7 +67,7 @@ sm_rootzone_pctl usable values              0 / NOT_SATISFIED
 
 This evidence should be reused rather than re-created during formal validation.
 
-The remaining question is not “did SMAP download?” but whether the qualified variables can be interpreted appropriately for Field Shift. Scientific work still includes seasonal/extreme behavior, quality semantics, any aggregation method, representative local-soil context, defensible cross-source comparison, and eventual agricultural fitness.
+The remaining question is not “did SMAP download?” but whether the qualified variables can be interpreted appropriately for AgroSpin. Scientific work still includes seasonal/extreme behavior, quality semantics, any aggregation method, representative local-soil context, defensible cross-source comparison, and eventual agricultural fitness.
 
 ```text
 ROOT_ZONE_SOIL_MOISTURE != PLANT_AVAILABLE_WATER
@@ -83,7 +83,7 @@ Do not use one source to “validate” another unless units, variable meaning, 
 
 ### Soil evidence hierarchy
 
-Field Shift prefers measured/profile-based soil evidence when a suitable representative profile exists, while preserving the distinction between profile location and target field.
+AgroSpin prefers measured/profile-based soil evidence when a suitable representative profile exists, while preserving the distinction between profile location and target field.
 
 ```text
 representative measured profile
