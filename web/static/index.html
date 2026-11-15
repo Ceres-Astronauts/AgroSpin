@@ -485,8 +485,25 @@
     }).addTo(mapa);
 
     // Rectángulo límite de la caja MVP
-    const boundsMVP = [[-33.875, -65.875], [-33.125, -64.125]];
+    const MVP_BBOX = { latMin: -33.875, latMax: -33.125, lonMin: -65.875, lonMax: -64.125 };
+    const PUNTO_INICIAL = { lat: -33.675, lon: -65.460 };
+    const boundsMVP = [[MVP_BBOX.latMin, MVP_BBOX.lonMin], [MVP_BBOX.latMax, MVP_BBOX.lonMax]];
     L.rectangle(boundsMVP, { color: "#065f46", weight: 2, fillOpacity: 0.04, dashArray: "6,4" }).addTo(mapa);
+
+    function estaDentroCajaMVP(lat, lon) {
+      return lat >= MVP_BBOX.latMin && lat <= MVP_BBOX.latMax && lon >= MVP_BBOX.lonMin && lon <= MVP_BBOX.lonMax;
+    }
+
+    function volverAPuntoInicial(mensajeError) {
+      datosLoteCustom = null;
+      drawnItems.clearLayers();
+      L.marker([PUNTO_INICIAL.lat, PUNTO_INICIAL.lon]).addTo(drawnItems);
+      mapa.setView([PUNTO_INICIAL.lat, PUNTO_INICIAL.lon], 9);
+      inputLat.value = PUNTO_INICIAL.lat.toFixed(4);
+      inputLon.value = PUNTO_INICIAL.lon.toFixed(4);
+      tarjetaTerreno.classList.remove("hidden");
+      tarjetaTerreno.innerHTML = `<p class="text-rose-700 font-medium">${mensajeError}</p>`;
+    }
 
     // Pines informativos de estaciones terrestres
     L.circleMarker([-33.7167, -65.3667], { radius: 6, color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.9 })
@@ -572,19 +589,33 @@
     }
 
     mapa.on("click", (e) => {
+      if (!estaDentroCajaMVP(e.latlng.lat, e.latlng.lng)) {
+        volverAPuntoInicial("Fuera de cobertura MVP: seleccioná un punto dentro del rectángulo permitido (lat -33.875 a -33.125, lon -65.875 a -64.125). Se restableció el punto inicial.");
+        return;
+      }
       drawnItems.clearLayers();
       L.marker(e.latlng).addTo(drawnItems);
       consultarTerrenoMapa({ lat: e.latlng.lat, lon: e.latlng.lng }, true);
     });
 
     mapa.on(L.Draw.Event.CREATED, (e) => {
-      drawnItems.clearLayers();
-      drawnItems.addLayer(e.layer);
       if (e.layerType === "polygon") {
         const coords = e.layer.getLatLngs()[0].map((ll) => [ll.lat, ll.lng]);
+        if (!coords.every(([lat, lon]) => estaDentroCajaMVP(lat, lon))) {
+          volverAPuntoInicial("Fuera de cobertura MVP: todo el polígono debe quedar dentro del rectángulo permitido. Se restableció el punto inicial.");
+          return;
+        }
+        drawnItems.clearLayers();
+        drawnItems.addLayer(e.layer);
         consultarTerrenoMapa({ poligono: coords }, true);
       } else if (e.layerType === "marker") {
         const ll = e.layer.getLatLng();
+        if (!estaDentroCajaMVP(ll.lat, ll.lng)) {
+          volverAPuntoInicial("Fuera de cobertura MVP: seleccioná un punto dentro del rectángulo permitido. Se restableció el punto inicial.");
+          return;
+        }
+        drawnItems.clearLayers();
+        drawnItems.addLayer(e.layer);
         consultarTerrenoMapa({ lat: ll.lat, lon: ll.lng }, true);
       }
     });
@@ -605,6 +636,10 @@
         const lat = parseFloat(inputLat.value);
         const lon = parseFloat(inputLon.value);
         if (!isNaN(lat) && !isNaN(lon)) {
+          if (!estaDentroCajaMVP(lat, lon)) {
+            volverAPuntoInicial("Fuera de cobertura MVP: las coordenadas deben estar dentro de lat [-33.875, -33.125] y lon [-65.875, -64.125]. Se restableció el punto inicial.");
+            return;
+          }
           mapa.setView([lat, lon], 12);
           drawnItems.clearLayers();
           L.marker([lat, lon]).addTo(drawnItems);
