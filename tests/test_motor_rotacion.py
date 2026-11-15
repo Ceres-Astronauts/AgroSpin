@@ -11,6 +11,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
 from src.decision.motor_rotacion import (  # noqa: E402
     calibrar_humedad_suelo,
     calibrar_minima_termica,
+    calibrar_precipitacion_zonal,
     cargar_rubrica,
     evaluar_suelo_lote,
     simular_escenarios,
@@ -29,6 +30,7 @@ class TestMotorRotacion(unittest.TestCase):
         sin_sonda = calibrar_humedad_suelo(0.18, None)
         self.assertEqual(sin_sonda["incertidumbre_pct"], 28)
         self.assertAlmostEqual(sin_sonda["humedad_efectiva"], 0.18, places=3)
+        self.assertFalse(sin_sonda["requiere_validacion_calicata"])
 
         con_sonda = calibrar_humedad_suelo(0.18, {"10cm": 0.15, "30cm": 0.22, "60cm": 0.25})
         self.assertEqual(con_sonda["incertidumbre_pct"], 7)
@@ -39,24 +41,62 @@ class TestMotorRotacion(unittest.TestCase):
         res = calibrar_minima_termica(2.0)
         self.assertAlmostEqual(res["tmin_calibrada_c"], 0.96, places=2)
         self.assertTrue(res["riesgo_helada"])
-        self.assertIn("ALERTA HELADA AGROMETEOROLÓGICA", res["alerta_termica"])
+        self.assertIn("ALERTA DE HELADA AGRONÓMICA", res["alerta_termica"])
 
         # Caso en buffer de seguridad (3.0 < T <= 4.5 °C)
         res_buffer = calibrar_minima_termica(5.0)
         self.assertAlmostEqual(res_buffer["tmin_calibrada_c"], 3.96, places=2)
         self.assertFalse(res_buffer["riesgo_helada"])
         self.assertTrue(res_buffer["buffer_seguridad"])
-        self.assertIn("PRECAUCIÓN TÉRMICA", res_buffer["alerta_termica"])
+        self.assertIn("PRECAUCIÓN POR FRÍO", res_buffer["alerta_termica"])
 
         # Caso térmicamente seguro (> 4.5 °C calibrada)
         res_seguro = calibrar_minima_termica(8.0)
         self.assertAlmostEqual(res_seguro["tmin_calibrada_c"], 6.96, places=2)
         self.assertFalse(res_seguro["riesgo_helada"])
         self.assertFalse(res_seguro["buffer_seguridad"])
-        self.assertIn("Térmicamente seguro", res_seguro["alerta_termica"])
+        self.assertIn("Sin riesgo inminente de helada", res_seguro["alerta_termica"])
+
+    def test_fallback_smap_sequia_extrema_o_percentil_nulo(self) -> None:
+        """Tarea A: Validación de corte (fallback) ante SMAP < 0.08 o nulo sin sonda."""
+        # 1. SMAP nulo / None
+        res_nulo = calibrar_humedad_suelo(None)
+        self.assertEqual(res_nulo["incertidumbre_pct"], 28)
+        self.assertTrue(res_nulo["requiere_validacion_calicata"])
+        self.assertEqual(res_nulo["humedad_efectiva"], 0.08)
+        self.assertIn("INCERTIDUMBRE ALTA", res_nulo["nota"])
+
+        # 2. SMAP sequía superficial extrema (0.05 m³/m³) sin sonda
+        res_seco = calibrar_humedad_suelo(0.05)
+        self.assertEqual(res_seco["incertidumbre_pct"], 28)
+        self.assertTrue(res_seco["requiere_validacion_calicata"])
+        self.assertAlmostEqual(res_seco["humedad_efectiva"], 0.05)
+        self.assertIn("Validar perfil con calicata", res_seco["alerta_sensor_superficial"])
+
+        # 3. SMAP nulo pero CON sonda -> La sonda rescata y anula la alerta de calicata
+        res_sonda_rescata = calibrar_humedad_suelo(
+            humedad_smap_superficial=None,
+            profundidad_sonda_cm=40.0,
+            medicion_sonda_directa=0.21,
+        )
+        self.assertFalse(res_sonda_rescata["requiere_validacion_calicata"])
+        self.assertEqual(res_sonda_rescata["humedad_efectiva"], 0.21)
+
+    def test_calibracion_precipitacion_zonal_transicion_este(self) -> None:
+        """Tarea B: Validación de consistencia zonal (REM 42 Villa Mercedes vs REM 49 Justo Daract)."""
+        # 1. Villa Mercedes central (600 mm proyectada)
+        lluvia_vm = calibrar_precipitacion_zonal([50.0] * 12, factor_clima=1.0, zona="villa_mercedes")
+        self.assertFalse(lluvia_vm["es_transicion_este"])
+        self.assertEqual(lluvia_vm["umbral_deficit_maiz_sorgo_mm"], 620.0)
+        self.assertIn("Estación REM 42", lluvia_vm["estacion_referencia"])
+
+        # 2. Transición Este / Justo Daract (720 mm proyectada)
+        lluvia_jd = calibrar_precipitacion_zonal([65.4] * 12, factor_clima=1.0, zona="justo_daract")
+        self.assertTrue(lluvia_jd["es_transicion_este"])
+        self.assertEqual(lluvia_jd["umbral_deficit_maiz_sorgo_mm"], 580.0)
+        self.assertIn("Estación REM 49", lluvia_jd["estacion_referencia"])
 
     def test_sonda_dinamica_estrato_superficial_vs_profundo(self) -> None:
-        """Verifica la ponderación por estrato radicular según el largo de la sonda."""
         # Estrato superficial (15 cm): peso 65% sonda, 35% SMAP, incertidumbre 12%
         sonda_sup = calibrar_humedad_suelo(
             humedad_smap_superficial=0.18,
@@ -86,7 +126,6 @@ class TestMotorRotacion(unittest.TestCase):
         self.assertAlmostEqual(sonda_prof["humedad_efectiva"], 0.85 * 0.26 + 0.15 * 0.18, places=3)
 
     def test_reglas_agronomicas_por_profundidad_de_sonda(self) -> None:
-        """Verifica la activación de alertas y bonificaciones según largo de sonda."""
         # 1. Sonda profunda (60 cm) con recarga hídrica (0.24 m³/m³): bonifica bomba biológica (alfalfa)
         res_prof = simular_escenarios(
             datos_lote={"nombre": "Lote Alfalfa"},
@@ -96,7 +135,7 @@ class TestMotorRotacion(unittest.TestCase):
         )
         bomba = next(r for r in res_prof["comparativa_rotaciones"] if r["id"] == "bomba_biologica")
         self.assertTrue(
-            any("Sonda a 60 cm confirma buena recarga profunda" in a for a in bomba["alertas_escenario"])
+            any("Sonda a 60 cm confirma buena humedad en profundidad" in a for a in bomba["alertas_escenario"])
         )
 
         # 2. Sonda superficial (20 cm) en cama de siembra seca (0.10 m³/m³): penaliza doble golpe
@@ -108,7 +147,7 @@ class TestMotorRotacion(unittest.TestCase):
         )
         dg = next(r for r in res_sup_seca["comparativa_rotaciones"] if r["id"] == "doble_golpe")
         self.assertTrue(
-            any("Sonda a 20 cm indica cama de siembra seca" in a for a in dg["alertas_escenario"])
+            any("Sonda a 20 cm marca cama de siembra seca" in a for a in dg["alertas_escenario"])
         )
 
         # 3. Sonda media (40 cm) con humedad limitante (0.15 m³/m³): bonifica resiliencia hídrica (sorgo/girasol)
@@ -120,19 +159,18 @@ class TestMotorRotacion(unittest.TestCase):
         )
         resil = next(r for r in res_resil["comparativa_rotaciones"] if r["id"] == "resiliencia_hidrica")
         self.assertTrue(
-            any("Sonda a 40 cm reporta perfil ajustado" in a for a in resil["alertas_escenario"])
+            any("Sonda a 40 cm muestra humedad justa" in a for a in resil["alertas_escenario"])
         )
 
     def test_precipitacion_consensuada_media_nasa_local(self) -> None:
-        """Verifica el cálculo de la media entre dato satelital bruto y calibrado local (descuento 20%)."""
         res = simular_escenarios(
             datos_lote={"lluvia_gpm_mm": [50.0] * 12},  # Bruto = 600 mm
             escenario_lluvia="normal",
         )
         diag = res["diagnostico_lote"]
         self.assertEqual(diag["lluvia_satelital_bruta_mm"], 600)
-        self.assertEqual(diag["lluvia_calibrada_local_mm"], 500)  # 600 / 1.20
-        self.assertEqual(diag["lluvia_anual_proyectada_mm"], 550)  # Media: (600 + 500) / 2
+        self.assertEqual(diag["lluvia_calibrada_local_mm"], 500)
+        self.assertEqual(diag["lluvia_anual_proyectada_mm"], 550)
 
     def test_escenario_seco_secano_franco_arenoso(self) -> None:
         res = simular_escenarios(
