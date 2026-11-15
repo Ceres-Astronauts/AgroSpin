@@ -22,13 +22,12 @@ CULTIVOS_CSV = REPOSITORY_ROOT / "data" / "cultivos_evaluacion_san_luis.csv"
 
 st.set_page_config(
     page_title="Field Shift — Ceres Agronauts",
-    page_icon="🌱",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # Encabezado principal
-st.title("🌱 Field Shift — Ceres Agronauts")
+st.title("Field Shift — Ceres Agronauts")
 st.caption("Sistema de apoyo a la toma de decisiones para rotación de cultivos | Zona piloto: Villa Mercedes (San Luis)")
 
 # Funciones cacheadas de lectura de datos locales
@@ -64,7 +63,7 @@ if LOTES_DEFAULT.is_file():
         st.error(f"Error cargando lotes piloto: {e}")
 
 # Sidebar interactivo
-st.sidebar.header("⚙️ Parámetros del Productor")
+st.sidebar.header("Parámetros del Productor")
 
 nombres_lotes = {l["nombre"]: l for l in lotes_data}
 if nombres_lotes:
@@ -85,9 +84,9 @@ prioridad = st.sidebar.radio(
     "Prioridad agronómica",
     ["suelo", "agua", "renta"],
     format_func=lambda x: {
-        "suelo": "🌿 Recuperar suelo y frenar erosión",
-        "agua": "💧 Maximizar eficiencia hídrica",
-        "renta": "💵 Priorizar margen económico inmediato"
+        "suelo": "Recuperar suelo y frenar erosión",
+        "agua": "Maximizar eficiencia hídrica",
+        "renta": "Priorizar margen económico inmediato"
     }[x]
 )
 
@@ -102,7 +101,7 @@ ganaderia = st.sidebar.checkbox("Integro ganadería (aporte forrajero / pastoreo
 
 # Módulo Mecatrónica: Telemetría in-situ
 st.sidebar.markdown("---")
-st.sidebar.subheader("📡 Módulo Mecatrónica")
+st.sidebar.subheader("Módulo Mecatrónica")
 usar_sonda = st.sidebar.checkbox("Calibración con nodo terrestre (ESP32 + Sondas)")
 lecturas_sonda = None
 if usar_sonda:
@@ -115,10 +114,10 @@ if usar_sonda:
 
 # Tabs principales
 tab_sim, tab_env, tab_cat, tab_sol = st.tabs([
-    "🔄 Simulador de Rotaciones",
-    "🛰️ Contexto Ambiental (NASA / INTA)",
-    "📖 Catálogo y Matriz Agronómica",
-    "📝 Solicitud de Parcela"
+    "Simulador de Rotaciones",
+    "Contexto Ambiental (NASA / INTA)",
+    "Catálogo y Matriz Agronómica",
+    "Solicitud de Parcela"
 ])
 
 # ----------------- TAB 1: SIMULADOR DE ROTACIONES -----------------
@@ -136,11 +135,11 @@ with tab_sim:
     incert = diag["estado_hidrico"]["incertidumbre_pct"]
     c4.metric("Humedad Efectiva de Perfil", f"{hum_efectiva} m³/m³", f"±{incert}% incertidumbre")
 
-    st.info(f"📍 **Fuente hídrica:** {diag['estado_hidrico']['fuente']} | {diag['estado_hidrico']['nota']}")
-    st.warning(f"⚠️ **Alerta agroecológica:** {diag['alerta_principal']}")
+    st.info(f"**Fuente hídrica:** {diag['estado_hidrico']['fuente']} | {diag['estado_hidrico']['nota']}")
+    st.warning(f"**Alerta agroecológica:** {diag['alerta_principal']}")
 
     st.markdown("---")
-    st.subheader("⚖️ Comparativa de Estrategias de Rotación")
+    st.subheader("Comparativa de Estrategias de Rotación")
     cols = st.columns(3)
     for idx, rot in enumerate(res["comparativa_rotaciones"]):
         with cols[idx]:
@@ -237,4 +236,4 @@ with tab_sol:
     
     if btn_sol:
         solicitud_id = str(uuid.uuid4())[:8]
-        st.success(f"✅ Parcela #{solicitud_id} registrada para evaluación con el motor de rotación.")
+        st.success(f"Parcela #{solicitud_id} registrada para evaluación con el motor de rotación.")

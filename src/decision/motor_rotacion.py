@@ -247,6 +247,8 @@ def simular_escenarios(
     sistema_productivo: str = "agricola",
     profundidad_sonda_cm: Optional[float] = None,
     medicion_sonda_directa: Optional[float] = None,
+    profundidad_efectiva_cm: float = 100.0,
+    tolerancia_perdidas: str = "baja",
 ) -> Dict[str, Any]:
     """
     Simula y compara las 3 estrategias de rotación reales de la rúbrica para un lote de San Luis.
@@ -261,8 +263,12 @@ def simular_escenarios(
     # se adopta la media entre la lectura satelital bruta y el valor calibrado local (reducción de sobreestimación).
     lluvias = datos_lote.get("lluvia_gpm_mm", [665 / 12] * 12)
     lluvia_satelital_bruta = sum(lluvias)
-    lluvia_calibrada_local = lluvia_satelital_bruta / 1.20  # Corrección por sobreestimación del 20%
-    lluvia_media_consenso = (lluvia_satelital_bruta + lluvia_calibrada_local) / 2.0
+    if datos_lote.get("origen_lluvia") in ("OBSERVADO_PIHC", "INGRESO_MANUAL"):
+        lluvia_calibrada_local = lluvia_satelital_bruta
+        lluvia_media_consenso = lluvia_satelital_bruta
+    else:
+        lluvia_calibrada_local = lluvia_satelital_bruta / 1.20  # Corrección por sobreestimación del 20%
+        lluvia_media_consenso = (lluvia_satelital_bruta + lluvia_calibrada_local) / 2.0
     lluvia_proyectada = lluvia_media_consenso * factor_clima
 
     ndvi_series = datos_lote.get("ndvi_sentinel2", [0.3] * 12)
@@ -272,7 +278,19 @@ def simular_escenarios(
     temp_max_verano = max(temps) if temps else 35.0
     # Temperatura mínima satelital (de lote o promedio histórico de referencia 9.0 °C en transición)
     tmin_satelital = datos_lote.get("temp_min_satelital_c", 3.8)
-    analisis_heladas = calibrar_minima_termica(tmin_satelital)
+    if datos_lote.get("origen_temperatura") == "OBSERVADO_SMN":
+        analisis_heladas = {
+            "tmin_satelital_c": round(tmin_satelital, 2),
+            "tmin_calibrada_c": round(tmin_satelital, 2),
+            "riesgo_helada_agrometeorologica": tmin_satelital < 3.0,
+            "riesgo_helada_fuerte": tmin_satelital <= 0.0,
+            "alerta_helada": (
+                f"Dato observado SMN ({tmin_satelital:.2f} °C): "
+                + ("Riesgo de helada agrometeorológica (< 3 °C)." if tmin_satelital < 3.0 else "Sin riesgo inmediato de helada.")
+            ),
+        }
+    else:
+        analisis_heladas = calibrar_minima_termica(tmin_satelital)
 
     smap_series = datos_lote.get("humedad_suelo_smap", [0.18])
     smap_media = sum(smap_series) / len(smap_series) if smap_series else 0.18
@@ -294,10 +312,42 @@ def simular_escenarios(
         pesos["produccion_sostenibilidad"] = round(pesos["produccion_sostenibilidad"] + 0.05, 2)
         pesos["negocio_mercado"] = max(0.05, round(pesos["negocio_mercado"] - 0.05, 2))
 
+    _DEMANDA_CULTIVOS = [
+        ("Trigo", 450, 650, "mm/ciclo"),
+        ("Soja", 450, 700, "mm/ciclo"),
+        ("Maíz", 500, 800, "mm/ciclo"),
+        ("Sorgo", 450, 650, "mm/ciclo"),
+        ("Girasol", 600, 1000, "mm/ciclo"),
+        ("Alfalfa", 800, 1600, "mm/período de referencia"),
+    ]
+    _DEMANDA_POR_METODO = {
+        "doble_golpe": "450–650 (Trigo) + 450–700 (Soja) mm/ciclo",
+        "bomba_biologica": "800–1600 mm/período de referencia (Alfalfa / pastura)",
+        "resiliencia_hidrica": "450–650 (Sorgo) / 500–800 (Maíz) / 450–700 (Soja) mm/ciclo",
+    }
+
+    demanda_cultivos_mm = []
+    for cultivo, d_min, d_max, unidad in _DEMANDA_CULTIVOS:
+        if lluvia_proyectada < d_min:
+            estado_orientativo = "por_debajo_rango"
+        elif lluvia_proyectada <= d_max:
+            estado_orientativo = "en_rango"
+        else:
+            estado_orientativo = "por_encima_rango"
+        demanda_cultivos_mm.append({
+            "cultivo": cultivo,
+            "min_mm": d_min,
+            "max_mm": d_max,
+            "unidad": unidad,
+            "estado_orientativo": estado_orientativo,
+        })
+
     diagnostico = {
         "lote": datos_lote.get("nombre", "Lote Piloto Villa Mercedes"),
         "suelo": suelo_eval["capacidad_retencion"],
         "evaluacion_suelo": suelo_eval,
+        "profundidad_efectiva_cm": profundidad_efectiva_cm,
+        "tolerancia_perdidas": tolerancia_perdidas,
         "lluvia_anual_proyectada_mm": round(lluvia_proyectada),
         "lluvia_satelital_bruta_mm": round(lluvia_satelital_bruta * factor_clima),
         "lluvia_calibrada_local_mm": round(lluvia_calibrada_local * factor_clima),
@@ -306,6 +356,24 @@ def simular_escenarios(
         "analisis_heladas": analisis_heladas,
         "estado_hidrico": humedad_info,
         "pesos_aplicados": pesos,
+        "balance_fao56": {
+            "lluvia_proyectada_mm": round(lluvia_proyectada),
+            "demanda_cultivos_mm": demanda_cultivos_mm,
+            "advertencia_fao56": (
+                "Comparación orientativa lluvia vs. ETc (FAO-56). Que la lluvia anual proyectada sea menor a la demanda "
+                "del cultivo NO implica déficit automático: intervienen reserva hídrica inicial del suelo, precipitación efectiva, "
+                "escorrentía, drenaje profundo y aporte de napa."
+            ),
+            "advertencia_smap": (
+                "La humedad superficial regional SMAP (0–5 cm) es una señal de contexto macro y NO equivale al agua útil "
+                "disponible en la zona radicular ni reemplaza mediciones parcelarias."
+            ),
+        },
+        "dimensiones_faltantes": [
+            "Historial agronómico de 3–5 años del lote (rotaciones previas, rindes y presión de malezas).",
+            "Análisis de laboratorio de granulometría, materia orgánica y balance NPK (la fijación biológica de N no reemplaza la fertilización).",
+            "Margen bruto local (USD/ha o ARS/ha) y evaluación financiera diferenciando OPEX anual de CAPEX plurianual.",
+        ],
         "alerta_principal": (
             suelo_eval["riesgos_suelo"][0]
             if suelo_eval["riesgos_suelo"]
@@ -416,6 +484,41 @@ def simular_escenarios(
                     "La mezcla vicia + centeno corrige rápidamente la falta de cobertura invernal y reduce erosión eólica."
                 )
 
+        # Modificador por profundidad efectiva del suelo (TAW)
+        if profundidad_efectiva_cm < 80:
+            if m_id == "doble_golpe" and regimen_agua == "secano":
+                ajuste -= 10.0
+                alertas_escenario.append(
+                    f"Suelo superficial ({round(profundidad_efectiva_cm)} cm < 80 cm): reduce el agua útil total (TAW) y eleva el riesgo hídrico en doble cultivo en secano."
+                )
+            elif m_id == "bomba_biologica" and napa_pendiente == "sin_napa":
+                ajuste -= 8.0
+                alertas_escenario.append(
+                    f"Suelo superficial ({round(profundidad_efectiva_cm)} cm < 80 cm) sin napa freática: limita la exploración radicular profunda de pasturas perennes."
+                )
+            elif m_id == "resiliencia_hidrica":
+                ajuste += 4.0
+                alertas_escenario.append(
+                    f"Suelo superficial ({round(profundidad_efectiva_cm)} cm): conviene priorizar cultivos rústicos (ej. sorgo) y cobertura permanente."
+                )
+
+        # Modificador por tolerancia a pérdidas / riesgo financiero
+        if tolerancia_perdidas == "baja":
+            if m_id == "doble_golpe":
+                ajuste -= 8.0
+                alertas_escenario.append(
+                    "Tolerancia baja a pérdidas: el doble cultivo anual duplica la exposición de capital operativo (OPEX) en la campaña."
+                )
+            elif m_id == "resiliencia_hidrica":
+                ajuste += 6.0
+            elif m_id == "bomba_biologica":
+                ajuste -= 3.0
+                alertas_escenario.append(
+                    "Tolerancia baja a pérdidas: requiere evaluar la inmovilización inicial de capital (CAPEX) de implantación de pastura."
+                )
+        elif tolerancia_perdidas == "alta" and m_id == "doble_golpe":
+            ajuste += 4.0
+
         # Modificador por horizonte temporal elegido por el productor
         if horizonte == metodo["horizonte"]:
             ajuste += 5.0
@@ -440,6 +543,7 @@ def simular_escenarios(
             "nombre": metodo["nombre"],
             "secuencia": metodo["secuencia"],
             "horizonte_label": metodo["horizonte_label"],
+            "demanda_hidrica_mm": _DEMANDA_POR_METODO.get(m_id, "450–800 mm/ciclo (orientativo)"),
             "puntaje_idoneidad": score_final,
             "score_base_dimensiones": round(score_base, 1),
             "ajuste_contextual": round(ajuste, 1),

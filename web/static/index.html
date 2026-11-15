@@ -3,260 +3,393 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Field Shift — Asistente de Rotación</title>
+  <title>Field Shift — Asistente de Rotación de Cultivos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
 </head>
-<body class="bg-stone-100 text-stone-900 min-h-screen antialiased flex flex-col">
-  <header class="bg-emerald-800 text-white shadow-sm">
-    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex items-center justify-between">
-      <div>
-        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">🌱 Field Shift</h1>
-        <p class="text-emerald-100 text-xs sm:text-sm">Villa Mercedes / San Luis · Ceres Agronauts</p>
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased flex flex-col">
+  <header class="bg-emerald-950 text-white border-b border-emerald-900/80 shadow-sm">
+    <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-800/80 border border-emerald-700/80 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 text-emerald-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21V11" />
+            <path d="M12 11C12 7 9 4 4 4c0 5 3 8 8 7z" />
+            <path d="M12 13c0-4 3-7 8-7 0 5-3 8-8 7z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight leading-tight">Field Shift</h1>
+          <p class="text-emerald-200/90 text-xs sm:text-sm">Asistente de rotación de cultivos · Corredor Villa Mercedes – Río Cuarto, San Luis</p>
+        </div>
       </div>
-      <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full font-medium">Rúbrica San Luis v2</span>
+      <div class="flex items-center gap-2">
+        <span class="text-xs bg-emerald-900/90 border border-emerald-700/70 text-emerald-100 px-3 py-1 rounded-full font-medium">Ceres Agronauts</span>
+        <span class="text-xs bg-white/10 text-emerald-100 px-3 py-1 rounded-full font-medium">Motor v2</span>
+      </div>
     </div>
   </header>
 
   <main class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-6 flex-1">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- Panel izquierdo: Formulario -->
-      <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-stone-200 p-4 sm:p-6 space-y-5">
-        <div>
-          <h2 class="text-lg font-bold text-stone-800">Contanos cómo está tu lote hoy</h2>
-          <p class="text-sm text-stone-500">Completá estas casillas para evaluar tu suelo y ver qué rotación te conviene.</p>
+      <!-- Panel izquierdo: Formulario de entrada -->
+      <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Configuración del lote</span>
+          <h2 class="text-lg font-bold text-slate-900 mt-0.5">Datos para evaluar tu rotación</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Marcá el lote en el mapa para completar relieve, lluvias y humedad automáticamente, y completá solo las variables propias de tu campo.
+          </p>
         </div>
 
-        <form id="form-lote" class="space-y-4">
-          <div>
-            <label for="lote_id" class="block text-sm font-semibold text-stone-700 mb-1">1. Ubicación / Lote</label>
-            <select id="lote_id" name="lote_id" class="w-full rounded-xl border border-stone-300 bg-stone-50 px-3.5 py-2.5 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600">
-              <option value="villa_mercedes_centro">Villa Mercedes — Lote Piloto</option>
-            </select>
-          </div>
-
-          <!-- Textura del suelo -->
-          <div>
-            <span class="block text-sm font-semibold text-stone-700 mb-1.5">2. Tipo de suelo del lote</span>
-            <div class="grid grid-cols-3 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="textura" value="franco_arenoso" class="peer sr-only" checked />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🏖️ Franco-arenoso</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="textura" value="limoso" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🧱 Limoso</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="textura" value="desconocido" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">❓ No sé</div>
-              </label>
+        <form id="form-lote" class="space-y-5">
+          <!-- Opción para alternar entre Mapa (automático) y Carga Manual completa -->
+          <label for="modo-manual" class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/90 hover:border-emerald-400 hover:bg-emerald-50/40 cursor-pointer transition">
+            <input type="checkbox" id="modo-manual" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+            <div class="space-y-0.5">
+              <span class="block text-sm font-semibold text-slate-800">Cargar todos los datos manualmente (sin usar el mapa)</span>
+              <span class="block text-xs text-slate-500 leading-relaxed">
+                Activá esta opción si preferís elegir una zona de referencia e ingresar manualmente napa/pendiente y estado de humedad o sonda.
+              </span>
             </div>
-          </div>
+          </label>
 
-          <!-- Napa o pendiente -->
-          <div>
-            <span class="block text-sm font-semibold text-stone-700 mb-1.5">3. Napa freática o pendiente</span>
-            <div class="grid grid-cols-3 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="napa_pendiente" value="sin_napa" class="peer sr-only" checked />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">➖ Sin napa</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="napa_pendiente" value="napa_cercana" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🌊 Napa cercana</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="napa_pendiente" value="pendiente_anegamiento" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">⛰️ Pendiente / Bajo</div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Régimen de agua -->
-          <div>
-            <span class="block text-sm font-semibold text-stone-700 mb-1.5">4. Régimen de agua</span>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="regimen_agua" value="secano" class="peer sr-only" checked />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">☁️ Secano (solo lluvia)</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="regimen_agua" value="riego" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🚿 Con riego</div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Humedad actual -->
-          <div>
-            <span class="block text-sm font-semibold text-stone-700 mb-1.5">5. ¿Cómo está la humedad hoy?</span>
-            <div class="grid grid-cols-2 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="humedad_estado" value="seco" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🏜️ Seco</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="humedad_estado" value="normal" class="peer sr-only" checked />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🌤️ Normal</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="humedad_estado" value="humedo" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">💧 Húmedo</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="humedad_estado" value="sonda" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">📡 Tengo sonda</div>
-              </label>
+          <!-- Bloque 1A: Ubicación en mapa (activo por defecto) -->
+          <div id="bloque-mapa" class="space-y-3 pt-1">
+            <div class="flex items-center justify-between gap-2">
+              <label class="block text-sm font-semibold text-slate-800">1. Ubicación del lote en el mapa</label>
+              <span class="text-[11px] font-medium text-slate-500">Clic en punto o polígono</span>
             </div>
 
-            <div id="box-sonda" class="hidden mt-2.5 space-y-3 bg-stone-50 p-3 rounded-xl border border-stone-200">
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-xs font-semibold text-stone-700 mb-1">Largo de sonda (cm)</label>
-                  <input type="number" step="5" min="5" max="200" id="sonda_largo_cm" value="30" placeholder="Ej: 30" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm bg-white font-medium" />
-                  <span class="text-[10px] text-stone-500">Profundidad del sensor</span>
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-stone-700 mb-1">Medición (m³/m³)</label>
-                  <input type="number" step="0.01" min="0.03" max="0.55" id="sonda_medicion" value="0.20" placeholder="Ej: 0.20" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm bg-white font-medium" />
-                  <span class="text-[10px] text-stone-500">Humedad en estrato</span>
-                </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.675" data-lon="-65.460">Villa Mercedes</button>
+              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.161" data-lon="-64.357">Río Cuarto</button>
+              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.175" data-lon="-64.995">Achiras</button>
+              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.858" data-lon="-65.182">Justo Daract</button>
+            </div>
+
+            <div id="mapa-lote" class="w-full rounded-xl border border-slate-200 overflow-hidden z-0 shadow-sm" style="height: 290px;"></div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label for="input-lat" class="block text-[11px] font-medium text-slate-500 mb-1">Latitud (EPSG:4326)</label>
+                <input type="number" step="0.0001" min="-33.875" max="-33.125" id="input-lat" value="-33.6750" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
+              </div>
+              <div>
+                <label for="input-lon" class="block text-[11px] font-medium text-slate-500 mb-1">Longitud (EPSG:4326)</label>
+                <input type="number" step="0.0001" min="-65.875" max="-64.125" id="input-lon" value="-65.4600" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <div id="tarjeta-terreno" class="hidden rounded-xl bg-emerald-50/70 border border-emerald-200 p-3.5 text-xs space-y-2.5"></div>
+          </div>
+
+          <!-- Bloque 1B: Carga manual sin mapa (incluye las casillas eliminadas de la vista automática) -->
+          <div id="bloque-manual" class="hidden space-y-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+            <div class="border-b border-slate-200 pb-2.5">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Ingreso sin mapa</span>
+              <h3 class="text-sm font-bold text-slate-800 mt-0.5">1. Datos manuales de ubicación, napa y humedad</h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="lote_manual" class="block text-xs font-semibold text-slate-700 mb-1">Zona climática de referencia</label>
+                <select id="lote_manual" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm focus:border-emerald-600 focus:outline-none">
+                  <option value="vm_centro">Villa Mercedes - Cuenca Río Quinto</option>
+                  <option value="rio_cuarto_norte">Río Cuarto Norte (Córdoba)</option>
+                  <option value="vm_sur">Villa Mercedes Sur (Franja Arenosa)</option>
+                </select>
+              </div>
+              <div>
+                <label for="lluvia_manual_mm" class="block text-xs font-semibold text-slate-700 mb-1">Lluvia anual propia (mm, opcional)</label>
+                <input type="number" step="10" min="100" max="2000" id="lluvia_manual_mm" placeholder="Ej: 620 (si omitís usa la zona)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm tabular-nums focus:border-emerald-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Napa o pendiente (restaurado aquí en carga manual) -->
+            <div>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Napa freática o pendiente del lote</span>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="napa_pendiente" value="sin_napa" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Sin napa</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="napa_pendiente" value="napa_cercana" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Napa cercana</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="napa_pendiente" value="pendiente_anegamiento" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Pendiente / Bajo</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Humedad actual / Sonda (restaurado aquí en carga manual) -->
+            <div>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Estado actual de humedad del perfil</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="humedad_estado" value="seco" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Seco</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="humedad_estado" value="normal" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Normal</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="humedad_estado" value="humedo" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Húmedo</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="humedad_estado" value="sonda" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Tengo sonda</div>
+                </label>
               </div>
 
-              <!-- Opción avanzada / multiprofundidad -->
-              <details class="text-xs text-stone-600">
-                <summary class="cursor-pointer text-stone-500 hover:text-stone-700 font-medium select-none">
-                  O ingresar perfil continuo (10, 30 y 60 cm)
-                </summary>
-                <div class="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-stone-200">
+              <div id="box-sonda" class="hidden mt-3 space-y-3 bg-white p-3 rounded-xl border border-slate-200">
+                <div class="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label class="block text-[11px] text-stone-500 mb-0.5">10 cm</label>
-                    <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_10cm" value="0.17" class="w-full rounded-lg border border-stone-300 px-2 py-1 text-xs bg-white" />
+                    <label for="sonda_largo_cm" class="block text-xs font-semibold text-slate-700 mb-1">Largo de sonda (cm)</label>
+                    <input type="number" step="5" min="5" max="200" id="sonda_largo_cm" value="30" placeholder="Ej: 30" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm bg-white font-medium tabular-nums" />
+                    <span class="text-[11px] text-slate-500">Profundidad del sensor</span>
                   </div>
                   <div>
-                    <label class="block text-[11px] text-stone-500 mb-0.5">30 cm</label>
-                    <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_30cm" value="0.21" class="w-full rounded-lg border border-stone-300 px-2 py-1 text-xs bg-white" />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] text-stone-500 mb-0.5">60 cm</label>
-                    <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_60cm" value="0.23" class="w-full rounded-lg border border-stone-300 px-2 py-1 text-xs bg-white" />
+                    <label for="sonda_medicion" class="block text-xs font-semibold text-slate-700 mb-1">Medición (m³/m³)</label>
+                    <input type="number" step="0.01" min="0.03" max="0.55" id="sonda_medicion" value="0.20" placeholder="Ej: 0.20" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm bg-white font-medium tabular-nums" />
+                    <span class="text-[11px] text-slate-500">Humedad volumétrica en estrato</span>
                   </div>
                 </div>
-              </details>
+
+                <details class="text-xs text-slate-600">
+                  <summary class="cursor-pointer text-slate-500 hover:text-slate-800 font-medium select-none">
+                    Ingresar perfil continuo por profundidades (10, 30 y 60 cm)
+                  </summary>
+                  <div class="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-slate-200">
+                    <div>
+                      <label for="sonda_10cm" class="block text-[11px] text-slate-500 mb-0.5">10 cm</label>
+                      <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_10cm" value="0.17" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
+                    </div>
+                    <div>
+                      <label for="sonda_30cm" class="block text-[11px] text-slate-500 mb-0.5">30 cm</label>
+                      <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_30cm" value="0.21" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
+                    </div>
+                    <div>
+                      <label for="sonda_60cm" class="block text-[11px] text-slate-500 mb-0.5">60 cm</label>
+                      <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_60cm" value="0.23" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
+                    </div>
+                  </div>
+                </details>
+              </div>
             </div>
           </div>
 
-          <!-- Estado del lote y lluvias -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Bloque 2: Campos obligatorios del lote que solo el productor conoce -->
+          <div class="space-y-4 pt-2 border-t border-slate-100">
             <div>
-              <span class="block text-sm font-semibold text-stone-700 mb-1.5">6. Estado actual</span>
-              <select id="estado_lote" class="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2.5 text-sm">
-                <option value="rastrojo">🌾 Con rastrojo</option>
-                <option value="desnudo">🟫 Suelo desnudo</option>
-                <option value="pastura">🌿 Pastura</option>
-              </select>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Observación directa a campo</span>
+              <h3 class="text-sm font-bold text-slate-800">2. Características propias del lote</h3>
             </div>
+
+            <!-- Textura del suelo -->
             <div>
-              <span class="block text-sm font-semibold text-stone-700 mb-1.5">7. Año de lluvias</span>
-              <select id="escenario_lluvia" class="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2.5 text-sm">
-                <option value="seco">☀️ Año seco (Niña)</option>
-                <option value="normal" selected>⛅ Año normal</option>
-                <option value="humedo">🌧️ Año húmedo</option>
-              </select>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de suelo (textura predominante)</span>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="textura" value="franco_arenoso" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Franco-arenoso</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="textura" value="limoso" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Limoso</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="textura" value="desconocido" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">No sé</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Régimen de agua -->
+            <div>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Régimen hídrico</span>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="regimen_agua" value="secano" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Secano (solo lluvia)</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="regimen_agua" value="riego" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Con riego</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Estado actual y profundidad efectiva -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="estado_lote" class="block text-xs font-semibold text-slate-700 mb-1">Cobertura / estado actual</label>
+                <select id="estado_lote" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="rastrojo">Con rastrojo</option>
+                  <option value="desnudo">Suelo desnudo</option>
+                  <option value="pastura">Pastura instalada</option>
+                </select>
+              </div>
+              <div>
+                <label for="profundidad_suelo" class="block text-xs font-semibold text-slate-700 mb-1">Profundidad efectiva del suelo</label>
+                <select id="profundidad_suelo" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="superficial">Superficial (&lt; 80 cm / tosca)</option>
+                  <option value="media" selected>Media (80–120 cm)</option>
+                  <option value="profunda">Profunda (&gt; 120 cm)</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <!-- Prioridad -->
-          <div>
-            <span class="block text-sm font-semibold text-stone-700 mb-1.5">8. ¿Qué priorizás esta campaña?</span>
-            <div class="grid grid-cols-3 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="prioridad" value="agua" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">💧 Cuidar agua</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="prioridad" value="suelo" class="peer sr-only" checked />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">🌱 Cuidar suelo</div>
-              </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="prioridad" value="renta" class="peer sr-only" />
-                <div class="rounded-xl border border-stone-300 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-checked:font-semibold">💰 Rentabilidad</div>
-              </label>
+          <!-- Bloque 3: Estrategia productiva y riesgo -->
+          <div class="space-y-4 pt-2 border-t border-slate-100">
+            <div>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Planificación de campaña</span>
+              <h3 class="text-sm font-bold text-slate-800">3. Escenario climático y perfil productivo</h3>
+            </div>
+
+            <!-- Prioridad -->
+            <div>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">¿Qué priorizás esta campaña?</span>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="prioridad" value="agua" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Cuidar agua</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="prioridad" value="suelo" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Cuidar suelo</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="prioridad" value="renta" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Rentabilidad</div>
+                </label>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="escenario_lluvia" class="block text-xs font-semibold text-slate-700 mb-1">Escenario de lluvias</label>
+                <select id="escenario_lluvia" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="seco">Año seco (La Niña)</option>
+                  <option value="normal" selected>Año normal</option>
+                  <option value="humedo">Año húmedo</option>
+                </select>
+              </div>
+              <div>
+                <label for="horizonte" class="block text-xs font-semibold text-slate-700 mb-1">Horizonte temporal</label>
+                <select id="horizonte" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="corto">Corto plazo (1 año)</option>
+                  <option value="mediano" selected>Mediano plazo (2 años)</option>
+                  <option value="largo">Largo plazo (3–5 años)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="sistema_productivo" class="block text-xs font-semibold text-slate-700 mb-1">Sistema / Equipo</label>
+                <select id="sistema_productivo" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="agricola">Solo agrícola (propio)</option>
+                  <option value="mixto">Mixto con hacienda</option>
+                  <option value="contratista">Con contratista</option>
+                </select>
+              </div>
+              <div>
+                <label for="tolerancia_perdidas" class="block text-xs font-semibold text-slate-700 mb-1">Tolerancia a pérdidas / riesgo</label>
+                <select id="tolerancia_perdidas" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="baja" selected>Baja (resguardar capital)</option>
+                  <option value="moderada">Moderada</option>
+                  <option value="alta">Alta (mayor riesgo/OPEX)</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <!-- Horizonte y sistema productivo -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label for="horizonte" class="block text-sm font-semibold text-stone-700 mb-1">9. Horizonte</label>
-              <select id="horizonte" class="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2.5 text-sm">
-                <option value="corto">Corto plazo (1 año)</option>
-                <option value="mediano" selected>Mediano plazo (2 años)</option>
-                <option value="largo">Largo plazo (3–5 años)</option>
-              </select>
-            </div>
-            <div>
-              <label for="sistema_productivo" class="block text-sm font-semibold text-stone-700 mb-1">10. Sistema / Equipo</label>
-              <select id="sistema_productivo" class="w-full rounded-xl border border-stone-300 bg-stone-50 px-3 py-2.5 text-sm">
-                <option value="agricola">Solo agrícola (propio)</option>
-                <option value="mixto">Mixto con hacienda</option>
-                <option value="contratista">Con contratista</option>
-              </select>
-            </div>
-          </div>
-
-          <button type="submit" id="btn-evaluar" class="w-full bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-base py-3.5 rounded-xl shadow-sm transition">
+          <button type="submit" id="btn-evaluar" class="w-full bg-emerald-800 hover:bg-emerald-900 active:bg-emerald-950 text-white font-semibold text-sm sm:text-base py-3.5 rounded-xl shadow-sm transition cursor-pointer">
             Evaluar lote y ver rotaciones
           </button>
         </form>
       </section>
 
-      <!-- Panel derecho: Resultados con menú por pestañas -->
+      <!-- Panel derecho: Resultados con pestañas -->
       <section class="lg:col-span-7 space-y-4">
-        <div id="placeholder-resultados" class="bg-white rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-500">
-          <p class="text-base font-medium text-stone-700">Completá los datos del lote y tocá <strong>"Evaluar lote y ver rotaciones"</strong></p>
-          <p class="text-sm mt-1">Podrás alternar entre <strong>Vista Campo</strong> (lenguaje práctico y calendario) y <strong>Vista Técnica</strong> (rúbrica de 5 dimensiones y fuentes).</p>
+        <div id="placeholder-resultados" class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500 space-y-2">
+          <div class="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mx-auto mb-3">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+          </div>
+          <p class="text-base font-semibold text-slate-800">Seleccioná un lote en el mapa o activá la carga manual</p>
+          <p class="text-sm max-w-lg mx-auto">
+            Luego tocá <strong>"Evaluar lote y ver rotaciones"</strong> para comparar estrategias en <strong>Vista Campo</strong> (lenguaje práctico y calendario) y <strong>Vista Técnica</strong> (rúbrica multicriterio y balance FAO-56).
+          </p>
         </div>
 
         <div id="resultados" class="hidden space-y-4">
-          <div class="bg-white rounded-2xl p-1.5 border border-stone-200 shadow-sm grid grid-cols-3 gap-1.5">
-            <button type="button" id="tab-campo" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white transition text-center">
-              🌾 Vista Campo
+          <div class="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-sm grid grid-cols-3 gap-1.5">
+            <button type="button" id="tab-campo" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-800 text-white transition text-center cursor-pointer">
+              Vista Campo
             </button>
-            <button type="button" id="tab-tecnica" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:bg-stone-100 transition text-center">
-              🔬 Vista Técnica
+            <button type="button" id="tab-tecnica" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer">
+              Vista Técnica
             </button>
-            <button type="button" id="tab-fuentes" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:bg-stone-100 transition text-center">
-              📚 Fuentes de Respaldo
+            <button type="button" id="tab-fuentes" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer">
+              Fuentes de Respaldo
             </button>
           </div>
 
           <!-- Pestaña 1: Vista Campo -->
           <div id="panel-campo" class="space-y-4">
-            <div id="alerta-lote" class="rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 font-medium"></div>
+            <div id="alerta-lote" class="rounded-2xl bg-amber-50 border border-amber-200/90 p-4 text-sm text-amber-950 font-medium"></div>
             <div id="tarjetas-campo" class="space-y-3"></div>
-            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-2">
-              <h3 class="font-bold text-emerald-950 text-sm sm:text-base">🧑‍🌾 Puntos clave a evaluar en el lote</h3>
-              <p class="text-xs text-emerald-800">
-                Aviso: todas las decisiones sugeridas por esta aplicación son orientativas y deben ser evaluadas por un conocedor del lugar, ingeniero agrónomo o alguien que conozca el lote y la zona.
+            <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 sm:p-5 space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="font-bold text-emerald-950 text-sm sm:text-base">Puntos clave a verificar en el lote</h3>
+                <span class="text-[11px] font-semibold uppercase tracking-wide text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">Revisión a campo</span>
+              </div>
+              <p class="text-xs text-emerald-900/90 leading-relaxed">
+                Aviso: todas las recomendaciones de esta herramienta son orientativas y deben ser validadas junto a un ingeniero agrónomo o conocedor del establecimiento.
               </p>
-              <ul id="lista-evaluar" class="text-sm text-emerald-900 list-disc list-inside space-y-1"></ul>
+              <ul id="lista-evaluar" class="text-sm text-emerald-950 list-disc list-inside space-y-1.5"></ul>
             </div>
           </div>
 
           <!-- Pestaña 2: Vista Técnica -->
           <div id="panel-tecnica" class="hidden space-y-4">
-            <div id="metricas-tecnicas" class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm"></div>
+            <div id="metricas-tecnicas" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm"></div>
+            <div id="balance-fao56" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3"></div>
+            <div id="dimensiones-faltantes" class="bg-amber-50/90 rounded-2xl border border-amber-200 p-4 sm:p-5 shadow-sm space-y-2"></div>
             <div id="problematicas-tecnicas" class="space-y-3"></div>
             <div id="tarjetas-tecnicas" class="space-y-3"></div>
           </div>
 
-          <!-- Pestaña 3: Menú Dedicado de Fuentes de Respaldo -->
+          <!-- Pestaña 3: Fuentes de Respaldo -->
           <div id="panel-fuentes" class="hidden space-y-4">
-            <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm">
-              <h3 class="font-bold text-base text-stone-900 mb-1">📚 Fuentes Bibliográficas y Validación Científica</h3>
-              <p class="text-xs text-stone-600 mb-4">
-                Compendio de instituciones técnicas, ensayos a campo y referencias agronómicas que respaldan los criterios de la matriz de rotación para Villa Mercedes y San Luis.
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+              <h3 class="font-bold text-base text-slate-900 mb-1">Fuentes Bibliográficas y Validación Científica</h3>
+              <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                Compendio de instituciones técnicas, ensayos a campo y referencias agronómicas que respaldan los criterios de evaluación para el centro-este de San Luis y sur de Córdoba.
               </p>
               <div id="lista-fuentes-dedicadas" class="space-y-3"></div>
             </div>
@@ -268,6 +401,9 @@
 
   <script>
     const form = document.getElementById("form-lote");
+    const modoManualCheck = document.getElementById("modo-manual");
+    const bloqueMapa = document.getElementById("bloque-mapa");
+    const bloqueManual = document.getElementById("bloque-manual");
     const boxSonda = document.getElementById("box-sonda");
     const placeholder = document.getElementById("placeholder-resultados");
     const resultados = document.getElementById("resultados");
@@ -283,10 +419,8 @@
       panelCampo.classList.toggle("hidden", modo !== "campo");
       panelTecnica.classList.toggle("hidden", modo !== "tecnica");
       panelFuentes.classList.toggle("hidden", modo !== "fuentes");
-
-      const activoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white transition text-center";
-      const inactivoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:bg-stone-100 transition text-center";
-
+      const activoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-800 text-white transition text-center cursor-pointer";
+      const inactivoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer";
       tabCampo.className = modo === "campo" ? activoCls : inactivoCls;
       tabTecnica.className = modo === "tecnica" ? activoCls : inactivoCls;
       tabFuentes.className = modo === "fuentes" ? activoCls : inactivoCls;
@@ -296,192 +430,427 @@
     tabTecnica.addEventListener("click", () => activarTab("tecnica"));
     tabFuentes.addEventListener("click", () => activarTab("fuentes"));
 
+    // Cargar lista de lotes de referencia para el modo manual
+    fetch("/api/lotes")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || !Array.isArray(data.lotes) || data.lotes.length === 0) return;
+        const sel = document.getElementById("lote_manual");
+        sel.innerHTML = data.lotes
+          .map((l) => `<option value="${l.id}" ${l.id === "vm_centro" ? "selected" : ""}>${l.nombre}</option>`)
+          .join("");
+      })
+      .catch(() => {});
+
+    // Alternar entre Modo Mapa (campos mínimos + mapa) y Modo Manual (todos los controles)
+    modoManualCheck.addEventListener("change", () => {
+      const manual = modoManualCheck.checked;
+      bloqueMapa.classList.toggle("hidden", manual);
+      bloqueManual.classList.toggle("hidden", !manual);
+      if (!manual) {
+        setTimeout(() => mapa.invalidateSize(), 60);
+      }
+    });
+
     document.querySelectorAll('input[name="humedad_estado"]').forEach((el) => {
       el.addEventListener("change", (e) => {
         boxSonda.classList.toggle("hidden", e.target.value !== "sonda");
       });
     });
 
-    async function cargarLotes() {
+    // Estado autodetectado por el mapa
+    let datosLoteCustom = null;
+    let autoNapaPendiente = "sin_napa";
+    let autoHumedadEstado = "normal";
+
+    const inputLat = document.getElementById("input-lat");
+    const inputLon = document.getElementById("input-lon");
+    const tarjetaTerreno = document.getElementById("tarjeta-terreno");
+
+    const NAPA_LABELS = {
+      sin_napa: "Sin pendiente significativa (Sin napa)",
+      napa_cercana: "Napa cercana",
+      pendiente_anegamiento: "Pendiente / Riesgo de escurrimiento o bajo",
+    };
+    const HUMEDAD_LABELS = {
+      seco: "Seco",
+      normal: "Normal",
+      humedo: "Húmedo",
+    };
+
+    const mapa = L.map("mapa-lote").setView([-33.50, -65.00], 9);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap",
+      maxZoom: 18,
+    }).addTo(mapa);
+
+    // Rectángulo límite de la caja MVP
+    const boundsMVP = [[-33.875, -65.875], [-33.125, -64.125]];
+    L.rectangle(boundsMVP, { color: "#065f46", weight: 2, fillOpacity: 0.04, dashArray: "6,4" }).addTo(mapa);
+
+    // Pines informativos de estaciones terrestres
+    L.circleMarker([-33.7167, -65.3667], { radius: 6, color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.9 })
+      .addTo(mapa)
+      .bindPopup("<strong>SMN 87448 — Villa Reynolds</strong><br/>Estación meteorológica observada");
+    L.circleMarker([-33.1612, -64.357], { radius: 6, color: "#0369a1", fillColor: "#0ea5e9", fillOpacity: 0.9 })
+      .addTo(mapa)
+      .bindPopup("<strong>PIHC 30109 — Río Cuarto</strong><br/>Estación pluviométrica observada");
+
+    const drawnItems = new L.FeatureGroup();
+    mapa.addLayer(drawnItems);
+    L.marker([-33.675, -65.460]).addTo(drawnItems);
+
+    const drawControl = new L.Control.Draw({
+      draw: {
+        polygon: { allowIntersection: false, shapeOptions: { color: "#059669" } },
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+        marker: true,
+      },
+      edit: { featureGroup: drawnItems },
+    });
+    mapa.addControl(drawControl);
+
+    async function consultarTerrenoMapa(payloadMapa, autoEvaluar = true) {
       try {
-        const res = await fetch("/api/lotes");
-        if (!res.ok) return;
-        const data = await res.json();
-        const select = document.getElementById("lote_id");
-        if (data.lotes && data.lotes.length > 0) {
-          select.innerHTML = data.lotes
-            .map((l) => `<option value="${l.id}">${l.nombre} (${l.suelo})</option>`)
-            .join("");
+        tarjetaTerreno.classList.remove("hidden");
+        tarjetaTerreno.innerHTML = "<p class='text-emerald-900 font-medium'>Consultando relieve SRTM, lluvia PIHC, SMN y SMAP...</p>";
+        const res = await fetch("/api/mapa/consultar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payloadMapa),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Error al consultar terreno");
         }
-      } catch (_) {}
+        const info = await res.json();
+        datosLoteCustom = info.datos_lote;
+        autoNapaPendiente = info.autodetectado.napa_pendiente || "sin_napa";
+        autoHumedadEstado = info.autodetectado.humedad_estado || "normal";
+
+        inputLat.value = info.coordenadas.lat.toFixed(4);
+        inputLon.value = info.coordenadas.lon.toFixed(4);
+
+        const t = info.terreno;
+        const estLluvia = (info.provenance.estaciones_lluvia || []).map((e) => `${e.nombre} (${e.distancia_km} km)`).join(" · ");
+        tarjetaTerreno.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-bold text-emerald-950">Datos detectados del terreno</span>
+            <span class="text-[11px] font-semibold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-md">Autocompletado</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-700 tabular-nums">
+            <div><span class="text-slate-500">Superficie:</span> <strong>${t.superficie_ha} ha</strong></div>
+            <div><span class="text-slate-500">Elevación:</span> <strong>${t.elevacion_m} m</strong></div>
+            <div><span class="text-slate-500">Pendiente SRTM:</span> <strong>${t.pendiente_pct}%</strong> (máx ${t.pendiente_max_pct}%)</div>
+            <div><span class="text-slate-500">Lluvia anual:</span> <strong>${t.lluvia_anual_mm} mm</strong></div>
+            <div><span class="text-slate-500">Humedad SMAP:</span> <strong>${t.sm_surface_media} m³/m³</strong></div>
+            <div><span class="text-slate-500">Tmin transición:</span> <strong>${t.tmin_transicion_c} °C</strong></div>
+          </div>
+          <div class="flex flex-wrap gap-1.5 pt-0.5">
+            <span class="text-[11px] bg-white border border-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md font-medium">
+              Relieve/Napa detectada: <strong>${NAPA_LABELS[autoNapaPendiente] || autoNapaPendiente}</strong>
+            </span>
+            <span class="text-[11px] bg-white border border-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md font-medium">
+              Humedad superficial detectada: <strong>${HUMEDAD_LABELS[autoHumedadEstado] || autoHumedadEstado}</strong>
+            </span>
+          </div>
+          <div class="text-[11px] text-emerald-900"><strong>Estaciones:</strong> ${estLluvia}</div>
+          <div class="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-2"><strong>Aviso de escala:</strong> ${info.advertencia_escala}</div>
+        `;
+
+        if (autoEvaluar) {
+          form.requestSubmit();
+        }
+        return true;
+      } catch (err) {
+        tarjetaTerreno.innerHTML = `<p class='text-rose-700 font-medium'>Error: ${err.message}</p>`;
+        return false;
+      }
     }
+
+    mapa.on("click", (e) => {
+      drawnItems.clearLayers();
+      L.marker(e.latlng).addTo(drawnItems);
+      consultarTerrenoMapa({ lat: e.latlng.lat, lon: e.latlng.lng }, true);
+    });
+
+    mapa.on(L.Draw.Event.CREATED, (e) => {
+      drawnItems.clearLayers();
+      drawnItems.addLayer(e.layer);
+      if (e.layerType === "polygon") {
+        const coords = e.layer.getLatLngs()[0].map((ll) => [ll.lat, ll.lng]);
+        consultarTerrenoMapa({ poligono: coords }, true);
+      } else if (e.layerType === "marker") {
+        const ll = e.layer.getLatLng();
+        consultarTerrenoMapa({ lat: ll.lat, lon: ll.lng }, true);
+      }
+    });
+
+    document.querySelectorAll(".btn-salto").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const lat = parseFloat(btn.dataset.lat);
+        const lon = parseFloat(btn.dataset.lon);
+        mapa.setView([lat, lon], 11);
+        drawnItems.clearLayers();
+        L.marker([lat, lon]).addTo(drawnItems);
+        consultarTerrenoMapa({ lat, lon }, true);
+      });
+    });
+
+    [inputLat, inputLon].forEach((inp) => {
+      inp.addEventListener("change", () => {
+        const lat = parseFloat(inputLat.value);
+        const lon = parseFloat(inputLon.value);
+        if (!isNaN(lat) && !isNaN(lon)) {
+          mapa.setView([lat, lon], 12);
+          drawnItems.clearLayers();
+          L.marker([lat, lon]).addTo(drawnItems);
+          consultarTerrenoMapa({ lat, lon }, true);
+        }
+      });
+    });
 
     const SEMAFORO_ESTILOS = {
       recomendado: {
-        borde: "border-l-emerald-500",
-        badge: "bg-emerald-100 text-emerald-800",
-        texto: "🟢 Recomendado",
+        borde: "border-l-emerald-600",
+        badge: "bg-emerald-50 text-emerald-800 border border-emerald-200",
+        dot: "bg-emerald-500",
+        texto: "Recomendado",
       },
       precaucion: {
-        borde: "border-l-amber-400",
-        badge: "bg-amber-100 text-amber-800",
-        texto: "🟡 Precaución",
+        borde: "border-l-amber-500",
+        badge: "bg-amber-50 text-amber-800 border border-amber-200",
+        dot: "bg-amber-500",
+        texto: "Precaución",
       },
       no_recomendado: {
-        borde: "border-l-rose-500",
-        badge: "bg-rose-100 text-rose-800",
-        texto: "🔴 Alerta / No recomendado",
+        borde: "border-l-rose-600",
+        badge: "bg-rose-50 text-rose-800 border border-rose-200",
+        dot: "bg-rose-500",
+        texto: "Alerta / No recomendado",
       },
     };
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const submitBtn = form.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.innerText : "Calcular";
+      const originalBtnText = submitBtn ? submitBtn.innerText : "Evaluar";
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = "⏳ Evaluando rotaciones...";
+        submitBtn.innerText = "Evaluando rotaciones...";
       }
 
       try {
-      const humedad = document.querySelector('input[name="humedad_estado"]:checked').value;
-      const sistema = document.getElementById("sistema_productivo").value;
-      const payload = {
-        lote_id: document.getElementById("lote_id").value,
-        textura: document.querySelector('input[name="textura"]:checked').value,
-        napa_pendiente: document.querySelector('input[name="napa_pendiente"]:checked').value,
-        regimen_agua: document.querySelector('input[name="regimen_agua"]:checked').value,
-        humedad_estado: humedad,
-        sonda_largo_cm: (humedad === "sonda" && document.getElementById("sonda_largo_cm").value) ? parseFloat(document.getElementById("sonda_largo_cm").value) : null,
-        sonda_medicion: (humedad === "sonda" && document.getElementById("sonda_medicion").value) ? parseFloat(document.getElementById("sonda_medicion").value) : null,
-        sonda_10cm: humedad === "sonda" ? parseFloat(document.getElementById("sonda_10cm").value) : null,
-        sonda_30cm: humedad === "sonda" ? parseFloat(document.getElementById("sonda_30cm").value) : null,
-        sonda_60cm: humedad === "sonda" ? parseFloat(document.getElementById("sonda_60cm").value) : null,
-        estado_lote: document.getElementById("estado_lote").value,
-        escenario_lluvia: document.getElementById("escenario_lluvia").value,
-        prioridad: document.querySelector('input[name="prioridad"]:checked').value,
-        horizonte: document.getElementById("horizonte").value,
-        sistema_productivo: sistema,
-        tiene_ganaderia: sistema === "mixto",
-      };
+        const esManual = modoManualCheck.checked;
 
-      const res = await fetch("/api/evaluar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+        // Si está en modo mapa y todavía no consultó datos del mapa, consultar la coordenada actual del pin
+        if (!esManual && !datosLoteCustom) {
+          const lat = parseFloat(inputLat.value);
+          const lon = parseFloat(inputLon.value);
+          const ok = await consultarTerrenoMapa({ lat, lon }, false);
+          if (!ok) return;
+        }
 
-      // Pestaña 1: Vista Campo
-      document.getElementById("alerta-lote").textContent =
-        `⚠️ Diagnóstico del suelo (${data.lote} · ${data.suelo}): ${data.alerta_principal}`;
+        const sistema = document.getElementById("sistema_productivo").value;
+        const humedadManual = esManual
+          ? document.querySelector('#bloque-manual input[name="humedad_estado"]:checked').value
+          : autoHumedadEstado;
+        const napaManual = esManual
+          ? document.querySelector('#bloque-manual input[name="napa_pendiente"]:checked').value
+          : autoNapaPendiente;
+        const lluviaManualVal = esManual && document.getElementById("lluvia_manual_mm").value
+          ? parseFloat(document.getElementById("lluvia_manual_mm").value)
+          : null;
 
-      document.getElementById("tarjetas-campo").innerHTML = data.tarjetas
-        .map((t) => {
-          const est = SEMAFORO_ESTILOS[t.semaforo] || SEMAFORO_ESTILOS.precaucion;
-          const rojasHtml = (t.alertas_rojas || []).length
-            ? `<div class="mt-2.5 bg-rose-50 rounded-xl p-3 border border-rose-200"><p class="text-xs font-bold text-rose-800 mb-1">🚨 Riesgos críticos a evaluar con un profesional:</p><ul class="text-xs text-rose-900 list-disc list-inside space-y-1">${t.alertas_rojas.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
-            : "";
-          const alertasHtml = (t.alertas || []).length
-            ? `<div class="mt-2.5 bg-stone-50 rounded-xl p-2.5 border border-stone-200"><p class="text-xs font-semibold text-stone-700 mb-1">Notas para tu lote:</p><ul class="text-xs text-stone-600 list-disc list-inside space-y-0.5">${t.alertas.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
-            : "";
-          return `
-            <article class="bg-white rounded-2xl border border-stone-200 border-l-4 ${est.borde} p-4 shadow-sm">
-              <div class="flex items-start justify-between gap-2">
-                <div>
-                  <h3 class="font-bold text-base text-stone-900">${t.nombre}</h3>
-                  <p class="text-xs text-stone-500 mt-0.5">${t.secuencia} · ${t.horizonte_label}</p>
+        const payload = {
+          lote_id: esManual ? document.getElementById("lote_manual").value : (datosLoteCustom ? datosLoteCustom.id : "vm_centro"),
+          datos_lote_custom: esManual ? null : datosLoteCustom,
+          lluvia_anual_manual_mm: lluviaManualVal,
+          textura: document.querySelector('input[name="textura"]:checked').value,
+          napa_pendiente: napaManual,
+          regimen_agua: document.querySelector('input[name="regimen_agua"]:checked').value,
+          humedad_estado: humedadManual,
+          sonda_largo_cm: (esManual && humedadManual === "sonda" && document.getElementById("sonda_largo_cm").value) ? parseFloat(document.getElementById("sonda_largo_cm").value) : null,
+          sonda_medicion: (esManual && humedadManual === "sonda" && document.getElementById("sonda_medicion").value) ? parseFloat(document.getElementById("sonda_medicion").value) : null,
+          sonda_10cm: (esManual && humedadManual === "sonda") ? parseFloat(document.getElementById("sonda_10cm").value) : null,
+          sonda_30cm: (esManual && humedadManual === "sonda") ? parseFloat(document.getElementById("sonda_30cm").value) : null,
+          sonda_60cm: (esManual && humedadManual === "sonda") ? parseFloat(document.getElementById("sonda_60cm").value) : null,
+          estado_lote: document.getElementById("estado_lote").value,
+          escenario_lluvia: document.getElementById("escenario_lluvia").value,
+          prioridad: document.querySelector('input[name="prioridad"]:checked').value,
+          horizonte: document.getElementById("horizonte").value,
+          sistema_productivo: sistema,
+          tiene_ganaderia: sistema === "mixto",
+          profundidad_suelo: document.getElementById("profundidad_suelo").value,
+          tolerancia_perdidas: document.getElementById("tolerancia_perdidas").value,
+        };
+
+        const res = await fetch("/api/evaluar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "No se pudo completar la evaluación.");
+        }
+        const data = await res.json();
+
+        // Pestaña 1: Vista Campo
+        document.getElementById("alerta-lote").innerHTML = `
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 block mb-0.5">Diagnóstico principal del lote</span>
+          <span>${data.lote} (${data.suelo}): ${data.alerta_principal}</span>
+        `;
+
+        document.getElementById("tarjetas-campo").innerHTML = data.tarjetas
+          .map((t) => {
+            const est = SEMAFORO_ESTILOS[t.semaforo] || SEMAFORO_ESTILOS.precaucion;
+            const rojasHtml = (t.alertas_rojas || []).length
+              ? `<div class="mt-3 bg-rose-50/90 rounded-xl p-3 border border-rose-200"><p class="text-xs font-bold text-rose-900 mb-1">Riesgos críticos a revisar con un profesional</p><ul class="text-xs text-rose-900 list-disc list-inside space-y-1">${t.alertas_rojas.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
+              : "";
+            const alertasHtml = (t.alertas || []).length
+              ? `<div class="mt-3 bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-xs font-semibold text-slate-700 mb-1">Consideraciones contextuales</p><ul class="text-xs text-slate-600 list-disc list-inside space-y-0.5">${t.alertas.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
+              : "";
+            return `
+              <article class="bg-white rounded-2xl border border-slate-200 border-l-4 ${est.borde} p-4 sm:p-5 shadow-sm">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="font-bold text-base text-slate-900">${t.nombre}</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">${t.secuencia} · ${t.horizonte_label}</p>
+                  </div>
+                  <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${est.badge}">
+                    <span class="w-2 h-2 rounded-full ${est.dot}"></span>
+                    ${est.texto}
+                  </span>
                 </div>
-                <span class="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${est.badge}">${est.texto}</span>
-              </div>
-              <p class="mt-2.5 text-sm text-stone-700 leading-relaxed">${t.resumen}</p>
-              <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-100">
-                <div><strong class="text-emerald-900">📅 Cuándo rotar:</strong> <span class="text-stone-700">${t.cuando_rotar}</span></div>
-                <div><strong class="text-emerald-900">✂️ Cosecha / secado:</strong> <span class="text-stone-700">${t.criterio_terminacion}</span></div>
-              </div>
-              ${rojasHtml}
-              ${alertasHtml}
-            </article>
-          `;
-        })
-        .join("");
+                <p class="mt-3 text-sm text-slate-700 leading-relaxed">${t.resumen}</p>
+                <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs bg-emerald-50/60 p-3 rounded-xl border border-emerald-100">
+                  <div><strong class="text-emerald-950 block mb-0.5">Cuándo rotar</strong><span class="text-slate-700">${t.cuando_rotar}</span></div>
+                  <div><strong class="text-emerald-950 block mb-0.5">Cosecha / secado</strong><span class="text-slate-700">${t.criterio_terminacion}</span></div>
+                </div>
+                ${rojasHtml}
+                ${alertasHtml}
+              </article>
+            `;
+          })
+          .join("");
 
-      document.getElementById("lista-evaluar").innerHTML = (data.puntos_evaluar || [])
-        .map((d) => `<li>${d}</li>`)
-        .join("");
+        document.getElementById("lista-evaluar").innerHTML = (data.puntos_evaluar || [])
+          .map((d) => `<li>${d}</li>`)
+          .join("");
 
-      // Pestaña 2: Vista Técnica
-      const dt = data.detalle_tecnico;
-      const p = data.pesos_aplicados;
-      document.getElementById("metricas-tecnicas").innerHTML = `
-        <h3 class="font-bold text-stone-800 text-sm mb-3">📊 Parámetros ambientales y ponderación aplicada</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-sm">
-          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200"><span class="block text-xs text-stone-500">Lluvia proyectada</span><strong>${dt.lluvia_anual_proyectada_mm} mm/año</strong></div>
-          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200"><span class="block text-xs text-stone-500">Humedad efectiva</span><strong>${dt.humedad_efectiva_m3_m3} m³/m³</strong></div>
-          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200"><span class="block text-xs text-stone-500">Incertidumbre</span><strong>±${dt.incertidumbre_pct}%</strong></div>
-          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200"><span class="block text-xs text-stone-500">Pico térmico</span><strong>${dt.pico_termico_c} °C</strong></div>
-          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200"><span class="block text-xs text-stone-500">Meses suelo desnudo</span><strong>${dt.meses_suelo_desnudo} meses</strong></div>
-          <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200"><span class="block text-xs text-stone-500">Fuente humedad</span><strong class="text-xs">${dt.fuente_humedad}</strong></div>
-        </div>
-        <div class="mt-3 pt-3 border-t border-stone-200 text-xs text-stone-600">
-          <strong>Pesos por dimensión:</strong> Agua/Suelo ${Math.round(p.agua_suelo*100)}% · Sostenibilidad ${Math.round(p.produccion_sostenibilidad*100)}% · Clima ${Math.round(p.clima_temperatura*100)}% · Mercado ${Math.round(p.negocio_mercado*100)}% · Sanidad ${Math.round(p.sanidad_agricola*100)}%
-        </div>
-      `;
-
-      document.getElementById("problematicas-tecnicas").innerHTML = (data.analisis_tecnico || [])
-        .map((item) => `
-          <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm">
-            <h4 class="font-bold text-sm text-stone-900">${item.titulo}</h4>
-            <p class="mt-1 text-sm text-stone-600 leading-relaxed">${item.detalle}</p>
+        // Pestaña 2: Vista Técnica
+        const dt = data.detalle_tecnico;
+        const p = data.pesos_aplicados;
+        document.getElementById("metricas-tecnicas").innerHTML = `
+          <h3 class="font-bold text-slate-900 text-sm mb-3">Parámetros ambientales y ponderación aplicada</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-sm tabular-nums">
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Lluvia proyectada</span><strong>${dt.lluvia_anual_proyectada_mm} mm/año</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Humedad efectiva</span><strong>${dt.humedad_efectiva_m3_m3} m³/m³</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Incertidumbre</span><strong>±${dt.incertidumbre_pct}%</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Pico térmico</span><strong>${dt.pico_termico_c} °C</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Meses suelo desnudo</span><strong>${dt.meses_suelo_desnudo} meses</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Fuente humedad</span><strong class="text-xs">${dt.fuente_humedad}</strong></div>
           </div>
-        `)
-        .join("");
+          <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600 tabular-nums">
+            <strong>Pesos por dimensión:</strong> Agua/Suelo ${Math.round(p.agua_suelo * 100)}% · Sostenibilidad ${Math.round(p.produccion_sostenibilidad * 100)}% · Clima ${Math.round(p.clima_temperatura * 100)}% · Mercado ${Math.round(p.negocio_mercado * 100)}% · Sanidad ${Math.round(p.sanidad_agricola * 100)}%
+          </div>
+        `;
 
-      document.getElementById("tarjetas-tecnicas").innerHTML = data.tarjetas
-        .map((t) => {
-          const est = SEMAFORO_ESTILOS[t.semaforo] || SEMAFORO_ESTILOS.precaucion;
-          const dimsHtml = Object.values(t.dimensiones || {})
-            .map((d) => `<div class="bg-stone-50 px-2.5 py-1.5 rounded-lg border border-stone-200 text-xs"><strong>${d.nombre}:</strong> ${d.promedio_1_5}/5 (${d.score_100}%)</div>`)
-            .join("");
-          return `
-            <article class="bg-white rounded-2xl border border-stone-200 border-l-4 ${est.borde} p-4 shadow-sm space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <h3 class="font-bold text-base text-stone-900">${t.nombre}</h3>
-                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${est.badge}">Score final: ${t.score}/100</span>
-              </div>
-              <p class="text-xs text-stone-500">Base 5 dimensiones: <strong>${t.score_base}</strong> | Ajuste contextual: <strong>${t.ajuste_contextual >= 0 ? "+" : ""}${t.ajuste_contextual}</strong></p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">${dimsHtml}</div>
-            </article>
-          `;
-        })
-        .join("");
+        const fao = data.balance_fao56 || {};
+        const cultivosHtml = (fao.demanda_cultivos_mm || [])
+          .map((c) => {
+            const badge = c.estado_orientativo === "por_debajo_rango"
+              ? "bg-amber-100 text-amber-900"
+              : c.estado_orientativo === "en_rango"
+                ? "bg-emerald-100 text-emerald-900"
+                : "bg-sky-100 text-sky-900";
+            const label = c.estado_orientativo === "por_debajo_rango"
+              ? "Lluvia < ETc"
+              : c.estado_orientativo === "en_rango"
+                ? "En rango"
+                : "Lluvia > ETc";
+            return `<div class="bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 flex items-center justify-between gap-2 text-xs tabular-nums">
+              <div><strong class="text-slate-800">${c.cultivo}:</strong> <span class="text-slate-600">${c.min_mm}–${c.max_mm} ${c.unidad}</span></div>
+              <span class="px-2 py-0.5 rounded-full font-semibold ${badge}">${label}</span>
+            </div>`;
+          })
+          .join("");
 
-      // Renderizar el menú aparte dedicado de fuentes de respaldo
-      const fuentes = data.fuentes_respaldo || [];
-      document.getElementById("lista-fuentes-dedicadas").innerHTML = fuentes.length > 0
-        ? fuentes
-            .map((f) => `
-              <div class="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+        document.getElementById("balance-fao56").innerHTML = `
+          <h3 class="font-bold text-slate-900 text-sm">Balance Hídrico Orientativo (FAO-56) y Límites de SMAP</h3>
+          <p class="text-xs text-slate-600">Referencia comparando la lluvia anual proyectada (<strong>${fao.lluvia_proyectada_mm ?? dt.lluvia_anual_proyectada_mm} mm</strong>) contra requerimientos orientativos por cultivo:</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${cultivosHtml}</div>
+          <div class="text-xs text-amber-950 bg-amber-50 border border-amber-200 rounded-xl p-3"><strong>Nota metodológica FAO-56:</strong> ${fao.advertencia_fao56 || ""}</div>
+          <div class="text-xs text-sky-950 bg-sky-50 border border-sky-200 rounded-xl p-3"><strong>Alcance de SMAP (0–5 cm):</strong> ${fao.advertencia_smap || ""}</div>
+        `;
+
+        const faltantes = data.dimensiones_faltantes || [];
+        document.getElementById("dimensiones-faltantes").innerHTML = `
+          <h3 class="font-bold text-amber-950 text-sm">Dimensiones faltantes y supuestos del modelo</h3>
+          <ul class="text-xs text-amber-950/90 list-disc list-inside space-y-1">${faltantes.map((f) => `<li>${f}</li>`).join("")}</ul>
+        `;
+
+        document.getElementById("problematicas-tecnicas").innerHTML = (data.analisis_tecnico || [])
+          .map((item) => `
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+              <h4 class="font-bold text-sm text-slate-900">${item.titulo}</h4>
+              <p class="mt-1 text-sm text-slate-600 leading-relaxed">${item.detalle}</p>
+            </div>
+          `)
+          .join("");
+
+        document.getElementById("tarjetas-tecnicas").innerHTML = data.tarjetas
+          .map((t) => {
+            const est = SEMAFORO_ESTILOS[t.semaforo] || SEMAFORO_ESTILOS.precaucion;
+            const dimsHtml = Object.values(t.dimensiones || {})
+              .map((d) => `<div class="bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs tabular-nums"><strong>${d.nombre}:</strong> ${d.promedio_1_5}/5 (${d.score_100}%)</div>`)
+              .join("");
+            return `
+              <article class="bg-white rounded-2xl border border-slate-200 border-l-4 ${est.borde} p-4 sm:p-5 shadow-sm space-y-3">
                 <div class="flex items-center justify-between gap-2">
-                  <span class="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">${f.institucion}</span>
-                  <span class="text-[11px] text-stone-500 font-medium">${f.rotacion || ""}</span>
+                  <h3 class="font-bold text-base text-slate-900">${t.nombre}</h3>
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${est.badge} tabular-nums">
+                    <span class="w-2 h-2 rounded-full ${est.dot}"></span>
+                    Score final: ${t.score}/100
+                  </span>
                 </div>
-                <h4 class="font-bold text-sm text-stone-900 mt-1">
-                  <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-700 underline">
-                    ${f.titulo}
-                  </a>
-                </h4>
-                <p class="text-xs text-stone-600 leading-relaxed">${f.aporte}</p>
-              </div>
-            `)
-            .join("")
-        : '<p class="text-xs text-stone-500">No hay fuentes registradas para esta consulta.</p>';
+                <p class="text-xs text-slate-600 tabular-nums">Base 5 dimensiones: <strong>${t.score_base}</strong> | Ajuste contextual: <strong>${t.ajuste_contextual >= 0 ? "+" : ""}${t.ajuste_contextual}</strong>${t.demanda_hidrica_mm ? ` | Demanda hídrica orientativa: <strong>${t.demanda_hidrica_mm}</strong>` : ""}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">${dimsHtml}</div>
+              </article>
+            `;
+          })
+          .join("");
 
-      placeholder.classList.add("hidden");
-      resultados.classList.remove("hidden");
-      if (window.innerWidth < 1024) {
-        resultados.scrollIntoView({ behavior: "smooth" });
-      }
+        // Pestaña 3: Fuentes de Respaldo
+        const fuentes = data.fuentes_respaldo || [];
+        document.getElementById("lista-fuentes-dedicadas").innerHTML = fuentes.length > 0
+          ? fuentes
+              .map((f) => `
+                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded-md">${f.institucion}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">${f.rotacion || ""}</span>
+                  </div>
+                  <h4 class="font-bold text-sm text-slate-900 mt-1">
+                    <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-800 underline">
+                      ${f.titulo}
+                    </a>
+                  </h4>
+                  <p class="text-xs text-slate-600 leading-relaxed">${f.aporte}</p>
+                </div>
+              `)
+              .join("")
+          : '<p class="text-xs text-slate-500">No hay fuentes registradas para esta consulta.</p>';
+
+        placeholder.classList.add("hidden");
+        resultados.classList.remove("hidden");
+        if (window.innerWidth < 1024) {
+          resultados.scrollIntoView({ behavior: "smooth" });
+        }
       } catch (err) {
         console.error("Error al evaluar:", err);
         alert("Ocurrió un error al procesar la evaluación: " + (err.message || err));
@@ -492,8 +861,6 @@
         }
       }
     });
-
-    cargarLotes();
   </script>
 </body>
 </html>
