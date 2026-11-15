@@ -56,3 +56,7 @@ When practical, a contributor should be able to regenerate a processed artifact 
 Do not commit data that is private, confidential, proprietary without permission, or incompatible with public redistribution.
 
 When redistribution rights are unclear, store only metadata, checksums, and retrieval instructions.
+
+## Entrega MVP: clima histórico + suelo homogéneos (2026-11-15)
+
+Carpeta `data/reference/mvp-homogeneo/`: tablas listas para Google Looker Studio y para el stack (Parquet/CSV, EPSG:4326), con `README.md` de uso, `diccionario_columnas.csv`, `cobertura_necesidades_mvp.csv` y `cargar_mvp.py`. Los dos archivos grandes (diario CSV de 56 MB y suelo 1 ha Parquet de 48 MB) quedan en el almacén de datos `consumo/homogeneo-mvp/entrega-mvp/`.

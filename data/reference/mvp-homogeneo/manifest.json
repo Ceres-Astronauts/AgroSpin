@@ -1,0 +1,108 @@
+{
+  "id": "field-shift-mvp-entrega-clima-suelo",
+  "fecha": "2026-11-15",
+  "caja_epsg4326": {
+    "lon_min": -65.875,
+    "lon_max": -64.125,
+    "lat_min": -33.875,
+    "lat_max": -33.125
+  },
+  "corte_datos": "2026-11-01",
+  "crs": "EPSG:4326",
+  "huso_horario": "dia local UTC-3 (tierra); POWER dia UTC",
+  "archivos": {
+    "clima_anual_grilla_1991_2026.csv": {
+      "bytes": 187512,
+      "sha256": "02060847097c86f43b895d00d486515ebc626048809e564234e4a8e9da4850ee"
+    },
+    "clima_diario_grilla_1991_2026.csv": {
+      "bytes": 58098497,
+      "sha256": "33485dd0631c5485e0ce75f314cffb150fbe440a1ff7bca0eb8c04aecd51778d"
+    },
+    "clima_diario_grilla_1991_2026.parquet": {
+      "bytes": 7426671,
+      "sha256": "4ca874dc011d014acff6e6eac0028a6b7c0bcd44d66cf4480746d28c2fac16c5"
+    },
+    "clima_mensual_grilla_1991_2026.csv": {
+      "bytes": 2032343,
+      "sha256": "ee81a4a9f4cc02184775da73c79cad0b86e95138b49cbf0187fbc0b0bb81ba65"
+    },
+    "clima_mensual_grilla_1991_2026.parquet": {
+      "bytes": 401471,
+      "sha256": "9ffb74bd7c0b55fd8d109f23c25b0a08f51c107f56d376a7b02b4b2ee114e065"
+    },
+    "clima_zona_diario_1991_2026.csv": {
+      "bytes": 1067845,
+      "sha256": "23e215af5b4e1d2daecd188c8acdb8367e033f99e1005bccc736f15636b40347"
+    },
+    "cobertura_necesidades_mvp.csv": {
+      "bytes": 2300,
+      "sha256": "c4605546dfdb712b0ae437dae808053d3ef1e7f375773e6eafefd9cfeceade17"
+    },
+    "diccionario_columnas.csv": {
+      "bytes": 3677,
+      "sha256": "750a36d087bee55adbdb213d3a39127c89ef6707ea2f1be3ba50f8f16f283e33"
+    },
+    "enso_oni_mensual.csv": {
+      "bytes": 23883,
+      "sha256": "33f8ad3362e33000f50b6d238492c97d9a4e5cef715fbc8372f5b0a31c8fd599"
+    },
+    "estaciones_terrestres.csv": {
+      "bytes": 2767,
+      "sha256": "bb101912b3fcbdfca104136d298d25ad8fb082dc8bb33869339d9ed6e900aa49"
+    },
+    "humedad_suelo_mensual_grilla_1991_2026.csv": {
+      "bytes": 2843180,
+      "sha256": "3efafef9b966fd980220105861d270ed0d66a84c80ba1c59ec03dc99de5a3a41"
+    },
+    "suelo_1ha_grilla.parquet": {
+      "bytes": 50096683,
+      "sha256": "82c8bdfbc6722bb74145ac2a1e1082545d6c75c798293f94b57383d03f952409"
+    },
+    "suelo_500m_grilla.csv": {
+      "bytes": 7944134,
+      "sha256": "a2ec1c25d9ebd7f4d5d462978fe8c160c7449a40ef30799532ae56d61277637e"
+    },
+    "suelo_gaez_cultivos_1981_2010.csv": {
+      "bytes": 649700,
+      "sha256": "22ba41d931864ee0676ab23e800c97f649e895775c935034f12eb98744e8407a"
+    },
+    "suelo_sisinta_perfiles_caja.csv": {
+      "bytes": 29335,
+      "sha256": "42b4e5e62df7896e90373b5cde78fe583d5faaa8b8989881988f0c9ceeed9d07"
+    }
+  },
+  "filas": {
+    "clima_diario": 418848,
+    "clima_mensual": 13792,
+    "clima_anual": 1152,
+    "clima_zona": 13089,
+    "suelo_1ha": 1352847,
+    "suelo_500m": 54600,
+    "gaez": 5280,
+    "sisinta_caja": 257,
+    "humedad_mensual": 13792,
+    "estaciones": 19,
+    "oni": 429
+  },
+  "unidades_power": {
+    "T2M": "C",
+    "T2M_MAX": "C",
+    "T2M_MIN": "C",
+    "PRECTOTCORR": "mm/day",
+    "RH2M": "%",
+    "WS10M": "m/s",
+    "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+    "PS": "kPa"
+  },
+  "radiacion_factor_a_MJ": 1.0,
+  "decisiones": [
+    "clima-cerrado-2026-11-15",
+    "suelo-cerrado-mvp-2026-11-15",
+    "humedad-suelo-modelo-balance-2026-11-15",
+    "susceptibilidad-topografica-2026-11-15",
+    "suelo-homogeneo-esquema-2026-11-15",
+    "smap-32-fuera-mvp-suelo-cierre-2026-11-15",
+    "gldas-desestimado-mvp-2026-11-15"
+  ]
+}
