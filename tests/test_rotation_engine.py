@@ -300,7 +300,7 @@ class TestRotationEngine(unittest.TestCase):
 
         r_home = client.get("/")
         self.assertEqual(r_home.status_code, 200)
-        self.assertIn("Field Shift", r_home.text)
+        self.assertIn("AgroSpin", r_home.text)
 
         r_fields = client.get("/api/fields")
         self.assertEqual(r_fields.status_code, 200)
