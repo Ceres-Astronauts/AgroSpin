@@ -210,58 +210,58 @@
               <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.858" data-lon="-65.182">Justo Daract</button>
             </div>
 
-            <!-- Recuadro intuitivo de selección de capas del mapa con nombres claros -->
+            <!-- Intuitive map layer selector with clean, descriptive English names -->
             <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-3.5 space-y-2.5 shadow-sm">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Capas del Mapa / Map Layers</span>
-                <span class="text-[10px] text-slate-500 font-medium">Selecciona qué información ver sobre el lote</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Map Overlays &amp; Sensors</span>
+                <span class="text-[10px] text-slate-500 font-medium">Select information layers to display on field</span>
               </div>
               <div class="grid grid-cols-2 gap-2 text-xs">
-                <!-- Capa 1: Lluvia y Temperatura -->
+                <!-- Layer 1: Rainfall & Climate -->
                 <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-sky-400 cursor-pointer transition select-none shadow-xs">
                   <input type="checkbox" id="chk-layer-stations" checked class="mt-0.5 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
                   <div class="space-y-0.5">
                     <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
                       <span class="w-2 h-2 rounded-full bg-sky-500 shrink-0"></span>
-                      Lluvia y Clima
+                      Rainfall &amp; Climate
                     </span>
-                    <span class="block text-[10px] text-slate-500 leading-snug">Estaciones de lluvia y olas de calor</span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Observed weather stations &amp; heat waves</span>
                   </div>
                 </label>
 
-                <!-- Capa 2: Humedad y Calidad del Suelo -->
+                <!-- Layer 2: Soil Moisture & Quality -->
                 <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-violet-400 cursor-pointer transition select-none shadow-xs">
                   <input type="checkbox" id="chk-layer-sisinta" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500" />
                   <div class="space-y-0.5">
                     <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
                       <span class="w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
-                      Humedad del Suelo
+                      Soil Moisture
                     </span>
-                    <span class="block text-[10px] text-slate-500 leading-snug">Agua útil y perfiles INTA (SISINTA)</span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Available water &amp; INTA SISINTA profiles</span>
                   </div>
                 </label>
 
-                <!-- Capa 3: Riesgo de Inundación / Napa -->
+                <!-- Layer 3: Waterlogging & Water Table Risk -->
                 <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-rose-400 cursor-pointer transition select-none shadow-xs">
                   <input type="checkbox" id="chk-layer-susceptibility" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500" />
                   <div class="space-y-0.5">
                     <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
                       <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
-                      Riesgo de Anegamiento
+                      Waterlogging Risk
                     </span>
-                    <span class="block text-[10px] text-slate-500 leading-snug">Bajos, lagunas y ascenso de napa</span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">Lowlands, wet basins &amp; rising water table</span>
                   </div>
                 </label>
 
-                <!-- Capa 4: Relieve y Pendiente -->
+                <!-- Layer 4: Relief & Slope -->
                 <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none shadow-xs">
                   <input type="checkbox" id="chk-layer-slope" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
                   <div class="space-y-0.5">
                     <span class="block font-semibold text-slate-800 text-[12px] leading-tight flex items-center gap-1.5">
                       <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                      Relieve y Pendiente
+                      Relief &amp; Slope
                     </span>
-                    <span class="block text-[10px] text-slate-500 leading-snug">Elevación SRTM y riesgo de escurrimiento</span>
+                    <span class="block text-[10px] text-slate-500 leading-snug">SRTM elevation &amp; surface runoff risk</span>
                   </div>
                 </label>
               </div>
@@ -859,15 +859,13 @@
     const slopeLayer = L.layerGroup();
     const canvasRenderer = L.canvas({ padding: 0.3 });
 
-// Control flotante viejo removido para dejar exclusivamente el recuadro superior
-
-    // Sincronización intuitiva del recuadro superior de capas
+    // Top panel layers synchronization with Leaflet
     const chkStations = document.getElementById("chk-layer-stations");
     const chkSisinta = document.getElementById("chk-layer-sisinta");
     const chkSusceptibility = document.getElementById("chk-layer-susceptibility");
     const chkSlope = document.getElementById("chk-layer-slope");
 
-    function sincronizarCapasRecuadro() {
+    function syncTopLayersPanel() {
       if (chkStations) chkStations.checked = fieldMap.hasLayer(stationsLayer);
       if (chkSisinta) chkSisinta.checked = fieldMap.hasLayer(sisintaLayer);
       if (chkSusceptibility) chkSusceptibility.checked = fieldMap.hasLayer(susceptibilityLayer);
@@ -899,8 +897,8 @@
       });
     }
 
-    fieldMap.on("overlayadd", sincronizarCapasRecuadro);
-    fieldMap.on("overlayremove", sincronizarCapasRecuadro);
+    fieldMap.on("overlayadd", syncTopLayersPanel);
+    fieldMap.on("overlayremove", syncTopLayersPanel);
 
     fetch("/api/map/layers")
       .then((r) => (r.ok ? r.json() : null))
