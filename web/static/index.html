@@ -336,6 +336,14 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.innerText : "Calcular";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "⏳ Evaluando rotaciones...";
+      }
+
+      try {
       const humedad = document.querySelector('input[name="humedad_estado"]:checked').value;
       const sistema = document.getElementById("sistema_productivo").value;
       const payload = {
@@ -473,6 +481,15 @@
       resultados.classList.remove("hidden");
       if (window.innerWidth < 1024) {
         resultados.scrollIntoView({ behavior: "smooth" });
+      }
+      } catch (err) {
+        console.error("Error al evaluar:", err);
+        alert("Ocurrió un error al procesar la evaluación: " + (err.message || err));
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalBtnText;
+        }
       }
     });
 
