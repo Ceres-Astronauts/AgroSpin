@@ -10,20 +10,20 @@ Field Shift is an agricultural decision-support prototype for comparing crop-rot
 
 ## Climate and soil evidence
 
-The published datasets live in [`data/reference/mvp-homogeneo/`](data/reference/mvp-homogeneo/), with CSV/Parquet tables, a data dictionary, manifest, and checksums. Filenames and machine-readable field identifiers have not yet been translated because application consumers depend on the current schema.
+The published datasets live in [`data/reference/mvp-homogeneous/`](data/reference/mvp-homogeneous/), with English-schema CSV/Parquet tables, a column dictionary, manifest, and checksums.
 
 | Dataset | Decision-relevant information |
 |---|---|
-| `clima_mensual_grilla_1991_2026`, `clima_anual_grilla_1991_2026` | Historical regional rainfall, temperature, FAO-56 ETo, P−ETo, frost, heat-stress days, and growing degree days across 32 grid points |
-| `clima_diario_grilla_1991_2026`, `clima_zona_diario_1991_2026` | Daily climate series and a study-area aggregate |
-| `enso_oni_mensual` | NOAA ONI and ENSO phase |
-| `suelo_1ha_grilla`, `suelo_500m_grilla` | SRTM-derived elevation, slope, topographic susceptibility, and modeled mean soil moisture |
-| `suelo_gaez_cultivos_1981_2010` | FAO GAEZ v4 historical crop suitability and attainable-yield reference |
-| `suelo_sisinta_perfiles_caja` | INTA SISINTA profile horizons and available soil properties |
-| `humedad_suelo_mensual_grilla_1991_2026` | Modeled mean monthly soil moisture, **not validated for daily correlation** |
-| `estaciones_terrestres` | 19 ground weather station entries with locations and quality labels |
+| `climate_monthly_grid_1991_2026`, `climate_annual_grid_1991_2026` | Historical regional rainfall, temperature, FAO-56 ETo, P−ETo, frost, heat-stress days, and growing degree days across 32 grid points |
+| `climate_daily_grid_1991_2026`, `climate_zone_daily_1991_2026` | Daily climate series and a study-area aggregate |
+| `enso_oni_monthly` | NOAA ONI and ENSO phase |
+| `soil_1ha_grid`, `soil_500m_grid` | SRTM-derived elevation, slope, topographic susceptibility, and modeled mean soil moisture |
+| `soil_gaez_crops_1981_2010` | FAO GAEZ v4 historical crop suitability and attainable-yield reference |
+| `soil_sisinta_profiles_box` | INTA SISINTA profile horizons and available soil properties |
+| `soil_moisture_monthly_grid_1991_2026` | Modeled mean monthly soil moisture, **not validated for daily correlation** |
+| `ground_stations` | 19 ground weather station entries with locations and quality labels |
 
-The `origen` field differentiates ground observations (`OBSERVADO_*`), estimates (`ESTIMADO_*`), and references (`REFERENCIA_*`). These must not be conflated. Verify the dataset files using `sha256sum -c SHA256SUMS` from the dataset directory.
+The `origin` field differentiates ground observations (`OBSERVED_*`), estimates (`ESTIMATED_*`), and references (`REFERENCE_*`). These must not be conflated. Verify the dataset files using `sha256sum -c SHA256SUMS` from the dataset directory.
 
 ## Scientific and product limitations
 
@@ -31,13 +31,13 @@ The `origen` field differentiates ground observations (`OBSERVADO_*`), estimates
 - SRTM-derived terrain includes flagged anomalous slopes. The topographic susceptibility index is **not a validated flood map**.
 - The area includes 198 INTA SISINTA soil profiles (257 horizons), but only nine horizons have sufficiently complete texture and field-capacity information.
 - GAEZ v4 crop suitability/yield data describe a historical 1981–2010 regional reference; local codebook coverage is incomplete.
-- The soil-moisture balance model did **not** meet the daily correlation acceptance threshold (about 0.48–0.50 versus 0.60). Published monthly means carry the `NO_VALIDADA_CORRELACION` warning.
+- The soil-moisture balance model did **not** meet the daily correlation acceptance threshold (about 0.48–0.50 versus 0.60). Published monthly means carry the `UNVALIDATED_CORRELATION` warning.
 - Regional data, including POWER and GAEZ, cannot be presented as direct parcel measurements merely because they are resampled.
 - The repository contains an **interactive rotation-comparison simulator with scoring logic**, but the scores and rankings are **prototype outputs, not field-validated agronomic recommendations**.
 
 ## Public project documentation
 
-- [MVP data guide](data/reference/mvp-homogeneo/README.md), [manifest](data/reference/mvp-homogeneo/manifest.json), and [checksums](data/reference/mvp-homogeneo/SHA256SUMS)
+- [MVP data guide](data/reference/mvp-homogeneous/README.md), [manifest](data/reference/mvp-homogeneous/manifest.json), and [checksums](data/reference/mvp-homogeneous/SHA256SUMS)
 - [NASA and local data source specifications](data/sources/README.md)
 - [Data methodology](data/ARCHITECTURE.md) and [decision/evidence contracts](docs/contracts/README.md)
 - [Crop catalog](docs/challenge/crop-catalog.yml), [project overview](docs/project-overview.md), and [NASA presentation](presentation/README.md)

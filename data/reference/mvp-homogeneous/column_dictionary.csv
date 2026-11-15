@@ -1,0 +1,34 @@
+table,column,unit,description,source
+climate_daily_grid_1991_2026,point_id,text,POWER grid point identifier (lat_lon),POWER
+climate_daily_grid_1991_2026,lat/lon,degrees EPSG:4326,"Center of 0.25-degree POWER grid cell",POWER
+climate_daily_grid_1991_2026,elevation_m,m,SRTM elevation of the nearest 1 ha cell,SRTM
+climate_daily_grid_1991_2026,tmean_c/tmax_c/tmin_c,C,"Mean, maximum, and minimum air temperature at 2 m",POWER T2M
+climate_daily_grid_1991_2026,precip_mm,mm/day,Bias-corrected precipitation,POWER PRECTOTCORR
+climate_daily_grid_1991_2026,rel_humidity_pct,%,Relative humidity at 2 m,POWER RH2M
+climate_daily_grid_1991_2026,wind_10m_ms,m/s,Wind speed at 10 m,POWER WS10M
+climate_daily_grid_1991_2026,pressure_kpa,kPa,Surface pressure,POWER PS
+climate_daily_grid_1991_2026,solar_rad_mj_m2,MJ/m2/day,Incoming solar radiation,POWER ALLSKY_SFC_SW_DWN
+climate_daily_grid_1991_2026,eto_mm,mm/day,FAO-56 Penman-Monteith reference evapotranspiration,calculated
+climate_daily_grid_1991_2026,p_eto_balance_mm,mm/day,precip_mm - eto_mm,calculated
+climate_daily_grid_1991_2026,gdd_base10,degree-days,"max(0,(tmax+tmin)/2-10)",calculated
+climate_daily_grid_1991_2026,agro_frost,0/1,tmin < 3 C (agrometeorological frost),calculated
+climate_daily_grid_1991_2026,frost,0/1,tmin <= 0 C,calculated
+climate_daily_grid_1991_2026,heat_stress,0/1,tmax > 35 C,calculated
+climate_daily_grid_1991_2026,heavy_rain_20mm,0/1,precip >= 20 mm/day,calculated
+climate_monthly_grid_1991_2026,oni_anomaly_c/enso_phase,C / EL_NINO-LA_NINA-NEUTRAL,"ONI index for the 3-month rolling season centered on the month (+-0.5 threshold)",NOAA ONI
+climate_annual_grid_1991_2026,first_autumn_frost/last_spring_frost,date,First day Jan-Jun with tmin<3; last day Jul-Dec with tmin<3,calculated
+climate_annual_grid_1991_2026,frost_free_days_season,days,Days from last spring frost (year) to first autumn frost (year+1),calculated
+climate_zone_daily_1991_2026,tmean_weighted/tmax_weighted/tmin_weighted,C,Single bounding-box series weighted by station proximity and variance,closed climate aggregate
+soil_1ha_grid,elevation_m/slope_pct/max_slope_pct,m / %,SRTMGL1 relief aggregated to 1 ha,SRTM
+soil_1ha_grid,atypical_slope,bool,"slope > 100% (likely artifact), 85 cells",approved rule
+soil_1ha_grid,topographic_susceptibility,0-1,TWI+depressions index; NOT a flood map,"calculated, UNVALIDATED"
+soil_1ha_grid,mean_moisture_level_m3_m3,m3/m3,Mean moisture level from the water-balance model,UNVALIDATED_CORRELATION
+soil_500m_grid,*,-,Aggregation of soil_1ha_grid to ~500 m for map display (Looker/Leaflet),derived
+soil_gaez_crops_1981_2010,cropland_suitability_class,GAEZ class,GAEZ v4 suitability class code (no codebook published in folder),FAO GAEZ v4
+soil_gaez_crops_1981_2010,cropland_attainable_yield,kg/ha (per GAEZ v4 docs),"Attainable yield 1981-2010, rainfed, high input level",FAO GAEZ v4
+soil_sisinta_profiles_box,clay_pct/silt_2_50_pct/total_sand_pct,%,Texture by soil horizon (upper_depth_cm to lower_depth_cm),INTA SISINTA
+soil_sisinta_profiles_box,field_capacity_water_pct/pwp_water_pct/calc_available_water_pct,gravimetric %,"Field capacity, permanent wilting point, and calculated difference",INTA SISINTA
+soil_sisinta_profiles_box,completeness_status,COMPLETE/INCOMPLETE_DATA,"Missing clay_pct, silt_2_50_pct, or total_sand_pct",approved rule
+soil_moisture_monthly_grid_1991_2026,mean_moisture_m3_m3,m3/m3,Monthly mean from water-balance model (root zone),UNVALIDATED_CORRELATION
+ground_stations,validation_status,text,Validation verdict for each ground station,decisions
+all,origin,label,OBSERVED_* measured; ESTIMATED_* model/reanalysis; *OUT_OF_BOX_REFERENCE out-of-box or third-party,contract
