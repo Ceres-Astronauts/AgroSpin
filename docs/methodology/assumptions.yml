@@ -1,6 +1,6 @@
 assumptions:
   - id: A-001
-    statement: The first useful Field Shift product should compare rotation strategies rather than only visualize environmental data.
+    statement: The first useful AgroSpin product should compare rotation strategies rather than only visualize environmental data.
     status: active
     basis: challenge_interpretation
     review_trigger: official_requirement_change
@@ -36,7 +36,7 @@ assumptions:
     review_trigger: team_decision
 
   - id: A-007
-    statement: The reusable framework is infrastructure for Field Shift and must not displace the agricultural challenge as the primary public narrative.
+    statement: The reusable framework is infrastructure for AgroSpin and must not displace the agricultural challenge as the primary public narrative.
     status: active
     basis: challenge_first_design
     review_trigger: product_strategy_change
