@@ -1,4 +1,8 @@
-# Field Shift — NASA Space Apps Challenge 2026 MVP
+<p align="center">
+  <img src="logo2.png" alt="AgroSpin" width="320">
+</p>
+
+# AgroSpin (Field Shift) — NASA Space Apps Challenge 2026 MVP
 
 Field Shift is an agricultural decision-support prototype for comparing crop-rotation alternatives under water stress and climate variability. It is **not just a satellite data viewer**.
 
