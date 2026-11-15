@@ -109,19 +109,40 @@
               </label>
             </div>
 
-            <div id="box-sonda" class="hidden mt-2.5 grid grid-cols-3 gap-2 bg-stone-50 p-3 rounded-xl border border-stone-200">
-              <div>
-                <label class="block text-xs text-stone-600 mb-1">10 cm (m³/m³)</label>
-                <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_10cm" value="0.17" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm" />
+            <div id="box-sonda" class="hidden mt-2.5 space-y-3 bg-stone-50 p-3 rounded-xl border border-stone-200">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-semibold text-stone-700 mb-1">Largo de sonda (cm)</label>
+                  <input type="number" step="5" min="5" max="200" id="sonda_largo_cm" value="30" placeholder="Ej: 30" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm bg-white font-medium" />
+                  <span class="text-[10px] text-stone-500">Profundidad del sensor</span>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-stone-700 mb-1">Medición (m³/m³)</label>
+                  <input type="number" step="0.01" min="0.03" max="0.55" id="sonda_medicion" value="0.20" placeholder="Ej: 0.20" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm bg-white font-medium" />
+                  <span class="text-[10px] text-stone-500">Humedad en estrato</span>
+                </div>
               </div>
-              <div>
-                <label class="block text-xs text-stone-600 mb-1">30 cm (m³/m³)</label>
-                <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_30cm" value="0.21" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm" />
-              </div>
-              <div>
-                <label class="block text-xs text-stone-600 mb-1">60 cm (m³/m³)</label>
-                <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_60cm" value="0.23" class="w-full rounded-lg border border-stone-300 px-2.5 py-1.5 text-sm" />
-              </div>
+
+              <!-- Opción avanzada / multiprofundidad -->
+              <details class="text-xs text-stone-600">
+                <summary class="cursor-pointer text-stone-500 hover:text-stone-700 font-medium select-none">
+                  O ingresar perfil continuo (10, 30 y 60 cm)
+                </summary>
+                <div class="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-stone-200">
+                  <div>
+                    <label class="block text-[11px] text-stone-500 mb-0.5">10 cm</label>
+                    <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_10cm" value="0.17" class="w-full rounded-lg border border-stone-300 px-2 py-1 text-xs bg-white" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-stone-500 mb-0.5">30 cm</label>
+                    <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_30cm" value="0.21" class="w-full rounded-lg border border-stone-300 px-2 py-1 text-xs bg-white" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-stone-500 mb-0.5">60 cm</label>
+                    <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_60cm" value="0.23" class="w-full rounded-lg border border-stone-300 px-2 py-1 text-xs bg-white" />
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -198,12 +219,15 @@
         </div>
 
         <div id="resultados" class="hidden space-y-4">
-          <div class="bg-white rounded-2xl p-1.5 border border-stone-200 shadow-sm grid grid-cols-2 gap-1.5">
-            <button type="button" id="tab-campo" class="py-2.5 px-3 rounded-xl text-sm font-bold bg-emerald-700 text-white transition">
-              🌾 Vista Campo (Productor)
+          <div class="bg-white rounded-2xl p-1.5 border border-stone-200 shadow-sm grid grid-cols-3 gap-1.5">
+            <button type="button" id="tab-campo" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white transition text-center">
+              🌾 Vista Campo
             </button>
-            <button type="button" id="tab-tecnica" class="py-2.5 px-3 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-100 transition">
-              🔬 Vista Técnica (Agronómica)
+            <button type="button" id="tab-tecnica" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:bg-stone-100 transition text-center">
+              🔬 Vista Técnica
+            </button>
+            <button type="button" id="tab-fuentes" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:bg-stone-100 transition text-center">
+              📚 Fuentes de Respaldo
             </button>
           </div>
 
@@ -226,6 +250,17 @@
             <div id="problematicas-tecnicas" class="space-y-3"></div>
             <div id="tarjetas-tecnicas" class="space-y-3"></div>
           </div>
+
+          <!-- Pestaña 3: Menú Dedicado de Fuentes de Respaldo -->
+          <div id="panel-fuentes" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm">
+              <h3 class="font-bold text-base text-stone-900 mb-1">📚 Fuentes Bibliográficas y Validación Científica</h3>
+              <p class="text-xs text-stone-600 mb-4">
+                Compendio de instituciones técnicas, ensayos a campo y referencias agronómicas que respaldan los criterios de la matriz de rotación para Villa Mercedes y San Luis.
+              </p>
+              <div id="lista-fuentes-dedicadas" class="space-y-3"></div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -239,24 +274,27 @@
 
     const tabCampo = document.getElementById("tab-campo");
     const tabTecnica = document.getElementById("tab-tecnica");
+    const tabFuentes = document.getElementById("tab-fuentes");
     const panelCampo = document.getElementById("panel-campo");
     const panelTecnica = document.getElementById("panel-tecnica");
+    const panelFuentes = document.getElementById("panel-fuentes");
 
     function activarTab(modo) {
-      const esCampo = modo === "campo";
-      panelCampo.classList.toggle("hidden", !esCampo);
-      panelTecnica.classList.toggle("hidden", esCampo);
+      panelCampo.classList.toggle("hidden", modo !== "campo");
+      panelTecnica.classList.toggle("hidden", modo !== "tecnica");
+      panelFuentes.classList.toggle("hidden", modo !== "fuentes");
 
-      tabCampo.className = esCampo
-        ? "py-2.5 px-3 rounded-xl text-sm font-bold bg-emerald-700 text-white transition"
-        : "py-2.5 px-3 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-100 transition";
-      tabTecnica.className = !esCampo
-        ? "py-2.5 px-3 rounded-xl text-sm font-bold bg-emerald-700 text-white transition"
-        : "py-2.5 px-3 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-100 transition";
+      const activoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white transition text-center";
+      const inactivoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:bg-stone-100 transition text-center";
+
+      tabCampo.className = modo === "campo" ? activoCls : inactivoCls;
+      tabTecnica.className = modo === "tecnica" ? activoCls : inactivoCls;
+      tabFuentes.className = modo === "fuentes" ? activoCls : inactivoCls;
     }
 
     tabCampo.addEventListener("click", () => activarTab("campo"));
     tabTecnica.addEventListener("click", () => activarTab("tecnica"));
+    tabFuentes.addEventListener("click", () => activarTab("fuentes"));
 
     document.querySelectorAll('input[name="humedad_estado"]').forEach((el) => {
       el.addEventListener("change", (e) => {
@@ -298,6 +336,14 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.innerText : "Calcular";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "⏳ Evaluando rotaciones...";
+      }
+
+      try {
       const humedad = document.querySelector('input[name="humedad_estado"]:checked').value;
       const sistema = document.getElementById("sistema_productivo").value;
       const payload = {
@@ -306,6 +352,8 @@
         napa_pendiente: document.querySelector('input[name="napa_pendiente"]:checked').value,
         regimen_agua: document.querySelector('input[name="regimen_agua"]:checked').value,
         humedad_estado: humedad,
+        sonda_largo_cm: (humedad === "sonda" && document.getElementById("sonda_largo_cm").value) ? parseFloat(document.getElementById("sonda_largo_cm").value) : null,
+        sonda_medicion: (humedad === "sonda" && document.getElementById("sonda_medicion").value) ? parseFloat(document.getElementById("sonda_medicion").value) : null,
         sonda_10cm: humedad === "sonda" ? parseFloat(document.getElementById("sonda_10cm").value) : null,
         sonda_30cm: humedad === "sonda" ? parseFloat(document.getElementById("sonda_30cm").value) : null,
         sonda_60cm: humedad === "sonda" ? parseFloat(document.getElementById("sonda_60cm").value) : null,
@@ -395,30 +443,53 @@
           const dimsHtml = Object.values(t.dimensiones || {})
             .map((d) => `<div class="bg-stone-50 px-2.5 py-1.5 rounded-lg border border-stone-200 text-xs"><strong>${d.nombre}:</strong> ${d.promedio_1_5}/5 (${d.score_100}%)</div>`)
             .join("");
-          const fuentesHtml = (t.fuentes || [])
-            .map((f) => `<li><a href="${f.url}" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline font-medium">${f.institucion}: ${f.titulo}</a> — ${f.aporte}</li>`)
-            .join("");
           return `
             <article class="bg-white rounded-2xl border border-stone-200 border-l-4 ${est.borde} p-4 shadow-sm space-y-3">
               <div class="flex items-center justify-between gap-2">
                 <h3 class="font-bold text-base text-stone-900">${t.nombre}</h3>
                 <span class="text-xs font-bold px-2.5 py-1 rounded-full ${est.badge}">Score final: ${t.score}/100</span>
               </div>
-              <p class="text-xs text-stone-500">Base 5 dimensiones: <strong>${t.score_base}</strong> | Ajuste por lote/clima/horizonte: <strong>${t.ajuste_contextual >= 0 ? "+" : ""}${t.ajuste_contextual}</strong></p>
+              <p class="text-xs text-stone-500">Base 5 dimensiones: <strong>${t.score_base}</strong> | Ajuste contextual: <strong>${t.ajuste_contextual >= 0 ? "+" : ""}${t.ajuste_contextual}</strong></p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">${dimsHtml}</div>
-              <div class="text-xs text-stone-600 space-y-1">
-                <p class="font-semibold text-stone-700">Fuentes bibliográficas de respaldo:</p>
-                <ul class="list-disc list-inside space-y-0.5">${fuentesHtml}</ul>
-              </div>
             </article>
           `;
         })
         .join("");
 
+      // Renderizar el menú aparte dedicado de fuentes de respaldo
+      const fuentes = data.fuentes_respaldo || [];
+      document.getElementById("lista-fuentes-dedicadas").innerHTML = fuentes.length > 0
+        ? fuentes
+            .map((f) => `
+              <div class="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">${f.institucion}</span>
+                  <span class="text-[11px] text-stone-500 font-medium">${f.rotacion || ""}</span>
+                </div>
+                <h4 class="font-bold text-sm text-stone-900 mt-1">
+                  <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-700 underline">
+                    ${f.titulo}
+                  </a>
+                </h4>
+                <p class="text-xs text-stone-600 leading-relaxed">${f.aporte}</p>
+              </div>
+            `)
+            .join("")
+        : '<p class="text-xs text-stone-500">No hay fuentes registradas para esta consulta.</p>';
+
       placeholder.classList.add("hidden");
       resultados.classList.remove("hidden");
       if (window.innerWidth < 1024) {
         resultados.scrollIntoView({ behavior: "smooth" });
+      }
+      } catch (err) {
+        console.error("Error al evaluar:", err);
+        alert("Ocurrió un error al procesar la evaluación: " + (err.message || err));
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalBtnText;
+        }
       }
     });
 

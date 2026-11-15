@@ -35,6 +35,8 @@ class EvaluacionRequest(BaseModel):
     napa_pendiente: Literal["sin_napa", "napa_cercana", "pendiente_anegamiento"] = "sin_napa"
     regimen_agua: Literal["secano", "riego"] = "secano"
     humedad_estado: Literal["seco", "normal", "humedo", "sonda"] = "normal"
+    sonda_largo_cm: Optional[float] = Field(default=None, ge=5.0, le=200.0, description="Largo o profundidad de inserción de la sonda en cm")
+    sonda_medicion: Optional[float] = Field(default=None, ge=0.03, le=0.55, description="Medición de humedad a esa profundidad en m³/m³")
     sonda_10cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
     sonda_30cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
     sonda_60cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
@@ -107,6 +109,25 @@ def _puntos_a_evaluar_en_lote(diag: Dict[str, Any], req: EvaluacionRequest) -> L
     return puntos
 
 
+def _recopilar_fuentes_respaldo(rotaciones: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Consolida y desduplica todas las fuentes bibliográficas de respaldo para el menú dedicado."""
+    fuentes_vistas = set()
+    consolidadas = []
+    for rot in rotaciones:
+        for f in rot.get("fuentes", []):
+            clave = (f.get("institucion", ""), f.get("titulo", ""))
+            if clave not in fuentes_vistas:
+                fuentes_vistas.add(clave)
+                consolidadas.append({
+                    "rotacion": rot["nombre"],
+                    "institucion": f.get("institucion", "Desconocida"),
+                    "titulo": f.get("titulo", "Sin título"),
+                    "url": f.get("url", "#"),
+                    "aporte": f.get("aporte", ""),
+                })
+    return consolidadas
+
+
 def _analisis_tecnico_detallado(diag: Dict[str, Any], req: EvaluacionRequest) -> List[Dict[str, str]]:
     hum = diag["estado_hidrico"]
     suelo = diag["evaluacion_suelo"]
@@ -169,12 +190,20 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
     elif req.estado_lote == "pastura":
         datos_lote["ndvi_sentinel2"] = [0.45] * 12
 
+    profundidad_sonda_cm = None
+    medicion_sonda_directa = None
+
     if req.humedad_estado == "sonda":
-        lecturas_sonda = {
-            "10cm": req.sonda_10cm if req.sonda_10cm is not None else 0.17,
-            "30cm": req.sonda_30cm if req.sonda_30cm is not None else 0.21,
-            "60cm": req.sonda_60cm if req.sonda_60cm is not None else 0.23,
-        }
+        if req.sonda_largo_cm is not None and req.sonda_medicion is not None:
+            profundidad_sonda_cm = req.sonda_largo_cm
+            medicion_sonda_directa = req.sonda_medicion
+            lecturas_sonda = None
+        else:
+            lecturas_sonda = {
+                "10cm": req.sonda_10cm if req.sonda_10cm is not None else 0.17,
+                "30cm": req.sonda_30cm if req.sonda_30cm is not None else 0.21,
+                "60cm": req.sonda_60cm if req.sonda_60cm is not None else 0.23,
+            }
     else:
         lecturas_sonda = _HUMEDAD_PRESETS[req.humedad_estado]
 
@@ -190,6 +219,8 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         estado_lote=req.estado_lote,
         horizonte=req.horizonte,
         sistema_productivo=req.sistema_productivo,
+        profundidad_sonda_cm=profundidad_sonda_cm,
+        medicion_sonda_directa=medicion_sonda_directa,
     )
 
     diag = sim["diagnostico_lote"]
@@ -225,6 +256,7 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         "tarjetas": tarjetas,
         "puntos_evaluar": _puntos_a_evaluar_en_lote(diag, req),
         "analisis_tecnico": _analisis_tecnico_detallado(diag, req),
+        "fuentes_respaldo": _recopilar_fuentes_respaldo(sim["comparativa_rotaciones"]),
         "pesos_aplicados": diag["pesos_aplicados"],
         "detalle_tecnico": {
             "lluvia_anual_proyectada_mm": diag["lluvia_anual_proyectada_mm"],
