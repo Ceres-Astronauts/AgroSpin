@@ -14,7 +14,7 @@ REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.decision.mapa_datos import consultar_terreno  # noqa: E402
+from src.decision.mapa_datos import consultar_terreno, obtener_capas_mapa  # noqa: E402
 from src.decision.motor_rotacion import cargar_rubrica, simular_escenarios  # noqa: E402
 
 LOTES_DEFAULT = REPOSITORY_ROOT / "data" / "lotes_piloto.json"
@@ -188,6 +188,14 @@ def listar_lotes() -> Dict[str, Any]:
     return {"lotes": resumen}
 
 
+@app.get("/api/mapa/capas")
+def capas_mapa() -> Dict[str, Any]:
+    try:
+        return obtener_capas_mapa()
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
 @app.post("/api/mapa/consultar")
 def consultar_mapa(req: MapaConsultaRequest) -> Dict[str, Any]:
     try:
@@ -297,6 +305,7 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         "dimensiones_faltantes": diag.get("dimensiones_faltantes", []),
         "profundidad_efectiva_cm": diag.get("profundidad_efectiva_cm"),
         "tolerancia_perdidas": diag.get("tolerancia_perdidas"),
+        "contexto_mvp": diag.get("contexto_mvp"),
         "detalle_tecnico": {
             "lluvia_anual_proyectada_mm": diag["lluvia_anual_proyectada_mm"],
             "humedad_efectiva_m3_m3": diag["estado_hidrico"]["humedad_efectiva"],

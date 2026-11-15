@@ -12,6 +12,7 @@ import pandas as pd
 
 REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parents[2]
 CURATED_DIR = REPOSITORY_ROOT / "data" / "curated"
+MVP_HOMOGENEO_DIR = REPOSITORY_ROOT / "data" / "reference" / "mvp-homogeneo"
 
 BBOX_MVP = {
     "lat_min": -33.875,
@@ -150,6 +151,68 @@ def _cargar_datasets() -> Dict[str, Any]:
     _CACHE["smap"] = df_smap
     _CACHE["lluvia"] = climatologia_lluvia
     _CACHE["temp"] = climatologia_temp
+
+    # 5. Datos homogéneos MVP integrados (suelo 1ha/500m, estaciones 19, SISINTA, GAEZ, clima anual/ENSO)
+    mvp: Dict[str, Any] = {}
+    if MVP_HOMOGENEO_DIR.is_dir():
+        est_path = MVP_HOMOGENEO_DIR / "estaciones_terrestres.csv"
+        if est_path.is_file():
+            mvp["estaciones"] = pd.read_csv(est_path)
+
+        sis_path = MVP_HOMOGENEO_DIR / "suelo_sisinta_perfiles_caja.csv"
+        if sis_path.is_file():
+            df_sis = pd.read_csv(sis_path)
+            # Representante superficial (menor prof_sup_cm) por ubicación única (lat, lon)
+            df_sis = df_sis.sort_values(["lat", "lon", "prof_sup_cm"], na_position="last")
+            mvp["sisinta"] = df_sis.groupby(["lat", "lon"], as_index=False).first()
+
+        gaez_path = MVP_HOMOGENEO_DIR / "suelo_gaez_cultivos_1981_2010.csv"
+        if gaez_path.is_file():
+            mvp["gaez"] = pd.read_csv(gaez_path)
+
+        clima_a_path = MVP_HOMOGENEO_DIR / "clima_anual_grilla_1991_2026.csv"
+        if clima_a_path.is_file():
+            df_ca = pd.read_csv(clima_a_path)
+            df_ca_hist = df_ca[df_ca["anio"] <= 2025].copy()
+            # Calcular resumen histórico por punto_id
+            for col_fecha, out_col in (
+                ("primera_helada_otono", "primera_doy"),
+                ("ultima_helada_primavera", "ultima_doy"),
+            ):
+                dt = pd.to_datetime(df_ca_hist[col_fecha], errors="coerce")
+                df_ca_hist[out_col] = dt.dt.day_of_year
+            mvp["clima_anual_resumen"] = (
+                df_ca_hist.groupby(["punto_id", "lat", "lon"], as_index=False)
+                .agg(
+                    precip_anual_media_mm=("precip_total_mm", "mean"),
+                    eto_anual_media_mm=("eto_total_mm", "mean"),
+                    balance_p_eto_medio_mm=("balance_p_eto_mm", "mean"),
+                    dias_estres_termico_medio=("dias_estres_termico", "mean"),
+                    dias_libres_heladas_medio=("dias_libres_heladas_campana", "mean"),
+                    primera_helada_doy=("primera_doy", "mean"),
+                    ultima_helada_doy=("ultima_doy", "mean"),
+                )
+            )
+
+        enso_path = MVP_HOMOGENEO_DIR / "enso_oni_mensual.csv"
+        if enso_path.is_file():
+            df_enso = pd.read_csv(enso_path).dropna(subset=["oni_anomalia_c"])
+            if not df_enso.empty:
+                ult = df_enso.sort_values("anio_mes").iloc[-1]
+                mvp["enso_ultimo"] = {
+                    "anio_mes": str(ult["anio_mes"]),
+                    "oni_anomalia_c": round(float(ult["oni_anomalia_c"]), 2),
+                    "fase_enso": str(ult["fase_enso"]),
+                }
+
+        s500_path = MVP_HOMOGENEO_DIR / "suelo_500m_grilla.csv"
+        if s500_path.is_file():
+            mvp["suelo_500m"] = pd.read_csv(
+                s500_path,
+                usecols=["lat", "lon", "pendiente_media_pct", "susceptibilidad_topografica_media", "etiqueta_susceptibilidad"],
+            )
+
+    _CACHE["mvp"] = mvp
     return _CACHE
 
 
@@ -295,6 +358,8 @@ def consultar_terreno(
     else:
         humedad_estado = "normal"
 
+    contexto_mvp = _consultar_contexto_mvp(centro_lat, centro_lon, datos.get("mvp", {}))
+
     datos_lote = {
         "id": f"lote_{round(centro_lat, 4)}_{round(centro_lon, 4)}",
         "nombre": f"Lote ({centro_lat:.4f}, {centro_lon:.4f}) · {superficie_ha} ha",
@@ -307,30 +372,38 @@ def consultar_terreno(
         "ndvi_sentinel2": [0.35, 0.38, 0.32, 0.22, 0.18, 0.17, 0.19, 0.21, 0.28, 0.36, 0.42, 0.40],
         "origen_lluvia": "OBSERVADO_PIHC",
         "origen_temperatura": "OBSERVADO_SMN",
+        "contexto_mvp": contexto_mvp,
     }
+
+    terreno_out: Dict[str, Any] = {
+        "superficie_ha": superficie_ha,
+        "elevacion_m": round(elevacion_m, 1),
+        "pendiente_pct": round(pendiente_pct, 2),
+        "pendiente_max_pct": round(pendiente_max_pct, 2),
+        "lluvia_anual_mm": round(sum(lluvia_12m), 1),
+        "sm_surface_media": sm_surface_media,
+        "sm_rootzone_media": sm_rootzone_media,
+        "tmin_transicion_c": tmin_critica,
+    }
+    if contexto_mvp.get("susceptibilidad_topografica") is not None:
+        terreno_out["susceptibilidad_topografica"] = contexto_mvp["susceptibilidad_topografica"]
+        terreno_out["etiqueta_susceptibilidad"] = contexto_mvp.get("etiqueta_susceptibilidad", "NO_VALIDADA")
 
     return {
         "coordenadas": {"lat": round(centro_lat, 5), "lon": round(centro_lon, 5)},
-        "terreno": {
-            "superficie_ha": superficie_ha,
-            "elevacion_m": round(elevacion_m, 1),
-            "pendiente_pct": round(pendiente_pct, 2),
-            "pendiente_max_pct": round(pendiente_max_pct, 2),
-            "lluvia_anual_mm": round(sum(lluvia_12m), 1),
-            "sm_surface_media": sm_surface_media,
-            "sm_rootzone_media": sm_rootzone_media,
-            "tmin_transicion_c": tmin_critica,
-        },
+        "terreno": terreno_out,
         "autodetectado": {
             "napa_pendiente": napa_pendiente,
             "humedad_estado": humedad_estado,
         },
+        "contexto_mvp": contexto_mvp,
         "datos_lote": datos_lote,
         "provenance": {
             "relieve": "SRTM 1 ha (srtm_1ha_corredor.parquet)",
             "lluvia": "Estaciones PIHC 30109/30492 (lluvia_agregada_cordoba.csv)",
             "temperatura": "Estaciones SMN 87448/87453 (capa-smn-gsod.csv)",
             "humedad": "Humedad regional SMAP 9 km / POWER (smap_9km_corredor.parquet)",
+            "mvp_homogeneo": "Clima/ETo POWER, GAEZ v4, INTA SISINTA y Red 19 estaciones",
             "estaciones_lluvia": est_lluvia,
             "estaciones_temperatura": est_temp,
         },
@@ -339,4 +412,160 @@ def consultar_terreno(
             "Relieve a escala de 1 ha; humedad de suelo y clima son referencias regionales/estacionales. "
             "Pozos, cárcavas puntuales y textura real requieren revisión en campo."
         ),
+    }
+
+
+def _opt_float(val: Any, ndigits: int = 2) -> Optional[float]:
+    if val is None or (isinstance(val, float) and math.isnan(val)):
+        return None
+    try:
+        f = float(val)
+        return None if math.isnan(f) else round(f, ndigits)
+    except (TypeError, ValueError):
+        return None
+
+
+def _doy_a_fecha_corta(doy: Optional[float]) -> Optional[str]:
+    if doy is None or math.isnan(doy):
+        return None
+    import datetime as _dt
+    dia = max(1, min(365, int(round(doy))))
+    fecha = _dt.date(2025, 1, 1) + _dt.timedelta(days=dia - 1)
+    return fecha.strftime("%d/%m")
+
+
+def _consultar_contexto_mvp(lat: float, lon: float, mvp: Dict[str, Any]) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    if not mvp:
+        return out
+
+    # 1. Susceptibilidad topográfica (NO_VALIDADA) desde suelo_500m
+    df_500 = mvp.get("suelo_500m")
+    if df_500 is not None and not df_500.empty:
+        d2 = (df_500["lat"] - lat) ** 2 + (df_500["lon"] - lon) ** 2
+        row = df_500.iloc[int(d2.idxmin())]
+        out["susceptibilidad_topografica"] = _opt_float(row["susceptibilidad_topografica_media"], 3)
+        out["etiqueta_susceptibilidad"] = str(row.get("etiqueta_susceptibilidad", "NO_VALIDADA"))
+
+    # 2. Clima anual histórico POWER + ETo FAO-56 + Ventana real de heladas + ENSO
+    df_ca = mvp.get("clima_anual_resumen")
+    if df_ca is not None and not df_ca.empty:
+        d2 = (df_ca["lat"] - lat) ** 2 + (df_ca["lon"] - lon) ** 2
+        row = df_ca.iloc[int(d2.idxmin())]
+        clima_hist: Dict[str, Any] = {
+            "punto_id": str(row["punto_id"]),
+            "origen": "ESTIMADO_POWER",
+            "precip_anual_media_mm": _opt_float(row["precip_anual_media_mm"], 1),
+            "eto_anual_media_mm": _opt_float(row["eto_anual_media_mm"], 1),
+            "balance_p_eto_medio_mm": _opt_float(row["balance_p_eto_medio_mm"], 1),
+            "dias_estres_termico_medio": _opt_float(row["dias_estres_termico_medio"], 1),
+            "dias_libres_heladas_medio": _opt_float(row["dias_libres_heladas_medio"], 0),
+            "primera_helada_otono_media": _doy_a_fecha_corta(row["primera_helada_doy"]),
+            "ultima_helada_primavera_media": _doy_a_fecha_corta(row["ultima_helada_doy"]),
+        }
+        if "enso_ultimo" in mvp:
+            clima_hist["enso_ultimo"] = mvp["enso_ultimo"]
+        out["clima_historica_celda"] = clima_hist
+
+    # 3. Perfil INTA SISINTA más cercano (solo referencia visual)
+    df_sis = mvp.get("sisinta")
+    if df_sis is not None and not df_sis.empty:
+        d2 = (df_sis["lat"] - lat) ** 2 + (df_sis["lon"] - lon) ** 2
+        row = df_sis.iloc[int(d2.idxmin())]
+        dist_km = _haversine_km(lat, lon, float(row["lat"]), float(row["lon"]))
+        out["sisinta_cercano"] = {
+            "no_registro": _opt_float(row.get("no_registro"), 0),
+            "distancia_km": round(dist_km, 2),
+            "prof_sup_cm": _opt_float(row.get("prof_sup_cm"), 0),
+            "prof_inf_cm": _opt_float(row.get("prof_inf_cm"), 0),
+            "arcilla_pct": _opt_float(row.get("arcilla_pct"), 1),
+            "limo_pct": _opt_float(row.get("limo_2_50_pct"), 1),
+            "arena_pct": _opt_float(row.get("arena_total_pct"), 1),
+            "ph_agua": _opt_float(row.get("ph_agua"), 2),
+            "carbono_organico_pct": _opt_float(row.get("carbono_organico_pct"), 2),
+            "agua_util_calc_pct": _opt_float(row.get("agua_util_calc_pct"), 1),
+            "estado_completitud": str(row.get("estado_completitud", "SIN_DATO_COMPLETO")),
+            "origen": str(row.get("origen", "OBSERVADO_SISINTA")),
+        }
+
+    # 4. Aptitud y rinde alcanzable FAO GAEZ v4 (1981-2010, sin codebook)
+    df_gaez = mvp.get("gaez")
+    if df_gaez is not None and not df_gaez.empty:
+        coords_g = df_gaez[["lat", "lon"]].drop_duplicates()
+        d2 = (coords_g["lat"] - lat) ** 2 + (coords_g["lon"] - lon) ** 2
+        pt = coords_g.loc[int(d2.idxmin())]
+        sub = df_gaez[(df_gaez["lat"] == pt["lat"]) & (df_gaez["lon"] == pt["lon"])]
+        cultivos_orden = ["trigo", "soja", "maiz", "sorgo", "girasol", "alfalfa"]
+        gaez_list = []
+        for cult in cultivos_orden:
+            sc = sub[sub["cultivo"] == cult]
+            if sc.empty:
+                continue
+            apt = sc[sc["capa"] == "clase_aptitud_tierra_cultivada"]["valor"]
+            rinde = sc[sc["capa"] == "rendimiento_alcanzable_tierra_cultivada"]["valor"]
+            gaez_list.append({
+                "cultivo": cult.capitalize(),
+                "clase_aptitud": _opt_float(apt.iloc[0], 0) if not apt.empty else None,
+                "rendimiento_alcanzable_kg_ha": _opt_float(rinde.iloc[0], 0) if not rinde.empty else None,
+            })
+        out["gaez_cultivos"] = gaez_list
+        out["gaez_origen"] = "REGIONAL_GAEZ_V4_SIN_CODEBOOK"
+
+    return out
+
+
+def obtener_capas_mapa() -> Dict[str, Any]:
+    """Devuelve capas interactivas del MVP homogéneo para el visor Leaflet."""
+    datos = _cargar_datasets()
+    mvp = datos.get("mvp", {})
+
+    estaciones: List[Dict[str, Any]] = []
+    df_est = mvp.get("estaciones")
+    if df_est is not None and not df_est.empty:
+        for _, r in df_est.iterrows():
+            estaciones.append({
+                "estacion_id": str(r["estacion_id"]),
+                "nombre": str(r["nombre"]),
+                "lat": round(float(r["lat"]), 5),
+                "lon": round(float(r["lon"]), 5),
+                "red": str(r["red"]),
+                "variables": str(r["variables"]),
+                "estado_validacion": str(r["estado_validacion"]),
+                "caja_mvp": str(r["caja_mvp"]),
+            })
+
+    sisinta: List[Dict[str, Any]] = []
+    df_sis = mvp.get("sisinta")
+    if df_sis is not None and not df_sis.empty:
+        for _, r in df_sis.iterrows():
+            sisinta.append({
+                "no_registro": _opt_float(r.get("no_registro"), 0),
+                "lat": round(float(r["lat"]), 5),
+                "lon": round(float(r["lon"]), 5),
+                "prof_sup_cm": _opt_float(r.get("prof_sup_cm"), 0),
+                "prof_inf_cm": _opt_float(r.get("prof_inf_cm"), 0),
+                "arcilla_pct": _opt_float(r.get("arcilla_pct"), 1),
+                "limo_pct": _opt_float(r.get("limo_2_50_pct"), 1),
+                "arena_pct": _opt_float(r.get("arena_total_pct"), 1),
+                "ph_agua": _opt_float(r.get("ph_agua"), 2),
+                "carbono_organico_pct": _opt_float(r.get("carbono_organico_pct"), 2),
+                "agua_util_calc_pct": _opt_float(r.get("agua_util_calc_pct"), 1),
+                "estado_completitud": str(r.get("estado_completitud", "SIN_DATO_COMPLETO")),
+            })
+
+    # Grilla 500m submuestreada uniformemente (~3400 puntos) para renderizado ágil en Canvas Leaflet
+    grilla_500m: List[List[float]] = []
+    df_500 = mvp.get("suelo_500m")
+    if df_500 is not None and not df_500.empty:
+        sub = df_500.iloc[::16]
+        for _, r in sub.iterrows():
+            susc = _opt_float(r["susceptibilidad_topografica_media"], 3) or 0.0
+            pend = _opt_float(r["pendiente_media_pct"], 2) or 0.0
+            grilla_500m.append([round(float(r["lat"]), 4), round(float(r["lon"]), 4), susc, pend])
+
+    return {
+        "estaciones": estaciones,
+        "sisinta": sisinta,
+        "grilla_500m": grilla_500m,
+        "etiqueta_susceptibilidad": "NO_VALIDADA (índice topográfico TWI + depresiones, no es mapa de inundación)",
     }

@@ -275,6 +275,23 @@ class TestMotorRotacion(unittest.TestCase):
         self.assertIn("advertencia_smap", diag["balance_fao56"])
         self.assertGreaterEqual(len(diag["dimensiones_faltantes"]), 3)
 
+    def test_mvp_homogeneo_mapa_y_capas(self) -> None:
+        from src.decision.mapa_datos import CURATED_DIR, consultar_terreno, obtener_capas_mapa
+
+        if not (CURATED_DIR / "srtm_1ha_corredor.parquet").is_file():
+            self.skipTest("Datasets curados locales no disponibles en este entorno.")
+        capas = obtener_capas_mapa()
+        self.assertEqual(len(capas["estaciones"]), 19)
+        self.assertGreaterEqual(len(capas["sisinta"]), 60)
+        self.assertGreater(len(capas["grilla_500m"]), 1000)
+
+        res = consultar_terreno(lat=-33.675, lon=-65.460)
+        ctx = res.get("contexto_mvp", {})
+        self.assertIn("susceptibilidad_topografica", res["terreno"])
+        self.assertIn("sisinta_cercano", ctx)
+        self.assertEqual(len(ctx.get("gaez_cultivos", [])), 6)
+        self.assertIn("clima_historica_celda", ctx)
+
 
 if __name__ == "__main__":
     unittest.main()
