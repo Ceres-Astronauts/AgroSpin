@@ -3,7 +3,7 @@ Motor de decisión agronómica y evaluación de rotaciones para Field Shift (Vil
 Basado en rúbrica multicriterio de 5 dimensiones (15 variables), calibración híbrida de humedad
 (NASA SMAP L4 + sonda de suelo a profundidad configurable) y evaluación física-hídrica del suelo.
 
-Ajustes y calibraciones funcionales (Angie Méndez - Análisis Funcional y Calidad de Datos):
+Ajustes y calibraciones funcionales (Análisis Funcional y Calidad de Datos):
 1. Calibración térmica de mínimas satelitales (-1.04 °C respecto a REM Estación 42 Villa Mercedes)
    para evaluar con precisión el umbral de heladas agrometeorológicas (<= 3.0 °C, buffer 4.5 °C).
 2. Sonda local de humedad de perfil disponible ponderada por estrato radicular + regla de corte
@@ -212,6 +212,7 @@ def calibrar_precipitacion_zonal(
 
     if es_transicion_este:
         estacion_ref = "Estación REM 49 (Justo Daract / Cuenca del Morro — régimen transición Este 650–750 mm)"
+        # Mayor recarga estival en el Este permite tolerar umbrales ligeramente más bajos sin falla crítica
         umbral_deficit_maiz_sorgo_mm = 580.0
     else:
         estacion_ref = "Estación REM 42 (Villa Mercedes — semiárido central)"
