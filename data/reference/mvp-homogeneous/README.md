@@ -1,4 +1,4 @@
-# Field Shift — MVP Delivery: Historical Climate + Soil (Homogeneous Data)
+# AgroSpin — MVP Delivery: Historical Climate + Soil (Homogeneous Data)
 
 Geographic bounding box: lon −65.875 to −64.125 · lat −33.875 to −33.125 (Villa Mercedes, San Luis – southern Cordoba).
 Data cutoff: 2026-11-01. CRS: EPSG:4326 (lat/lon). Delivery date: 2026-11-15.

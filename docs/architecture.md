@@ -1,8 +1,8 @@
-# Field Shift — Product Architecture
+# AgroSpin — Product Architecture
 
 ## 1. Architectural objective
 
-Field Shift is a standalone, open-source agricultural decision-support product. It is designed to combine environmental evidence that has passed source-specific validation, local soil/crop context, farmer/company priorities, transparent indicators, and explicit decision rules to compare crop-rotation strategies under drought and climate variability.
+AgroSpin is a standalone, open-source agricultural decision-support product. It is designed to combine environmental evidence that has passed source-specific validation, local soil/crop context, farmer/company priorities, transparent indicators, and explicit decision rules to compare crop-rotation strategies under drought and climate variability.
 
 The public product must run on publicly documented dependencies and datasets with inspectable evidence and decision rules.
 
@@ -172,7 +172,7 @@ assumptions
 
 A point coordinate is a query target, not exact field geometry. Area in hectares does not define a parcel.
 
-User declarations remain distinguishable from Field Shift observations and derived evidence.
+User declarations remain distinguishable from AgroSpin observations and derived evidence.
 
 ---
 
@@ -218,7 +218,7 @@ The exact local model/runtime is replaceable. A modest-hardware target (includin
 
 ## 8. Visualization and analytical consumption
 
-Field Shift keeps scientific meaning independent from visualization technology.
+AgroSpin keeps scientific meaning independent from visualization technology.
 
 Potential open-source consumers include:
 

@@ -2,7 +2,7 @@
 
 ## Field Shift: Adapting Farms with NASA Data
 
-Field Shift is developed for the **2026 NASA International Space Apps Challenge**.
+**AgroSpin** is the team's solution to the NASA Space Apps Challenge 2026 challenge **Field Shift: Adapting Farms with NASA Data**.
 
 Official challenge page: https://www.spaceappschallenge.org/2026/challenges/field-shift-adapting-farms-with-nasa-data/
 
@@ -16,7 +16,7 @@ Earth-observation data can characterize environmental conditions, but observatio
 
 > Given the conditions of my field or region, which crop-rotation strategies should I consider, and why?
 
-Field Shift focuses on the layer between observation and decision.
+AgroSpin focuses on the layer between observation and decision.
 
 ## Four input families
 
@@ -69,7 +69,7 @@ The recommendation model must preserve these priorities instead of assuming a si
 
 ## Expected decision support
 
-Field Shift should not stop at an environmental dashboard.
+AgroSpin should not stop at an environmental dashboard.
 
 The target output is a comparison of plausible rotation strategies with understandable evidence, benefits, risks, trade-offs, uncertainty, and limitations.
 
@@ -87,4 +87,4 @@ Space Data Atlas provides a useful third-party mapping between the challenge and
 
 https://spacedata.swapniltamse.com/challenges/field-shift-adapting-farms/
 
-It is **not an official NASA resource list**. Field Shift may use it to accelerate discovery, but authoritative NASA product documentation remains the canonical source for dataset metadata and limitations.
+It is **not an official NASA resource list**. AgroSpin may use it to accelerate discovery, but authoritative NASA product documentation remains the canonical source for dataset metadata and limitations.

@@ -2,9 +2,11 @@
   <img src="logo2.png" alt="AgroSpin" width="320">
 </p>
 
-# AgroSpin (Field Shift) — NASA Space Apps Challenge 2026 MVP
+# AgroSpin — NASA Space Apps Challenge 2026 MVP
 
-Field Shift is an agricultural decision-support prototype for comparing crop-rotation alternatives under water stress and climate variability. It is **not just a satellite data viewer**.
+**NASA challenge:** Field Shift: Adapting Farms with NASA Data.
+
+AgroSpin is an agricultural decision-support prototype for comparing crop-rotation alternatives under water stress and climate variability. It is **not just a satellite data viewer**.
 
 **MVP area:** 65.875°W–64.125°W, 33.875°S–33.125°S (Villa Mercedes, San Luis, and southern Córdoba, Argentina). **Data cutoff:** 2026-11-01.
 

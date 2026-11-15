@@ -1,6 +1,6 @@
 # Data
 
-This directory defines how Field Shift handles project data assets.
+This directory defines how AgroSpin handles project data assets.
 
 ## Start here
 
