@@ -59,4 +59,4 @@ When redistribution rights are unclear, store only metadata, checksums, and retr
 
 ## Climate and soil MVP data delivery (2026-11-15)
 
-The `data/reference/mvp-homogeneo/` directory includes repository-hosted CSV and Parquet datasets in EPSG:4326, a usage guide, column dictionary, coverage matrix, manifest, and checksums. Application consumers read these files directly; no external dataset-loader script is required.
+The `data/reference/mvp-homogeneous/` directory includes repository-hosted CSV and Parquet datasets in EPSG:4326, a usage guide, column dictionary, coverage matrix, manifest, and checksums. Application consumers read these files directly; no external dataset-loader script is required.

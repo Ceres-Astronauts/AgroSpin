@@ -1,0 +1,34 @@
+{
+  "fields": [
+    {
+      "id": "rio_cuarto_north",
+      "name": "Rio Cuarto North (Cordoba)",
+      "soil": "Loam (Gentle slope - water erosion risk)",
+      "slope_srtm_pct": 2.4,
+      "gpm_rainfall_mm": [ 115, 102, 95, 52, 22, 10, 12, 16, 34, 72, 98, 120 ],
+      "smap_soil_moisture": [ 0.26, 0.24, 0.27, 0.22, 0.18, 0.15, 0.13, 0.12, 0.14, 0.19, 0.23, 0.25 ],
+      "ecostress_surface_temp_c": [ 34.2, 33.1, 28.5, 22.0, 16.5, 12.8, 12.5, 15.8, 20.4, 25.5, 30.1, 33.5 ],
+      "sentinel2_ndvi": [ 0.79, 0.81, 0.70, 0.42, 0.24, 0.19, 0.18, 0.17, 0.21, 0.33, 0.58, 0.74 ]
+    },
+    {
+      "id": "vm_central",
+      "name": "Villa Mercedes - Rio Quinto Basin (San Luis)",
+      "soil": "Sandy loam (Transition zone - summer deficit)",
+      "slope_srtm_pct": 1.8,
+      "gpm_rainfall_mm": [ 105, 92, 85, 45, 18, 8, 10, 14, 28, 62, 88, 110 ],
+      "smap_soil_moisture": [ 0.22, 0.20, 0.24, 0.19, 0.15, 0.12, 0.10, 0.09, 0.11, 0.16, 0.19, 0.21 ],
+      "ecostress_surface_temp_c": [ 36.5, 35.2, 30.1, 23.4, 17.8, 13.5, 13.2, 16.9, 21.5, 26.8, 31.4, 35.0 ],
+      "sentinel2_ndvi": [ 0.74, 0.78, 0.65, 0.38, 0.21, 0.16, 0.15, 0.14, 0.17, 0.28, 0.52, 0.69 ]
+    },
+    {
+      "id": "vm_south",
+      "name": "Villa Mercedes South (Sandy Strip)",
+      "soil": "Loamy sand (High wind-erosion susceptibility)",
+      "slope_srtm_pct": 0.9,
+      "gpm_rainfall_mm": [ 95, 84, 76, 38, 14, 6, 8, 11, 22, 54, 78, 98 ],
+      "smap_soil_moisture": [ 0.18, 0.16, 0.19, 0.15, 0.11, 0.09, 0.08, 0.07, 0.09, 0.13, 0.16, 0.17 ],
+      "ecostress_surface_temp_c": [ 38.4, 37.0, 31.8, 24.6, 18.5, 14.0, 13.8, 17.6, 22.8, 28.2, 33.0, 37.1 ],
+      "sentinel2_ndvi": [ 0.68, 0.71, 0.58, 0.31, 0.18, 0.14, 0.13, 0.12, 0.15, 0.23, 0.46, 0.63 ]
+    }
+  ]
+}

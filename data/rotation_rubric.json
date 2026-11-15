@@ -1,0 +1,453 @@
+{
+  "version": "2026-11-15",
+  "reference_zone": "Villa Mercedes / Central-East and Cuenca del Morro, San Luis, Argentina",
+  "methods": [
+    {
+      "id": "double_crop",
+      "name": "Productive Double Crop (Winter Wheat -> Double-Crop Soybean / Late Corn)",
+      "sequence": "Wheat (Autumn-Winter) -> Double-crop Soybean or Late Corn (Summer)",
+      "horizon": "short",
+      "horizon_label": "Short term (1 year / intensive annual cycle)",
+      "suitable_for_livestock": false,
+      "requires_special_machinery": false,
+      "field_summary": "Aims for two commercial grain harvests in a single year while keeping soil covered during strong August-September winds, but demands heavy water availability and tight planting windows.",
+      "when_to_rotate": "Apply only if initial soil moisture data and summer rainfall outlook are favorable (or under irrigation / non-saline shallow water table). Rotate immediately after winter wheat harvest.",
+      "termination_criterion": "Harvest wheat early (including artificial grain drying if needed) to avoid delaying second-crop planting; every week lost in December penalizes summer yield due to early autumn frosts.",
+      "dimensions": {
+        "climate_temperature": {
+          "name": "Climate & Temperature",
+          "criteria": [
+            {
+              "name": "Temperature patterns",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "In Villa Mercedes, agrometeorological frosts (<3 C) span roughly from March to November. Waiting for wheat harvest delays second-crop planting, exposing grain fill to early autumn frosts (starting in April)."
+            },
+            {
+              "name": "Heat stress",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "Summers average 30-33 C highs. Wheat suffers spring heat waves during grain filling, and under rainfed conditions the second crop combines summer heat with water deficit."
+            },
+            {
+              "name": "Frost risk",
+              "score": 1,
+              "rating": "Very unfavorable",
+              "justification": "Highest cumulative exposure in Villa Mercedes: late frosts (Oct-Nov) during wheat heading and early autumn frosts during double-crop soybean/corn grain filling."
+            },
+            {
+              "name": "Extreme weather risks",
+              "score": 1,
+              "rating": "Very unfavorable",
+              "justification": "Exposes two commercial harvests to peak hailstorms, strong winds (wheat lodging/shattering and second-crop corn stalk breakage), and summer waterlogging."
+            }
+          ]
+        },
+        "water_soil": {
+          "name": "Water & Soil",
+          "criteria": [
+            {
+              "name": "Rainfall",
+              "score": 1,
+              "rating": "Very unfavorable",
+              "justification": "San Luis's dry winter (75-80% of rainfall occurs Oct-Mar) restricts rainfed wheat and leaves the profile depleted before second-crop planting. Only viable with irrigation or very wet eastern years (650-700 mm)."
+            },
+            {
+              "name": "Soil moisture",
+              "score": 1,
+              "rating": "Very unfavorable",
+              "justification": "On sandy loam soils, wheat consumes autumn stored soil water and delivers a dry profile in Nov-Dec. Favorable only with supplemental irrigation or a non-saline shallow water table (1.5-3 m)."
+            },
+            {
+              "name": "Evaporation (Evapotranspiration)",
+              "score": 3,
+              "rating": "Moderately favorable",
+              "justification": "Wheat stubble curbs direct summer soil evaporation, but the cumulative evapotranspiration demand of two harvested crops exceeds rainfed precipitation supply."
+            },
+            {
+              "name": "Long-term hydrological trends",
+              "score": 1,
+              "rating": "Not favorable",
+              "justification": "Under two annual harvests, deep soil reserves cannot recharge. During dry cycles (La Nina), risk of total crop failure rises sharply."
+            },
+            {
+              "name": "Water use efficiency",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "High water demand in a semi-arid province; unless rainfall aligns precisely with both critical stages, both crops suffer yield loss."
+            }
+          ]
+        },
+        "production_sustainability": {
+          "name": "Production & Sustainability",
+          "criteria": [
+            {
+              "name": "Vegetation stress",
+              "score": 1,
+              "rating": "Very unfavorable",
+              "justification": "Under rainfed farming, subjects wheat to winter deficit and the second crop to water and oxidative stress over an already depleted profile."
+            },
+            {
+              "name": "Forage value",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "Oriented almost exclusively toward grain sales; only late corn offers emergency silage without steady forage output."
+            },
+            {
+              "name": "Nitrogen fixation potential",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "Negative balance: wheat and corn extract heavy N, and double-crop soybean exports more N in harvested grain than it fixes, creating strong fertilizer dependence."
+            },
+            {
+              "name": "Organic matter improvement",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "Soybean residue degrades quickly and double annual nutrient extraction progressively wears down sandy soil structure."
+            }
+          ]
+        },
+        "agricultural_health": {
+          "name": "Crop Health",
+          "criteria": [
+            {
+              "name": "Pests and diseases",
+              "score": 2,
+              "rating": "Unfavorable",
+              "justification": "Without a winter biological break ('green bridge'), cutworms and pillbugs persist; aphids surge in dry wheat and fall armyworm (Spodoptera) plus leafhopper (Dalbulus maidis) peak in second-crop corn."
+            }
+          ]
+        },
+        "business_market": {
+          "name": "Business & Market",
+          "criteria": [
+            {
+              "name": "Market suitability",
+              "score": 5,
+              "rating": "Optimal",
+              "justification": "Wheat, soybean, and corn enjoy daily public pricing (Matba Rofex), guaranteed export demand, and consolidated elevator logistics in Villa Mercedes toward ports."
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "institution": "INTA / CIAg - Pena Zubiate et al.",
+          "title": "Physical and Environmental Resources of San Luis Territories",
+          "contribution": "Villa Mercedes frost regime (03/29 +/- 24d to 11/09 +/- 19d) and summer rainfall share (75-80% Oct-Mar).",
+          "url": "https://www.produccion-animal.com.ar/regiones_ganaderas/39-Recursos_Fisicos_y_ambientales_SL.pdf"
+        },
+        {
+          "institution": "Matba Rofex",
+          "title": "Buenos Aires Futures Market",
+          "contribution": "Public price discovery, high liquidity, and hedging for wheat, soybean, and corn.",
+          "url": "https://www.matbarofex.com.ar/"
+        },
+        {
+          "institution": "RIA - Scielo",
+          "title": "Nitrogen Balance in Soybean-Wheat Rotations",
+          "contribution": "Documents net N export in harvested double-crop soybean grain.",
+          "url": "http://www.scielo.org.ar/scielo.php?script=sci_serial&pid=1669-2314"
+        }
+      ]
+    },
+    {
+      "id": "biological_pump",
+      "name": "Anti-Water-Table & Anti-Erosion Biological Pump (Perennial Alfalfa -> Late Corn)",
+      "sequence": "Perennial Alfalfa (3-4 years) -> Late Corn (December)",
+      "horizon": "long",
+      "horizon_label": "Long term (4-5 years: perennial pasture + corn)",
+      "suitable_for_livestock": true,
+      "requires_special_machinery": true,
+      "field_summary": "Keeps the field green for 3-4 years with deep roots that halt erosion, draw down excess water or rising water tables (such as Cuenca del Morro), and leave natural nitrogen for late corn.",
+      "when_to_rotate": "Establish alfalfa in autumn when the field needs nitrogen recovery, soil structure repair, or water-table drawdown. Rotate to late corn as alfalfa stand density declines (years 3-4).",
+      "termination_criterion": "Cut alfalfa at 10% bloom. Terminate pasture early in late winter (spring fallow) to recharge soil profile moisture before planting late corn in December (silking in February).",
+      "dimensions": {
+        "climate_temperature": {
+          "name": "Climate & Temperature",
+          "criteria": [
+            {
+              "name": "Temperature patterns",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Established alfalfa tolerates San Luis winter frosts; single-crop late corn can be planted in the optimal summer window."
+            },
+            {
+              "name": "Heat stress",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Deep taproots sustain summer transpiration; planting corn in December places silking in February, avoiding January heat waves."
+            },
+            {
+              "name": "Frost risk",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Autumn-established alfalfa resists winter frosts; December-planted corn avoids late November frosts and matures before April."
+            },
+            {
+              "name": "Extreme weather risks",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Alfalfa regrows from the crown after hail (losing only one cut) and does not lodge in high winds. Monitor root anoxia if ponding exceeds 48-72 h."
+            }
+          ]
+        },
+        "water_soil": {
+          "name": "Water & Soil",
+          "criteria": [
+            {
+              "name": "Rainfall",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Uses 600-800 mm/year capturing spring-summer rains and excess moisture. Requires timely pasture termination to recharge the profile before corn."
+            },
+            {
+              "name": "Soil moisture",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Outstanding performance where water tables are rising (Cuenca del Morro): lowers groundwater and prevents waterlogging. Leaves profile dry at exit, requiring spring fallow."
+            },
+            {
+              "name": "Evaporation (Evapotranspiration)",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Permanent canopy minimizes bare-soil evaporation and maximizes year-round transpiration to control rising groundwater."
+            },
+            {
+              "name": "Long-term hydrological trends",
+              "score": 5,
+              "rating": "Optimal",
+              "justification": "Strong stabilizer against groundwater imbalances, restoring hydrological balance for subsequent cash cropping."
+            },
+            {
+              "name": "Water use efficiency",
+              "score": 5,
+              "rating": "Optimal (Strategic use)",
+              "justification": "Acts as a biological pump against groundwater excess and improves rainfall infiltration while curbing runoff."
+            }
+          ]
+        },
+        "production_sustainability": {
+          "name": "Production & Sustainability",
+          "criteria": [
+            {
+              "name": "Vegetation stress",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Deep taproot sustains photosynthesis during dry spells; late corn following fallow establishes canopy under milder summer conditions."
+            },
+            {
+              "name": "Forage value",
+              "score": 5,
+              "rating": "Optimal",
+              "justification": "Unmatched option for beef/dairy livestock and high-protein hay production over 3-4 consecutive years."
+            },
+            {
+              "name": "Nitrogen fixation potential",
+              "score": 5,
+              "rating": "Optimal",
+              "justification": "Biological atmospheric N factory for 3-4 years, supplying most of the nitrogen demand for subsequent late corn."
+            },
+            {
+              "name": "Organic matter improvement",
+              "score": 5,
+              "rating": "Optimal",
+              "justification": "Zero tillage for 3-4 years; deep root biomass stabilizes soil aggregates and builds deep soil organic carbon."
+            }
+          ]
+        },
+        "agricultural_health": {
+          "name": "Crop Health",
+          "criteria": [
+            {
+              "name": "Pests and diseases",
+              "score": 3,
+              "rating": "Moderately favorable",
+              "justification": "Breaks annual pest cycles and harbors beneficial insects. Watchpoints: aphids and alfalfa caterpillar (Colias lesbia), plus white grubs/cutworms/armyworm entering corn."
+            }
+          ]
+        },
+        "business_market": {
+          "name": "Business & Market",
+          "criteria": [
+            {
+              "name": "Market suitability",
+              "score": 5,
+              "rating": "Favorable to Optimal",
+              "justification": "Late corn has secure liquidity and alfalfa serves steady local feedlots/dairies plus compacted hay bale exports via AgroZAL in Villa Mercedes."
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "institution": "INTA EEA San Luis / UNSL - Jobbagy et al.",
+          "title": "Water-Table Rise in the Pampas and Cuenca del Morro",
+          "contribution": "Role of perennial alfalfa as a biological pump to draw down shallow water tables.",
+          "url": "https://www.researchgate.net/publication/262637835_El_ascenso_de_napas_en_la_region_pampeana_causas_consecuencias_y_estrategias_de_manejo"
+        },
+        {
+          "institution": "INTA EEA San Luis - Garay & Colazo (Eds.)",
+          "title": "Corn Production in San Luis Province (Tech. Report No. 188)",
+          "contribution": "December late-corn planting to align flowering with February rains and avoid January heat waves.",
+          "url": "https://www.researchgate.net/publication/281273477_El_cultivo_de_maiz_en_San_Luis"
+        },
+        {
+          "institution": "Government of San Luis - AgroZAL",
+          "title": "San Luis Alfalfa Exports from Villa Mercedes",
+          "contribution": "High-density hay compaction and export logistics to Brazil and the Middle East.",
+          "url": "https://agenciasanluis.com/2023/04/18/887460-la-alfalfa-puntana-continua-su-camino-hacia-los-mercados-internacionales/"
+        }
+      ]
+    },
+    {
+      "id": "water_resilience",
+      "name": "Water Resilience / Defensive Strategy (Sorghum -> Vetch + Rye -> Sunflower)",
+      "sequence": "Sorghum (Summer 1) -> Vetch + Rye (Winter cover crop) -> Sunflower (Summer 2)",
+      "horizon": "medium",
+      "horizon_label": "Medium term (2 years: summer - winter bridge - summer)",
+      "suitable_for_livestock": true,
+      "requires_special_machinery": false,
+      "field_summary": "Ideal defensive strategy for sandy soils and dry or erratic years: saves every millimeter of water with protective residue, adds free nitrogen via vetch, and diversifies low-water-demand crops.",
+      "when_to_rotate": "Adopt this scheme when soil moisture at planting is low or seasonal forecast is dry. Plant sorghum once spring soil warms; sow vetch + rye in autumn right after sorghum harvest.",
+      "termination_criterion": "Harvest sorghum grain or chop under severe stress. Terminate/roller-crimp vetch + rye in Sep/Oct (30-45 days before sunflower planting) to stop spring water extraction.",
+      "dimensions": {
+        "climate_temperature": {
+          "name": "Climate & Temperature",
+          "criteria": [
+            {
+              "name": "Temperature patterns",
+              "score": 3,
+              "rating": "Moderately favorable",
+              "justification": "Vetch + rye tolerate winter cold well as cover crops. Sorghum needs warm soils for germination, and sunflower requires timely planting before mid-November."
+            },
+            {
+              "name": "Heat stress",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Sorghum handles high heat better than corn, sunflower tolerates hot summers, and rye/vetch residue buffers soil surface temperature spikes."
+            },
+            {
+              "name": "Frost risk",
+              "score": 3,
+              "rating": "Moderately favorable",
+              "justification": "Winter cover suffers no grain loss; sorghum is frost-sensitive and heavy mulch can increase radiative frost risk for overly early sunflower plantings."
+            },
+            {
+              "name": "Extreme weather risks",
+              "score": 3,
+              "rating": "Moderately favorable",
+              "justification": "Stubble blocks spring wind erosion; sorghum tolerates brief waterlogging, while flowering sunflower remains vulnerable to hail and wind lodging."
+            }
+          ]
+        },
+        "water_soil": {
+          "name": "Water & Soil",
+          "criteria": [
+            {
+              "name": "Rainfall",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Best match for semi-arid rainfall (450-600 mm): sorghum and sunflower need less water than corn/soybean. Early Sep/Oct cover termination saves spring rain."
+            },
+            {
+              "name": "Soil moisture",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Most efficient approach on sandy soils without a shallow water table: curbs evaporation, boosts infiltration, and accesses subsoil moisture without depleting the profile when terminated on time."
+            },
+            {
+              "name": "Evaporation (Evapotranspiration)",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Persistent rye stubble (high C/N ratio) sharply cuts bare-soil evaporation while sorghum throttles transpiration under high atmospheric demand."
+            },
+            {
+              "name": "Long-term hydrological trends",
+              "score": 5,
+              "rating": "Optimal",
+              "justification": "Progressive 'sponge' effect: accumulated ground cover enhances infiltration and soil water retention across future droughts."
+            },
+            {
+              "name": "Water use efficiency",
+              "score": 5,
+              "rating": "Optimal (Defensive use)",
+              "justification": "Ideal water-conservation design pairing sorghum's physiological drought resilience with a physical residue barrier."
+            }
+          ]
+        },
+        "production_sustainability": {
+          "name": "Production & Sustainability",
+          "criteria": [
+            {
+              "name": "Vegetation stress",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "High plasticity: sorghum pauses growth during drought and recovers after rain; sunflower sustains photosynthesis via deep taproots."
+            },
+            {
+              "name": "Forage value",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Dual-purpose sorghum (grain or silage/deferred grazing) plus optional emergency grazing on vetch + rye while keeping basal residue cover."
+            },
+            {
+              "name": "Nitrogen fixation potential",
+              "score": 4.5,
+              "rating": "Favorable to Optimal",
+              "justification": "Vetch fixes atmospheric N and, since it is not harvested, 100% remains in the field for sunflower, lowering synthetic fertilizer needs."
+            },
+            {
+              "name": "Organic matter improvement",
+              "score": 4.5,
+              "rating": "Favorable to Optimal",
+              "justification": "Abundant, slowly decomposing sorghum and rye residue increases organic carbon and shields sandy soil structure."
+            }
+          ]
+        },
+        "agricultural_health": {
+          "name": "Crop Health",
+          "criteria": [
+            {
+              "name": "Pests and diseases",
+              "score": 4,
+              "rating": "Favorable",
+              "justification": "Maximum functional diversity (C4 grass -> C3 grass + legume mix -> broadleaf oilseed) breaks pest cycles. Monitor cutworms (Agrotis spp.) and pillbugs after vetch termination."
+            }
+          ]
+        },
+        "business_market": {
+          "name": "Business & Market",
+          "criteria": [
+            {
+              "name": "Market suitability",
+              "score": 3,
+              "rating": "Moderately favorable",
+              "justification": "More cyclical market (crushing quotas for sunflower or local/poultry-swine demand for sorghum), and winter cover carries an operational cost without direct cash harvest."
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "institution": "INTA EEA San Luis - Colazo, Garay & Veneciano",
+          "title": "Sorghum Cultivation in San Luis (Tech. Report No. 183)",
+          "contribution": "Heat/drought tolerance, osmotic adjustment, and pest management for sorghum in San Luis.",
+          "url": "https://www.researchgate.net/publication/281273449_El_cultivo_de_sorgo_en_San_Luis"
+        },
+        {
+          "institution": "INTA EEA San Luis - Colazo & Garay",
+          "title": "Cover Crops in San Luis (Tech. Report No. 197)",
+          "contribution": "N fixation in vetch + rye, optimal termination window (Sep/Oct), and wind-erosion control.",
+          "url": "https://www.researchgate.net/publication/347510114_Cultivos_de_cobertura_en_San_Luis"
+        },
+        {
+          "institution": "ASAGIR / INTA",
+          "title": "Sunflower Crop - Technical Update Handbook",
+          "contribution": "Deep rooting profile, minimum planting soil temperature (8-10 C), and wind/hail lodging risks.",
+          "url": "https://www.asagir.org.ar/descargar-archivo-45/archivos-01e3a1a53c235fd1484651587412a506"
+        }
+      ]
+    }
+  ]
+}

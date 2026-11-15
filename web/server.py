@@ -1,4 +1,4 @@
-"""Servidor web FastAPI para la interfaz de productor agropecuario (Field Shift)."""
+"""FastAPI web server for the Field Shift producer decision interface."""
 
 import json
 import pathlib
@@ -14,156 +14,155 @@ REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.decision.mapa_datos import consultar_terreno, obtener_capas_mapa  # noqa: E402
-from src.decision.motor_rotacion import cargar_rubrica, simular_escenarios  # noqa: E402
+from src.decision.map_data import get_map_layers, query_terrain  # noqa: E402
+from src.decision.rotation_engine import load_rubric, simulate_scenarios  # noqa: E402
 
-LOTES_DEFAULT = REPOSITORY_ROOT / "data" / "lotes_piloto.json"
+PILOT_FIELDS_DEFAULT = REPOSITORY_ROOT / "data" / "pilot_fields.json"
 STATIC_DIR = pathlib.Path(__file__).resolve().parent / "static"
 
 app = FastAPI(title="Field Shift — Ceres Agronauts", version="2.0.0")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-_HUMEDAD_PRESETS: Dict[str, Dict[str, float]] = {
-    "seco": {"10cm": 0.08, "30cm": 0.11, "60cm": 0.13},
+_MOISTURE_PRESETS: Dict[str, Dict[str, float]] = {
+    "dry": {"10cm": 0.08, "30cm": 0.11, "60cm": 0.13},
     "normal": {"10cm": 0.17, "30cm": 0.21, "60cm": 0.23},
-    "humedo": {"10cm": 0.28, "30cm": 0.32, "60cm": 0.34},
+    "wet": {"10cm": 0.28, "30cm": 0.32, "60cm": 0.34},
 }
 
 
-class EvaluacionRequest(BaseModel):
-    lote_id: str = Field(default="villa_mercedes_centro")
-    textura: Literal["franco_arenoso", "limoso", "desconocido"] = "franco_arenoso"
-    napa_pendiente: Literal["sin_napa", "napa_cercana", "pendiente_anegamiento"] = "sin_napa"
-    regimen_agua: Literal["secano", "riego"] = "secano"
-    humedad_estado: Literal["seco", "normal", "humedo", "sonda"] = "normal"
-    sonda_largo_cm: Optional[float] = Field(default=None, ge=5.0, le=200.0, description="Largo o profundidad de inserción de la sonda en cm")
-    sonda_medicion: Optional[float] = Field(default=None, ge=0.03, le=0.55, description="Medición de humedad a esa profundidad en m³/m³")
-    sonda_10cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
-    sonda_30cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
-    sonda_60cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
-    estado_lote: Literal["rastrojo", "desnudo", "pastura"] = "rastrojo"
-    escenario_lluvia: Literal["seco", "normal", "humedo"] = "normal"
-    prioridad: Literal["agua", "renta", "suelo"] = "suelo"
-    horizonte: Literal["corto", "mediano", "largo"] = "mediano"
-    sistema_productivo: Literal["agricola", "mixto", "contratista"] = "agricola"
-    tiene_ganaderia: bool = False
-    profundidad_suelo: Literal["superficial", "media", "profunda"] = "media"
-    tolerancia_perdidas: Literal["baja", "moderada", "alta"] = "baja"
-    lluvia_anual_manual_mm: Optional[float] = Field(default=None, ge=50.0, le=3000.0)
-    datos_lote_custom: Optional[Dict[str, Any]] = None
+class EvaluationRequest(BaseModel):
+    field_id: str = Field(default="vm_central")
+    texture: Literal["sandy_loam", "silty", "unknown"] = "sandy_loam"
+    water_table_slope: Literal["no_water_table", "shallow_water_table", "sloped_waterlogging"] = "no_water_table"
+    water_regime: Literal["rainfed", "irrigated"] = "rainfed"
+    moisture_status: Literal["dry", "normal", "wet", "probe"] = "normal"
+    probe_depth_cm: Optional[float] = Field(default=None, ge=5.0, le=200.0, description="Soil probe installation depth in cm")
+    probe_reading: Optional[float] = Field(default=None, ge=0.03, le=0.55, description="Soil moisture reading at probe depth in m³/m³")
+    probe_10cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
+    probe_30cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
+    probe_60cm: Optional[float] = Field(default=None, ge=0.05, le=0.45)
+    field_condition: Literal["stubble", "bare", "degraded_pasture"] = "stubble"
+    rainfall_scenario: Literal["dry", "normal", "wet"] = "normal"
+    priority: Literal["water", "profit", "soil"] = "soil"
+    horizon: Literal["short", "medium", "long"] = "medium"
+    production_system: Literal["agricultural", "mixed", "contractor"] = "agricultural"
+    has_livestock: bool = False
+    soil_depth: Literal["shallow", "medium", "deep"] = "medium"
+    loss_tolerance: Literal["low", "moderate", "high"] = "low"
+    manual_annual_rainfall_mm: Optional[float] = Field(default=None, ge=50.0, le=3000.0)
+    custom_field_data: Optional[Dict[str, Any]] = None
 
 
-class MapaConsultaRequest(BaseModel):
+class MapQueryRequest(BaseModel):
     lat: Optional[float] = None
     lon: Optional[float] = None
-    poligono: Optional[List[List[float]]] = None
+    polygon: Optional[List[List[float]]] = None
 
 
-def _cargar_lotes() -> List[Dict[str, Any]]:
-    if LOTES_DEFAULT.is_file():
+def _load_fields() -> List[Dict[str, Any]]:
+    if PILOT_FIELDS_DEFAULT.is_file():
         try:
-            data = json.loads(LOTES_DEFAULT.read_text(encoding="utf-8"))
+            data = json.loads(PILOT_FIELDS_DEFAULT.read_text(encoding="utf-8"))
             if isinstance(data, list) and data:
                 return data
-            if isinstance(data, dict) and "lotes" in data:
-                return data["lotes"]
+            if isinstance(data, dict) and "fields" in data:
+                return data["fields"]
         except Exception:
             pass
     return [
         {
-            "id": "villa_mercedes_centro",
-            "nombre": "Villa Mercedes — Lote Piloto (INTA San Luis)",
-            "suelo": "Franco-arenoso",
-            "lluvia_gpm_mm": [55.4] * 12,
-            "humedad_suelo_smap": [0.18] * 12,
-            "ndvi_sentinel2": [0.35, 0.38, 0.32, 0.22, 0.18, 0.17, 0.19, 0.21, 0.28, 0.36, 0.42, 0.40],
-            "temp_superficial_ecostress_c": [36.5],
+            "id": "vm_central",
+            "name": "Villa Mercedes — Pilot Field (INTA San Luis)",
+            "soil": "Sandy-loam",
+            "gpm_rainfall_mm": [55.4] * 12,
+            "smap_soil_moisture": [0.18] * 12,
+            "sentinel2_ndvi": [0.35, 0.38, 0.32, 0.22, 0.18, 0.17, 0.19, 0.21, 0.28, 0.36, 0.42, 0.40],
+            "ecostress_surface_temp_c": [36.5],
         }
     ]
 
 
-def _clasificar_semaforo(score: float, tiene_alerta_roja: bool) -> Literal["recomendado", "precaucion", "no_recomendado"]:
-    if tiene_alerta_roja or score < 50:
-        return "no_recomendado"
+def _classify_traffic_light(score: float, has_red_alert: bool) -> Literal["recommended", "caution", "not_recommended"]:
+    if has_red_alert or score < 50:
+        return "not_recommended"
     if score >= 68:
-        return "recomendado"
-    return "precaucion"
+        return "recommended"
+    return "caution"
 
 
-def _puntos_a_evaluar_en_lote(diag: Dict[str, Any], req: EvaluacionRequest) -> List[str]:
-    puntos: List[str] = []
-    suelo = diag["evaluacion_suelo"]
-    if diag["meses_suelo_desnudo"] >= 4 or req.estado_lote == "desnudo":
-        puntos.append(
-            "Evaluar junto a un conocedor del lote cómo cubrir el suelo en invierno (por ejemplo con vicia + centeno) para frenar la voladura por vientos de agosto-septiembre."
+def _field_check_points(diag: Dict[str, Any], req: EvaluationRequest) -> List[str]:
+    points: List[str] = []
+    if diag["bare_soil_months"] >= 4 or req.field_condition == "bare":
+        points.append(
+            "Evaluate with a local advisor how to keep winter cover on the field (for example rye + vetch) to prevent wind erosion during August-September gusts."
         )
-    if req.napa_pendiente == "napa_cercana":
-        puntos.append(
-            "Verificar profundidad y salinidad de la napa freática en el lote: si está en ascenso (como en Cuenca del Morro), analizar si conviene alfalfa plurianual como bomba biológica."
+    if req.water_table_slope == "shallow_water_table":
+        points.append(
+            "Verify water-table depth and salinity across the field: if rising (as in Cuenca del Morro), evaluate perennial alfalfa as a biological pump."
         )
-    elif req.napa_pendiente == "pendiente_anegamiento":
-        puntos.append(
-            "Revisar zonas bajas y escurrimiento ante lluvias torrenciales; evaluar especies tolerantes a encharcamiento temporal o cobertura viva permanente."
+    elif req.water_table_slope == "sloped_waterlogging":
+        points.append(
+            "Inspect low-lying drainage paths and runoff channels during heavy summer storms; consider waterlogging-tolerant species or permanent living cover."
         )
 
-    if req.regimen_agua == "secano" and (req.escenario_lluvia == "seco" or diag["estado_hidrico"]["humedad_efectiva"] < 0.16):
-        puntos.append(
-            "Confirmar agua útil real a 1–2 metros de profundidad antes de sembrar: en secano con baja reserva, evitar doble cultivo anual y ajustar fecha/densidad."
+    if req.water_regime == "rainfed" and (req.rainfall_scenario == "dry" or diag["moisture_status"]["effective_moisture"] < 0.16):
+        points.append(
+            "Confirm actual plant-available water at 1-2 m depth before seeding: under rainfed low-reserve conditions, avoid annual double cropping and adjust planting date/density."
         )
     else:
-        puntos.append(
-            "Validar fecha de corte/secado primaveral de coberturas (30–45 días antes del cultivo estival) para no competir con las lluvias de primavera."
+        points.append(
+            "Validate spring cover-crop termination timing (30-45 days before summer crop planting) so cover growth does not compete with spring recharge."
         )
 
-    if req.textura == "desconocido":
-        puntos.append("Realizar análisis granulométrico (textura), pH y profundidad efectiva del lote antes de definir fertilización o cultivos sensibles.")
-    return puntos
+    if req.texture == "unknown":
+        points.append("Run laboratory particle-size texture, pH, and effective rooting depth testing before locking in fertilization or sensitive crops.")
+    return points
 
 
-def _recopilar_fuentes_respaldo(rotaciones: List[Dict[str, Any]]) -> List[Dict[str, str]]:
-    """Consolida y desduplica todas las fuentes bibliográficas de respaldo para el menú dedicado."""
-    fuentes_vistas = set()
-    consolidadas = []
-    for rot in rotaciones:
-        for f in rot.get("fuentes", []):
-            clave = (f.get("institucion", ""), f.get("titulo", ""))
-            if clave not in fuentes_vistas:
-                fuentes_vistas.add(clave)
-                consolidadas.append({
-                    "rotacion": rot["nombre"],
-                    "institucion": f.get("institucion", "Desconocida"),
-                    "titulo": f.get("titulo", "Sin título"),
-                    "url": f.get("url", "#"),
-                    "aporte": f.get("aporte", ""),
+def _collect_supporting_sources(rotations: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Consolidate and deduplicate all bibliographic sources for the supporting sources menu."""
+    seen = set()
+    consolidated = []
+    for rot in rotations:
+        for src in rot.get("sources", []):
+            key = (src.get("institution", ""), src.get("title", ""))
+            if key not in seen:
+                seen.add(key)
+                consolidated.append({
+                    "rotation": rot["name"],
+                    "institution": src.get("institution", "Unknown"),
+                    "title": src.get("title", "Untitled"),
+                    "url": src.get("url", "#"),
+                    "contribution": src.get("contribution", ""),
                 })
-    return consolidadas
+    return consolidated
 
 
-def _analisis_tecnico_detallado(diag: Dict[str, Any], req: EvaluacionRequest) -> List[Dict[str, str]]:
-    hum = diag["estado_hidrico"]
-    suelo = diag["evaluacion_suelo"]
+def _detailed_technical_analysis(diag: Dict[str, Any], req: EvaluationRequest) -> List[Dict[str, str]]:
+    hum = diag["moisture_status"]
+    soil = diag["soil_evaluation"]
     return [
         {
-            "titulo": "1. Evaluación física e hídrica del suelo",
-            "detalle": (
-                f"Textura declarada: {suelo['capacidad_retencion']}. Régimen: {req.regimen_agua}. "
-                f"Estado de reserva: {suelo['estado_reserva']}. "
-                + " ".join(suelo["riesgos_suelo"])
+            "title": "1. Soil physical and water assessment",
+            "detail": (
+                f"Declared texture: {soil['retention_capacity']}. Water regime: {req.water_regime}. "
+                f"Reserve status: {soil['reserve_status']}. "
+                + " ".join(soil["soil_risks"])
             ),
         },
         {
-            "titulo": "2. Balance hídrico e incertidumbre de humedad",
-            "detalle": (
-                f"Lluvia proyectada: {diag['lluvia_anual_proyectada_mm']} mm/año (escenario '{req.escenario_lluvia}'). "
-                f"Humedad efectiva calibrada: {hum['humedad_efectiva']} m³/m³ ({hum['fuente']}, incertidumbre ±{hum['incertidumbre_pct']}%). "
-                f"{hum.get('nota', '')}"
+            "title": "2. Water balance and soil-moisture uncertainty",
+            "detail": (
+                f"Projected rainfall: {diag['projected_annual_rainfall_mm']} mm/yr ('{req.rainfall_scenario}' scenario). "
+                f"Calibrated effective moisture: {hum['effective_moisture']} m³/m³ ({hum['source']}, ±{hum['uncertainty_pct']}% uncertainty). "
+                f"{hum.get('note', '')}"
             ),
         },
         {
-            "titulo": "3. Cobertura, estrés térmico y ventana de heladas",
-            "detalle": (
-                f"Se estiman {diag['meses_suelo_desnudo']} meses con baja cobertura (NDVI < 0.25) y pico térmico superficial de {diag['pico_termico_ecostress_c']} °C. "
-                "En Villa Mercedes las heladas agrometeorológicas (<3 °C) promedian del 29/03 (±24 d) al 09/11 (±19 d), condicionando siembras de segunda."
+            "title": "3. Surface cover, thermal stress, and frost window",
+            "detail": (
+                f"Estimated {diag['bare_soil_months']} months with low cover (NDVI < 0.25) and surface thermal peak of {diag['ecostress_thermal_peak_c']} °C. "
+                "In Villa Mercedes, agrometeorological frosts (<3 °C) historically span Mar 29 (±24 d) to Nov 09 (±19 d), constraining late second-crop windows."
             ),
         },
     ]
@@ -174,144 +173,149 @@ def home() -> FileResponse:
     return FileResponse(str(STATIC_DIR / "index.html"))
 
 
-@app.get("/api/lotes")
-def listar_lotes() -> Dict[str, Any]:
-    lotes = _cargar_lotes()
-    resumen = [
+@app.get("/api/fields")
+def list_fields() -> Dict[str, Any]:
+    fields = _load_fields()
+    summary = [
         {
-            "id": lote.get("id", f"lote_{i}"),
-            "nombre": lote.get("nombre", f"Lote {i + 1}"),
-            "suelo": lote.get("suelo", "Franco-arenoso"),
+            "id": field.get("id", f"field_{i}"),
+            "name": field.get("name", f"Field {i + 1}"),
+            "soil": field.get("soil", "Sandy-loam"),
         }
-        for i, lote in enumerate(lotes)
+        for i, field in enumerate(fields)
     ]
-    return {"lotes": resumen}
+    return {"fields": summary}
 
 
-@app.get("/api/mapa/capas")
-def capas_mapa() -> Dict[str, Any]:
+@app.get("/api/map/layers")
+def map_layers() -> Dict[str, Any]:
     try:
-        return obtener_capas_mapa()
+        return get_map_layers()
     except FileNotFoundError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@app.post("/api/mapa/consultar")
-def consultar_mapa(req: MapaConsultaRequest) -> Dict[str, Any]:
+@app.post("/api/map/query")
+def query_map(req: MapQueryRequest) -> Dict[str, Any]:
     try:
-        return consultar_terreno(lat=req.lat, lon=req.lon, poligono=req.poligono)
+        return query_terrain(lat=req.lat, lon=req.lon, polygon=req.polygon)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except FileNotFoundError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@app.post("/api/evaluar")
-def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
-    if req.datos_lote_custom:
-        datos_lote = dict(req.datos_lote_custom)
+@app.post("/api/evaluate")
+def evaluate_field(req: EvaluationRequest) -> Dict[str, Any]:
+    if req.custom_field_data:
+        field_data = dict(req.custom_field_data)
     else:
-        lotes = _cargar_lotes()
-        lote = next((x for x in lotes if x.get("id") == req.lote_id), lotes[0] if lotes else None)
-        if not lote:
-            raise HTTPException(status_code=404, detail="No se encontró el lote seleccionado.")
-        datos_lote = dict(lote)
-        if req.lluvia_anual_manual_mm is not None:
-            lluvia_base = datos_lote.get("lluvia_gpm_mm") or [1.0] * 12
-            suma_base = sum(lluvia_base) or 12.0
-            factor = req.lluvia_anual_manual_mm / suma_base
-            datos_lote["lluvia_gpm_mm"] = [round(v * factor, 2) for v in lluvia_base]
-            datos_lote["origen_lluvia"] = "INGRESO_MANUAL"
-    if req.estado_lote == "desnudo":
-        datos_lote["ndvi_sentinel2"] = [0.15] * 12
-    elif req.estado_lote == "pastura":
-        datos_lote["ndvi_sentinel2"] = [0.45] * 12
+        fields = _load_fields()
+        field = next((x for x in fields if x.get("id") == req.field_id), fields[0] if fields else None)
+        if not field:
+            raise HTTPException(status_code=404, detail="Selected field was not found.")
+        field_data = dict(field)
 
-    profundidad_sonda_cm = None
-    medicion_sonda_directa = None
+    if req.manual_annual_rainfall_mm is not None:
+        base_rain = field_data.get("gpm_rainfall_mm") or [1.0] * 12
+        base_sum = sum(base_rain) or 12.0
+        factor = req.manual_annual_rainfall_mm / base_sum
+        field_data["gpm_rainfall_mm"] = [round(v * factor, 2) for v in base_rain]
+        field_data["rainfall_origin"] = "MANUAL_INPUT"
 
-    if req.humedad_estado == "sonda":
-        if req.sonda_largo_cm is not None and req.sonda_medicion is not None:
-            profundidad_sonda_cm = req.sonda_largo_cm
-            medicion_sonda_directa = req.sonda_medicion
-            lecturas_sonda = None
+    if req.field_condition == "bare":
+        field_data["sentinel2_ndvi"] = [0.15] * 12
+    elif req.field_condition == "degraded_pasture":
+        field_data["sentinel2_ndvi"] = [0.45] * 12
+
+    probe_depth_cm = None
+    direct_probe_reading = None
+
+    if req.moisture_status == "probe":
+        if req.probe_depth_cm is not None and req.probe_reading is not None:
+            probe_depth_cm = req.probe_depth_cm
+            direct_probe_reading = req.probe_reading
+            probe_readings = None
         else:
-            lecturas_sonda = {
-                "10cm": req.sonda_10cm if req.sonda_10cm is not None else 0.17,
-                "30cm": req.sonda_30cm if req.sonda_30cm is not None else 0.21,
-                "60cm": req.sonda_60cm if req.sonda_60cm is not None else 0.23,
+            probe_readings = {
+                "10cm": req.probe_10cm if req.probe_10cm is not None else 0.17,
+                "30cm": req.probe_30cm if req.probe_30cm is not None else 0.21,
+                "60cm": req.probe_60cm if req.probe_60cm is not None else 0.23,
             }
+    elif req.custom_field_data is not None:
+        # Map mode relies on the regional modeled moisture estimate unless the producer enters probe readings
+        probe_readings = None
     else:
-        lecturas_sonda = _HUMEDAD_PRESETS[req.humedad_estado]
+        probe_readings = _MOISTURE_PRESETS[req.moisture_status]
 
-    _PROFUNDIDAD_MAP = {"superficial": 60.0, "media": 100.0, "profunda": 150.0}
-    profundidad_efectiva_cm = _PROFUNDIDAD_MAP.get(req.profundidad_suelo, 100.0)
+    _DEPTH_MAP = {"shallow": 60.0, "medium": 100.0, "deep": 150.0}
+    effective_depth_cm = _DEPTH_MAP.get(req.soil_depth, 100.0)
 
-    sim = simular_escenarios(
-        datos_lote=datos_lote,
-        prioridad_usuario=req.prioridad,
-        tiene_ganaderia=req.tiene_ganaderia or req.sistema_productivo == "mixto",
-        escenario_lluvia=req.escenario_lluvia,
-        lecturas_sonda=lecturas_sonda,
-        textura=req.textura,
-        napa_pendiente=req.napa_pendiente,
-        regimen_agua=req.regimen_agua,
-        estado_lote=req.estado_lote,
-        horizonte=req.horizonte,
-        sistema_productivo=req.sistema_productivo,
-        profundidad_sonda_cm=profundidad_sonda_cm,
-        medicion_sonda_directa=medicion_sonda_directa,
-        profundidad_efectiva_cm=profundidad_efectiva_cm,
-        tolerancia_perdidas=req.tolerancia_perdidas,
+    sim = simulate_scenarios(
+        field_data=field_data,
+        user_priority=req.priority,
+        has_livestock=req.has_livestock or req.production_system == "mixed",
+        rainfall_scenario=req.rainfall_scenario,
+        probe_readings=probe_readings,
+        texture=req.texture,
+        water_table_slope=req.water_table_slope,
+        water_regime=req.water_regime,
+        field_condition=req.field_condition,
+        horizon=req.horizon,
+        production_system=req.production_system,
+        probe_depth_cm=probe_depth_cm,
+        direct_probe_reading=direct_probe_reading,
+        effective_depth_cm=effective_depth_cm,
+        loss_tolerance=req.loss_tolerance,
     )
 
-    diag = sim["diagnostico_lote"]
-    tarjetas = []
-    for item in sim["comparativa_rotaciones"]:
-        score = item["puntaje_idoneidad"]
-        alertas_rojas = item.get("alertas_rojas", [])
-        semaforo = _clasificar_semaforo(score, len(alertas_rojas) > 0)
-        tarjetas.append(
+    diag = sim["field_diagnosis"]
+    cards = []
+    for item in sim["rotation_comparison"]:
+        score = item["suitability_score"]
+        red_alerts = item.get("red_alerts", [])
+        traffic_light = _classify_traffic_light(score, len(red_alerts) > 0)
+        cards.append(
             {
                 "id": item["id"],
-                "nombre": item["nombre"],
-                "secuencia": item["secuencia"],
-                "horizonte_label": item["horizonte_label"],
-                "demanda_hidrica_mm": item.get("demanda_hidrica_mm"),
-                "semaforo": semaforo,
+                "name": item["name"],
+                "sequence": item["sequence"],
+                "horizon_label": item["horizon_label"],
+                "water_demand_mm": item.get("water_demand_mm"),
+                "traffic_light": traffic_light,
                 "score": score,
-                "score_base": item["score_base_dimensiones"],
-                "ajuste_contextual": item["ajuste_contextual"],
-                "resumen": item["resumen_campo"],
-                "cuando_rotar": item["cuando_rotar"],
-                "criterio_terminacion": item["criterio_terminacion"],
-                "alertas_rojas": alertas_rojas,
-                "alertas": item.get("alertas_escenario", []),
-                "dimensiones": item["dimensiones"],
-                "fuentes": item["fuentes"],
+                "base_score": item["base_dimension_score"],
+                "contextual_adjustment": item["contextual_adjustment"],
+                "summary": item["field_summary"],
+                "when_to_rotate": item["when_to_rotate"],
+                "termination_criterion": item["termination_criterion"],
+                "red_alerts": red_alerts,
+                "alerts": item.get("scenario_alerts", []),
+                "dimensions": item["dimensions"],
+                "sources": item["sources"],
             }
         )
 
     return {
-        "lote": diag["lote"],
-        "suelo": diag["suelo"],
-        "alerta_principal": diag["alerta_principal"],
-        "tarjetas": tarjetas,
-        "puntos_evaluar": _puntos_a_evaluar_en_lote(diag, req),
-        "analisis_tecnico": _analisis_tecnico_detallado(diag, req),
-        "fuentes_respaldo": _recopilar_fuentes_respaldo(sim["comparativa_rotaciones"]),
-        "pesos_aplicados": diag["pesos_aplicados"],
-        "balance_fao56": diag.get("balance_fao56"),
-        "dimensiones_faltantes": diag.get("dimensiones_faltantes", []),
-        "profundidad_efectiva_cm": diag.get("profundidad_efectiva_cm"),
-        "tolerancia_perdidas": diag.get("tolerancia_perdidas"),
-        "contexto_mvp": diag.get("contexto_mvp"),
-        "detalle_tecnico": {
-            "lluvia_anual_proyectada_mm": diag["lluvia_anual_proyectada_mm"],
-            "humedad_efectiva_m3_m3": diag["estado_hidrico"]["humedad_efectiva"],
-            "incertidumbre_pct": diag["estado_hidrico"]["incertidumbre_pct"],
-            "fuente_humedad": diag["estado_hidrico"]["fuente"],
-            "pico_termico_c": diag["pico_termico_ecostress_c"],
-            "meses_suelo_desnudo": diag["meses_suelo_desnudo"],
+        "field": diag["field"],
+        "soil": diag["soil"],
+        "primary_alert": diag["primary_alert"],
+        "cards": cards,
+        "field_check_points": _field_check_points(diag, req),
+        "technical_analysis": _detailed_technical_analysis(diag, req),
+        "supporting_sources": _collect_supporting_sources(sim["rotation_comparison"]),
+        "applied_weights": diag["applied_weights"],
+        "fao56_balance": diag.get("fao56_balance"),
+        "missing_dimensions": diag.get("missing_dimensions", []),
+        "effective_depth_cm": diag.get("effective_depth_cm"),
+        "loss_tolerance": diag.get("loss_tolerance"),
+        "mvp_context": diag.get("mvp_context"),
+        "technical_details": {
+            "projected_annual_rainfall_mm": diag["projected_annual_rainfall_mm"],
+            "effective_moisture_m3_m3": diag["moisture_status"]["effective_moisture"],
+            "uncertainty_pct": diag["moisture_status"]["uncertainty_pct"],
+            "moisture_source": diag["moisture_status"]["source"],
+            "thermal_peak_c": diag["ecostress_thermal_peak_c"],
+            "bare_soil_months": diag["bare_soil_months"],
         },
     }

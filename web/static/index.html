@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Field Shift — Asistente de Rotación de Cultivos</title>
+  <title>Field Shift — Crop Rotation Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -34,163 +34,163 @@
         </div>
         <div>
           <h1 class="text-lg sm:text-xl font-bold tracking-tight leading-tight">Field Shift</h1>
-          <p class="text-emerald-200/90 text-xs sm:text-sm">Asistente de rotación de cultivos · Corredor Villa Mercedes – Río Cuarto, San Luis</p>
+          <p class="text-emerald-200/90 text-xs sm:text-sm">Crop rotation assistant · Villa Mercedes – Rio Cuarto Corridor, San Luis</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <span class="text-xs bg-emerald-900/90 border border-emerald-700/70 text-emerald-100 px-3 py-1 rounded-full font-medium">Ceres Agronauts</span>
-        <span class="text-xs bg-white/10 text-emerald-100 px-3 py-1 rounded-full font-medium">Motor v2</span>
+        <span class="text-xs bg-white/10 text-emerald-100 px-3 py-1 rounded-full font-medium">Engine v2</span>
       </div>
     </div>
   </header>
 
   <main class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-6 flex-1">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- Panel izquierdo: Formulario de entrada -->
+      <!-- Left panel: Field input form -->
       <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
         <div class="border-b border-slate-100 pb-4">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Configuración del lote</span>
-          <h2 class="text-lg font-bold text-slate-900 mt-0.5">Datos para evaluar tu rotación</h2>
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Field configuration</span>
+          <h2 class="text-lg font-bold text-slate-900 mt-0.5">Inputs to evaluate your rotation</h2>
           <p class="text-xs sm:text-sm text-slate-500 mt-1">
-            Marcá el lote en el mapa para completar relieve, lluvias y humedad automáticamente, y completá solo las variables propias de tu campo.
+            Select your field on the map to auto-fill relief, rainfall, and soil moisture, then complete only your farm-specific conditions.
           </p>
         </div>
 
-        <form id="form-lote" class="space-y-5">
-          <!-- Opción para alternar entre Mapa (automático) y Carga Manual completa -->
-          <label for="modo-manual" class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/90 hover:border-emerald-400 hover:bg-emerald-50/40 cursor-pointer transition">
-            <input type="checkbox" id="modo-manual" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+        <form id="field-form" class="space-y-5">
+          <!-- Toggle between Map Mode (automatic) and Manual Entry Mode -->
+          <label for="manual-mode" class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/90 hover:border-emerald-400 hover:bg-emerald-50/40 cursor-pointer transition">
+            <input type="checkbox" id="manual-mode" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
             <div class="space-y-0.5">
-              <span class="block text-sm font-semibold text-slate-800">Cargar todos los datos manualmente (sin usar el mapa)</span>
+              <span class="block text-sm font-semibold text-slate-800">Enter all data manually (skip map)</span>
               <span class="block text-xs text-slate-500 leading-relaxed">
-                Activá esta opción si preferís elegir una zona de referencia e ingresar manualmente napa/pendiente y estado de humedad o sonda.
+                Enable this option if you prefer to choose a reference zone and enter water-table/slope conditions, moisture status, or probe readings manually.
               </span>
             </div>
           </label>
 
-          <!-- Bloque 1A: Ubicación en mapa (activo por defecto) -->
-          <div id="bloque-mapa" class="space-y-3 pt-1">
+          <!-- Block 1A: Map location (active by default) -->
+          <div id="map-block" class="space-y-3 pt-1">
             <div class="flex items-center justify-between gap-2">
-              <label class="block text-sm font-semibold text-slate-800">1. Ubicación del lote en el mapa</label>
-              <span class="text-[11px] font-medium text-slate-500">Clic en punto o polígono</span>
+              <label class="block text-sm font-semibold text-slate-800">1. Field location on the map</label>
+              <span class="text-[11px] font-medium text-slate-500">Click point or draw polygon</span>
             </div>
 
             <div class="flex flex-wrap gap-1.5">
-              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.675" data-lon="-65.460">Villa Mercedes</button>
-              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.161" data-lon="-64.357">Río Cuarto</button>
-              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.175" data-lon="-64.995">Achiras</button>
-              <button type="button" class="btn-salto text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.858" data-lon="-65.182">Justo Daract</button>
+              <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.675" data-lon="-65.460">Villa Mercedes</button>
+              <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.161" data-lon="-64.357">Rio Cuarto</button>
+              <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.175" data-lon="-64.995">Achiras</button>
+              <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.858" data-lon="-65.182">Justo Daract</button>
             </div>
 
-            <div id="mapa-lote" class="w-full rounded-xl border border-slate-200 overflow-hidden z-0 shadow-sm" style="height: 290px;"></div>
+            <div id="field-map" class="w-full rounded-xl border border-slate-200 overflow-hidden z-0 shadow-sm" style="height: 290px;"></div>
 
             <div class="grid grid-cols-2 gap-2.5">
               <div>
-                <label for="input-lat" class="block text-[11px] font-medium text-slate-500 mb-1">Latitud (EPSG:4326)</label>
+                <label for="input-lat" class="block text-[11px] font-medium text-slate-500 mb-1">Latitude (EPSG:4326)</label>
                 <input type="number" step="0.0001" min="-33.875" max="-33.125" id="input-lat" value="-33.6750" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
               </div>
               <div>
-                <label for="input-lon" class="block text-[11px] font-medium text-slate-500 mb-1">Longitud (EPSG:4326)</label>
+                <label for="input-lon" class="block text-[11px] font-medium text-slate-500 mb-1">Longitude (EPSG:4326)</label>
                 <input type="number" step="0.0001" min="-65.875" max="-64.125" id="input-lon" value="-65.4600" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
               </div>
             </div>
 
-            <div id="tarjeta-terreno" class="hidden rounded-xl bg-emerald-50/70 border border-emerald-200 p-3.5 text-xs space-y-2.5"></div>
+            <div id="terrain-card" class="hidden rounded-xl bg-emerald-50/70 border border-emerald-200 p-3.5 text-xs space-y-2.5"></div>
           </div>
 
-          <!-- Bloque 1B: Carga manual sin mapa (incluye las casillas eliminadas de la vista automática) -->
-          <div id="bloque-manual" class="hidden space-y-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+          <!-- Block 1B: Manual entry without map -->
+          <div id="manual-block" class="hidden space-y-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4">
             <div class="border-b border-slate-200 pb-2.5">
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Ingreso sin mapa</span>
-              <h3 class="text-sm font-bold text-slate-800 mt-0.5">1. Datos manuales de ubicación, napa y humedad</h3>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Manual entry (no map)</span>
+              <h3 class="text-sm font-bold text-slate-800 mt-0.5">1. Manual location, water table, and moisture</h3>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="lote_manual" class="block text-xs font-semibold text-slate-700 mb-1">Zona climática de referencia</label>
-                <select id="lote_manual" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm focus:border-emerald-600 focus:outline-none">
-                  <option value="vm_centro">Villa Mercedes - Cuenca Río Quinto</option>
-                  <option value="rio_cuarto_norte">Río Cuarto Norte (Córdoba)</option>
-                  <option value="vm_sur">Villa Mercedes Sur (Franja Arenosa)</option>
+                <label for="manual_field" class="block text-xs font-semibold text-slate-700 mb-1">Reference climate zone</label>
+                <select id="manual_field" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm focus:border-emerald-600 focus:outline-none">
+                  <option value="vm_central">Villa Mercedes - Rio Quinto Basin</option>
+                  <option value="rio_cuarto_north">Northern Rio Cuarto (Cordoba)</option>
+                  <option value="vm_south">Southern Villa Mercedes (Sandy Belt)</option>
                 </select>
               </div>
               <div>
-                <label for="lluvia_manual_mm" class="block text-xs font-semibold text-slate-700 mb-1">Lluvia anual propia (mm, opcional)</label>
-                <input type="number" step="10" min="100" max="2000" id="lluvia_manual_mm" placeholder="Ej: 620 (si omitís usa la zona)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm tabular-nums focus:border-emerald-600 focus:outline-none" />
+                <label for="manual_rainfall_mm" class="block text-xs font-semibold text-slate-700 mb-1">Custom annual rainfall (mm, optional)</label>
+                <input type="number" step="10" min="100" max="2000" id="manual_rainfall_mm" placeholder="e.g., 620 (blank uses zone default)" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm tabular-nums focus:border-emerald-600 focus:outline-none" />
               </div>
             </div>
 
-            <!-- Napa o pendiente (restaurado aquí en carga manual) -->
+            <!-- Water table / slope -->
             <div>
-              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Napa freática o pendiente del lote</span>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Water table or field slope</span>
               <div class="grid grid-cols-3 gap-2">
                 <label class="cursor-pointer">
-                  <input type="radio" name="napa_pendiente" value="sin_napa" class="peer sr-only" checked />
-                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Sin napa</div>
+                  <input type="radio" name="water_table_slope" value="no_water_table" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">No water table</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="napa_pendiente" value="napa_cercana" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Napa cercana</div>
+                  <input type="radio" name="water_table_slope" value="shallow_water_table" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Shallow table</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="napa_pendiente" value="pendiente_anegamiento" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Pendiente / Bajo</div>
+                  <input type="radio" name="water_table_slope" value="sloped_waterlogging" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Slope / Lowland</div>
                 </label>
               </div>
             </div>
 
-            <!-- Humedad actual / Sonda (restaurado aquí en carga manual) -->
+            <!-- Soil moisture / Probe -->
             <div>
-              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Estado actual de humedad del perfil</span>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Current soil profile moisture status</span>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <label class="cursor-pointer">
-                  <input type="radio" name="humedad_estado" value="seco" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Seco</div>
+                  <input type="radio" name="moisture_status" value="dry" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Dry</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="humedad_estado" value="normal" class="peer sr-only" checked />
+                  <input type="radio" name="moisture_status" value="normal" class="peer sr-only" checked />
                   <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Normal</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="humedad_estado" value="humedo" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Húmedo</div>
+                  <input type="radio" name="moisture_status" value="wet" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Wet</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="humedad_estado" value="sonda" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Tengo sonda</div>
+                  <input type="radio" name="moisture_status" value="probe" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-300 bg-white p-2 text-center text-xs peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">I have a probe</div>
                 </label>
               </div>
 
-              <div id="box-sonda" class="hidden mt-3 space-y-3 bg-white p-3 rounded-xl border border-slate-200">
+              <div id="probe-box" class="hidden mt-3 space-y-3 bg-white p-3 rounded-xl border border-slate-200">
                 <div class="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label for="sonda_largo_cm" class="block text-xs font-semibold text-slate-700 mb-1">Largo de sonda (cm)</label>
-                    <input type="number" step="5" min="5" max="200" id="sonda_largo_cm" value="30" placeholder="Ej: 30" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm bg-white font-medium tabular-nums" />
-                    <span class="text-[11px] text-slate-500">Profundidad del sensor</span>
+                    <label for="probe_depth_cm" class="block text-xs font-semibold text-slate-700 mb-1">Probe depth (cm)</label>
+                    <input type="number" step="5" min="5" max="200" id="probe_depth_cm" value="30" placeholder="e.g., 30" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm bg-white font-medium tabular-nums" />
+                    <span class="text-[11px] text-slate-500">Sensor installation depth</span>
                   </div>
                   <div>
-                    <label for="sonda_medicion" class="block text-xs font-semibold text-slate-700 mb-1">Medición (m³/m³)</label>
-                    <input type="number" step="0.01" min="0.03" max="0.55" id="sonda_medicion" value="0.20" placeholder="Ej: 0.20" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm bg-white font-medium tabular-nums" />
-                    <span class="text-[11px] text-slate-500">Humedad volumétrica en estrato</span>
+                    <label for="probe_reading" class="block text-xs font-semibold text-slate-700 mb-1">Reading (m³/m³)</label>
+                    <input type="number" step="0.01" min="0.03" max="0.55" id="probe_reading" value="0.20" placeholder="e.g., 0.20" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm bg-white font-medium tabular-nums" />
+                    <span class="text-[11px] text-slate-500">Volumetric moisture at stratum</span>
                   </div>
                 </div>
 
                 <details class="text-xs text-slate-600">
                   <summary class="cursor-pointer text-slate-500 hover:text-slate-800 font-medium select-none">
-                    Ingresar perfil continuo por profundidades (10, 30 y 60 cm)
+                    Enter continuous multi-depth profile (10, 30, and 60 cm)
                   </summary>
                   <div class="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-slate-200">
                     <div>
-                      <label for="sonda_10cm" class="block text-[11px] text-slate-500 mb-0.5">10 cm</label>
-                      <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_10cm" value="0.17" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
+                      <label for="probe_10cm" class="block text-[11px] text-slate-500 mb-0.5">10 cm</label>
+                      <input type="number" step="0.01" min="0.05" max="0.45" id="probe_10cm" value="0.17" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
                     </div>
                     <div>
-                      <label for="sonda_30cm" class="block text-[11px] text-slate-500 mb-0.5">30 cm</label>
-                      <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_30cm" value="0.21" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
+                      <label for="probe_30cm" class="block text-[11px] text-slate-500 mb-0.5">30 cm</label>
+                      <input type="number" step="0.01" min="0.05" max="0.45" id="probe_30cm" value="0.21" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
                     </div>
                     <div>
-                      <label for="sonda_60cm" class="block text-[11px] text-slate-500 mb-0.5">60 cm</label>
-                      <input type="number" step="0.01" min="0.05" max="0.45" id="sonda_60cm" value="0.23" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
+                      <label for="probe_60cm" class="block text-[11px] text-slate-500 mb-0.5">60 cm</label>
+                      <input type="number" step="0.01" min="0.05" max="0.45" id="probe_60cm" value="0.23" class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs bg-white tabular-nums" />
                     </div>
                   </div>
                 </details>
@@ -198,201 +198,201 @@
             </div>
           </div>
 
-          <!-- Bloque 2: Campos obligatorios del lote que solo el productor conoce -->
+          <!-- Block 2: Producer-known field characteristics -->
           <div class="space-y-4 pt-2 border-t border-slate-100">
             <div>
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Observación directa a campo</span>
-              <h3 class="text-sm font-bold text-slate-800">2. Características propias del lote</h3>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Direct field observation</span>
+              <h3 class="text-sm font-bold text-slate-800">2. Field-specific characteristics</h3>
             </div>
 
-            <!-- Textura del suelo -->
+            <!-- Soil texture -->
             <div>
-              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de suelo (textura predominante)</span>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Soil type (predominant texture)</span>
               <div class="grid grid-cols-3 gap-2">
                 <label class="cursor-pointer">
-                  <input type="radio" name="textura" value="franco_arenoso" class="peer sr-only" checked />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Franco-arenoso</div>
+                  <input type="radio" name="texture" value="sandy_loam" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Sandy loam</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="textura" value="limoso" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Limoso</div>
+                  <input type="radio" name="texture" value="silty" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Silty loam</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="textura" value="desconocido" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">No sé</div>
+                  <input type="radio" name="texture" value="unknown" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Not sure</div>
                 </label>
               </div>
             </div>
 
-            <!-- Régimen de agua -->
+            <!-- Water regime -->
             <div>
-              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Régimen hídrico</span>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">Water regime</span>
               <div class="grid grid-cols-2 gap-2">
                 <label class="cursor-pointer">
-                  <input type="radio" name="regimen_agua" value="secano" class="peer sr-only" checked />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Secano (solo lluvia)</div>
+                  <input type="radio" name="water_regime" value="rainfed" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Rainfed (rainfall only)</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="regimen_agua" value="riego" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Con riego</div>
+                  <input type="radio" name="water_regime" value="irrigated" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Irrigated</div>
                 </label>
               </div>
             </div>
 
-            <!-- Estado actual y profundidad efectiva -->
+            <!-- Cover state & effective depth -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="estado_lote" class="block text-xs font-semibold text-slate-700 mb-1">Cobertura / estado actual</label>
-                <select id="estado_lote" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
-                  <option value="rastrojo">Con rastrojo</option>
-                  <option value="desnudo">Suelo desnudo</option>
-                  <option value="pastura">Pastura instalada</option>
+                <label for="field_condition" class="block text-xs font-semibold text-slate-700 mb-1">Current cover / field condition</label>
+                <select id="field_condition" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="stubble">With stubble cover</option>
+                  <option value="bare">Bare soil</option>
+                  <option value="degraded_pasture">Established pasture</option>
                 </select>
               </div>
               <div>
-                <label for="profundidad_suelo" class="block text-xs font-semibold text-slate-700 mb-1">Profundidad efectiva del suelo</label>
-                <select id="profundidad_suelo" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
-                  <option value="superficial">Superficial (&lt; 80 cm / tosca)</option>
-                  <option value="media" selected>Media (80–120 cm)</option>
-                  <option value="profunda">Profunda (&gt; 120 cm)</option>
+                <label for="soil_depth" class="block text-xs font-semibold text-slate-700 mb-1">Effective soil depth</label>
+                <select id="soil_depth" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="shallow">Shallow (&lt; 80 cm / hardpan)</option>
+                  <option value="medium" selected>Medium (80–120 cm)</option>
+                  <option value="deep">Deep (&gt; 120 cm)</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- Bloque 3: Estrategia productiva y riesgo -->
+          <!-- Block 3: Production strategy and risk -->
           <div class="space-y-4 pt-2 border-t border-slate-100">
             <div>
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Planificación de campaña</span>
-              <h3 class="text-sm font-bold text-slate-800">3. Escenario climático y perfil productivo</h3>
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Season planning</span>
+              <h3 class="text-sm font-bold text-slate-800">3. Climate scenario &amp; farm profile</h3>
             </div>
 
-            <!-- Prioridad -->
+            <!-- Priority -->
             <div>
-              <span class="block text-xs font-semibold text-slate-700 mb-1.5">¿Qué priorizás esta campaña?</span>
+              <span class="block text-xs font-semibold text-slate-700 mb-1.5">What is your priority this season?</span>
               <div class="grid grid-cols-3 gap-2">
                 <label class="cursor-pointer">
-                  <input type="radio" name="prioridad" value="agua" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Cuidar agua</div>
+                  <input type="radio" name="priority" value="water" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Protect water</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="prioridad" value="suelo" class="peer sr-only" checked />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Cuidar suelo</div>
+                  <input type="radio" name="priority" value="soil" class="peer sr-only" checked />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Protect soil</div>
                 </label>
                 <label class="cursor-pointer">
-                  <input type="radio" name="prioridad" value="renta" class="peer sr-only" />
-                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Rentabilidad</div>
+                  <input type="radio" name="priority" value="profit" class="peer sr-only" />
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-center text-xs sm:text-sm peer-checked:border-emerald-700 peer-checked:bg-emerald-50 peer-checked:text-emerald-950 peer-checked:font-semibold transition">Profitability</div>
                 </label>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="escenario_lluvia" class="block text-xs font-semibold text-slate-700 mb-1">Escenario de lluvias</label>
-                <select id="escenario_lluvia" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
-                  <option value="seco">Año seco (La Niña)</option>
-                  <option value="normal" selected>Año normal</option>
-                  <option value="humedo">Año húmedo</option>
+                <label for="rainfall_scenario" class="block text-xs font-semibold text-slate-700 mb-1">Rainfall scenario</label>
+                <select id="rainfall_scenario" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="dry">Dry year (La Nina)</option>
+                  <option value="normal" selected>Normal year</option>
+                  <option value="wet">Wet year</option>
                 </select>
               </div>
               <div>
-                <label for="horizonte" class="block text-xs font-semibold text-slate-700 mb-1">Horizonte temporal</label>
-                <select id="horizonte" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
-                  <option value="corto">Corto plazo (1 año)</option>
-                  <option value="mediano" selected>Mediano plazo (2 años)</option>
-                  <option value="largo">Largo plazo (3–5 años)</option>
+                <label for="horizon" class="block text-xs font-semibold text-slate-700 mb-1">Planning horizon</label>
+                <select id="horizon" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="short">Short term (1 year)</option>
+                  <option value="medium" selected>Medium term (2 years)</option>
+                  <option value="long">Long term (3–5 years)</option>
                 </select>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="sistema_productivo" class="block text-xs font-semibold text-slate-700 mb-1">Sistema / Equipo</label>
-                <select id="sistema_productivo" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
-                  <option value="agricola">Solo agrícola (propio)</option>
-                  <option value="mixto">Mixto con hacienda</option>
-                  <option value="contratista">Con contratista</option>
+                <label for="production_system" class="block text-xs font-semibold text-slate-700 mb-1">System / Equipment</label>
+                <select id="production_system" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="agricultural">Crop-only (own machinery)</option>
+                  <option value="mixed">Mixed crop + livestock</option>
+                  <option value="contractor">With contractor</option>
                 </select>
               </div>
               <div>
-                <label for="tolerancia_perdidas" class="block text-xs font-semibold text-slate-700 mb-1">Tolerancia a pérdidas / riesgo</label>
-                <select id="tolerancia_perdidas" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
-                  <option value="baja" selected>Baja (resguardar capital)</option>
-                  <option value="moderada">Moderada</option>
-                  <option value="alta">Alta (mayor riesgo/OPEX)</option>
+                <label for="loss_tolerance" class="block text-xs font-semibold text-slate-700 mb-1">Loss / financial risk tolerance</label>
+                <select id="loss_tolerance" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:bg-white focus:border-emerald-600 focus:outline-none">
+                  <option value="low" selected>Low (protect capital)</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="high">High (higher risk/OPEX)</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <button type="submit" id="btn-evaluar" class="w-full bg-emerald-800 hover:bg-emerald-900 active:bg-emerald-950 text-white font-semibold text-sm sm:text-base py-3.5 rounded-xl shadow-sm transition cursor-pointer">
-            Evaluar lote y ver rotaciones
+          <button type="submit" id="btn-evaluate" class="w-full bg-emerald-800 hover:bg-emerald-900 active:bg-emerald-950 text-white font-semibold text-sm sm:text-base py-3.5 rounded-xl shadow-sm transition cursor-pointer">
+            Evaluate field &amp; compare rotations
           </button>
         </form>
       </section>
 
-      <!-- Panel derecho: Resultados con pestañas -->
+      <!-- Right panel: Tabbed results -->
       <section class="lg:col-span-7 space-y-4">
-        <div id="placeholder-resultados" class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500 space-y-2">
+        <div id="results-placeholder" class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500 space-y-2">
           <div class="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mx-auto mb-3">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
           </div>
-          <p class="text-base font-semibold text-slate-800">Seleccioná un lote en el mapa o activá la carga manual</p>
+          <p class="text-base font-semibold text-slate-800">Select a field on the map or enable manual entry</p>
           <p class="text-sm max-w-lg mx-auto">
-            Luego tocá <strong>"Evaluar lote y ver rotaciones"</strong> para comparar estrategias en <strong>Vista Campo</strong> (lenguaje práctico y calendario) y <strong>Vista Técnica</strong> (rúbrica multicriterio y balance FAO-56).
+            Then click <strong>"Evaluate field &amp; compare rotations"</strong> to review strategies in <strong>Field View</strong> (practical management and calendar) and <strong>Technical View</strong> (multicriteria rubric and FAO-56 water balance).
           </p>
         </div>
 
-        <div id="resultados" class="hidden space-y-4">
+        <div id="results-panel" class="hidden space-y-4">
           <div class="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-sm grid grid-cols-3 gap-1.5">
-            <button type="button" id="tab-campo" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-800 text-white transition text-center cursor-pointer">
-              Vista Campo
+            <button type="button" id="tab-field" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-800 text-white transition text-center cursor-pointer">
+              Field View
             </button>
-            <button type="button" id="tab-tecnica" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer">
-              Vista Técnica
+            <button type="button" id="tab-technical" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer">
+              Technical View
             </button>
-            <button type="button" id="tab-fuentes" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer">
-              Fuentes de Respaldo
+            <button type="button" id="tab-sources" class="py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer">
+              Supporting Sources
             </button>
           </div>
 
-          <!-- Pestaña 1: Vista Campo -->
-          <div id="panel-campo" class="space-y-4">
-            <div id="alerta-lote" class="rounded-2xl bg-amber-50 border border-amber-200/90 p-4 text-sm text-amber-950 font-medium"></div>
-            <div id="tarjetas-campo" class="space-y-3"></div>
+          <!-- Tab 1: Field View -->
+          <div id="panel-field" class="space-y-4">
+            <div id="field-alert" class="rounded-2xl bg-amber-50 border border-amber-200/90 p-4 text-sm text-amber-950 font-medium"></div>
+            <div id="field-cards" class="space-y-3"></div>
             <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 sm:p-5 space-y-2.5">
               <div class="flex items-center justify-between gap-2">
-                <h3 class="font-bold text-emerald-950 text-sm sm:text-base">Puntos clave a verificar en el lote</h3>
-                <span class="text-[11px] font-semibold uppercase tracking-wide text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">Revisión a campo</span>
+                <h3 class="font-bold text-emerald-950 text-sm sm:text-base">Key checklist items to verify on site</h3>
+                <span class="text-[11px] font-semibold uppercase tracking-wide text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">Field inspection</span>
               </div>
               <p class="text-xs text-emerald-900/90 leading-relaxed">
-                Aviso: todas las recomendaciones de esta herramienta son orientativas y deben ser validadas junto a un ingeniero agrónomo o conocedor del establecimiento.
+                Notice: all recommendations from this tool are indicative and should be validated with a local agronomist or farm manager.
               </p>
-              <ul id="lista-evaluar" class="text-sm text-emerald-950 list-disc list-inside space-y-1.5"></ul>
+              <ul id="check-list" class="text-sm text-emerald-950 list-disc list-inside space-y-1.5"></ul>
             </div>
           </div>
 
-          <!-- Pestaña 2: Vista Técnica -->
-          <div id="panel-tecnica" class="hidden space-y-4">
-            <div id="metricas-tecnicas" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm"></div>
-            <div id="balance-fao56" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3"></div>
-            <div id="contexto-mvp-ampliado" class="hidden space-y-4"></div>
-            <div id="dimensiones-faltantes" class="bg-amber-50/90 rounded-2xl border border-amber-200 p-4 sm:p-5 shadow-sm space-y-2"></div>
-            <div id="problematicas-tecnicas" class="space-y-3"></div>
-            <div id="tarjetas-tecnicas" class="space-y-3"></div>
+          <!-- Tab 2: Technical View -->
+          <div id="panel-technical" class="hidden space-y-4">
+            <div id="technical-metrics" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm"></div>
+            <div id="fao56-balance" class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-3"></div>
+            <div id="extended-mvp-context" class="hidden space-y-4"></div>
+            <div id="missing-dimensions" class="bg-amber-50/90 rounded-2xl border border-amber-200 p-4 sm:p-5 shadow-sm space-y-2"></div>
+            <div id="technical-issues" class="space-y-3"></div>
+            <div id="technical-cards" class="space-y-3"></div>
           </div>
 
-          <!-- Pestaña 3: Fuentes de Respaldo -->
-          <div id="panel-fuentes" class="hidden space-y-4">
+          <!-- Tab 3: Supporting Sources -->
+          <div id="panel-sources" class="hidden space-y-4">
             <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-              <h3 class="font-bold text-base text-slate-900 mb-1">Fuentes Bibliográficas y Validación Científica</h3>
+              <h3 class="font-bold text-base text-slate-900 mb-1">Bibliographic Sources &amp; Scientific Validation</h3>
               <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                Compendio de instituciones técnicas, ensayos a campo y referencias agronómicas que respaldan los criterios de evaluación para el centro-este de San Luis y sur de Córdoba.
+                Compendium of technical institutions, field trials, and agronomic references backing the evaluation criteria for central-eastern San Luis and southern Cordoba.
               </p>
-              <div id="lista-fuentes-dedicadas" class="space-y-3"></div>
+              <div id="dedicated-sources-list" class="space-y-3"></div>
             </div>
           </div>
         </div>
@@ -401,133 +401,133 @@
   </main>
 
   <script>
-    const form = document.getElementById("form-lote");
-    const modoManualCheck = document.getElementById("modo-manual");
-    const bloqueMapa = document.getElementById("bloque-mapa");
-    const bloqueManual = document.getElementById("bloque-manual");
-    const boxSonda = document.getElementById("box-sonda");
-    const placeholder = document.getElementById("placeholder-resultados");
-    const resultados = document.getElementById("resultados");
+    const form = document.getElementById("field-form");
+    const manualModeCheck = document.getElementById("manual-mode");
+    const mapBlock = document.getElementById("map-block");
+    const manualBlock = document.getElementById("manual-block");
+    const probeBox = document.getElementById("probe-box");
+    const placeholder = document.getElementById("results-placeholder");
+    const resultsPanel = document.getElementById("results-panel");
 
-    const tabCampo = document.getElementById("tab-campo");
-    const tabTecnica = document.getElementById("tab-tecnica");
-    const tabFuentes = document.getElementById("tab-fuentes");
-    const panelCampo = document.getElementById("panel-campo");
-    const panelTecnica = document.getElementById("panel-tecnica");
-    const panelFuentes = document.getElementById("panel-fuentes");
+    const tabField = document.getElementById("tab-field");
+    const tabTechnical = document.getElementById("tab-technical");
+    const tabSources = document.getElementById("tab-sources");
+    const panelField = document.getElementById("panel-field");
+    const panelTechnical = document.getElementById("panel-technical");
+    const panelSources = document.getElementById("panel-sources");
 
-    function activarTab(modo) {
-      panelCampo.classList.toggle("hidden", modo !== "campo");
-      panelTecnica.classList.toggle("hidden", modo !== "tecnica");
-      panelFuentes.classList.toggle("hidden", modo !== "fuentes");
-      const activoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-800 text-white transition text-center cursor-pointer";
-      const inactivoCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer";
-      tabCampo.className = modo === "campo" ? activoCls : inactivoCls;
-      tabTecnica.className = modo === "tecnica" ? activoCls : inactivoCls;
-      tabFuentes.className = modo === "fuentes" ? activoCls : inactivoCls;
+    function activateTab(mode) {
+      panelField.classList.toggle("hidden", mode !== "field");
+      panelTechnical.classList.toggle("hidden", mode !== "technical");
+      panelSources.classList.toggle("hidden", mode !== "sources");
+      const activeCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-800 text-white transition text-center cursor-pointer";
+      const inactiveCls = "py-2.5 px-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition text-center cursor-pointer";
+      tabField.className = mode === "field" ? activeCls : inactiveCls;
+      tabTechnical.className = mode === "technical" ? activeCls : inactiveCls;
+      tabSources.className = mode === "sources" ? activeCls : inactiveCls;
     }
 
-    tabCampo.addEventListener("click", () => activarTab("campo"));
-    tabTecnica.addEventListener("click", () => activarTab("tecnica"));
-    tabFuentes.addEventListener("click", () => activarTab("fuentes"));
+    tabField.addEventListener("click", () => activateTab("field"));
+    tabTechnical.addEventListener("click", () => activateTab("technical"));
+    tabSources.addEventListener("click", () => activateTab("sources"));
 
-    // Cargar lista de lotes de referencia para el modo manual
-    fetch("/api/lotes")
+    // Load reference pilot fields list for manual entry mode
+    fetch("/api/fields")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (!data || !Array.isArray(data.lotes) || data.lotes.length === 0) return;
-        const sel = document.getElementById("lote_manual");
-        sel.innerHTML = data.lotes
-          .map((l) => `<option value="${l.id}" ${l.id === "vm_centro" ? "selected" : ""}>${l.nombre}</option>`)
+        if (!data || !Array.isArray(data.fields) || data.fields.length === 0) return;
+        const sel = document.getElementById("manual_field");
+        sel.innerHTML = data.fields
+          .map((f) => `<option value="${f.id}" ${f.id === "vm_central" ? "selected" : ""}>${f.name}</option>`)
           .join("");
       })
       .catch(() => {});
 
-    // Alternar entre Modo Mapa (campos mínimos + mapa) y Modo Manual (todos los controles)
-    modoManualCheck.addEventListener("change", () => {
-      const manual = modoManualCheck.checked;
-      bloqueMapa.classList.toggle("hidden", manual);
-      bloqueManual.classList.toggle("hidden", !manual);
-      if (!manual) {
-        setTimeout(() => mapa.invalidateSize(), 60);
+    // Toggle between Map Mode and Manual Entry Mode
+    manualModeCheck.addEventListener("change", () => {
+      const isManual = manualModeCheck.checked;
+      mapBlock.classList.toggle("hidden", isManual);
+      manualBlock.classList.toggle("hidden", !isManual);
+      if (!isManual) {
+        setTimeout(() => fieldMap.invalidateSize(), 60);
       }
     });
 
-    document.querySelectorAll('input[name="humedad_estado"]').forEach((el) => {
+    document.querySelectorAll('input[name="moisture_status"]').forEach((el) => {
       el.addEventListener("change", (e) => {
-        boxSonda.classList.toggle("hidden", e.target.value !== "sonda");
+        probeBox.classList.toggle("hidden", e.target.value !== "probe");
       });
     });
 
-    // Estado autodetectado por el mapa
-    let datosLoteCustom = null;
-    let autoNapaPendiente = "sin_napa";
-    let autoHumedadEstado = "normal";
+    // Auto-detected map terrain state
+    let customFieldData = null;
+    let autoWaterTableSlope = "no_water_table";
+    let autoMoistureStatus = "normal";
 
     const inputLat = document.getElementById("input-lat");
     const inputLon = document.getElementById("input-lon");
-    const tarjetaTerreno = document.getElementById("tarjeta-terreno");
+    const terrainCard = document.getElementById("terrain-card");
 
-    const NAPA_LABELS = {
-      sin_napa: "Sin pendiente significativa (Sin napa)",
-      napa_cercana: "Napa cercana",
-      pendiente_anegamiento: "Pendiente / Riesgo de escurrimiento o bajo",
+    const WATER_TABLE_LABELS = {
+      no_water_table: "No significant slope (No water table)",
+      shallow_water_table: "Shallow water table",
+      sloped_waterlogging: "Sloped / Runoff or lowland risk",
     };
-    const HUMEDAD_LABELS = {
-      seco: "Seco",
+    const MOISTURE_LABELS = {
+      dry: "Dry",
       normal: "Normal",
-      humedo: "Húmedo",
+      wet: "Wet",
     };
 
-    const mapa = L.map("mapa-lote").setView([-33.50, -65.00], 9);
+    const fieldMap = L.map("field-map").setView([-33.50, -65.00], 9);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap",
       maxZoom: 18,
-    }).addTo(mapa);
+    }).addTo(fieldMap);
 
-    // Rectángulo límite de la caja MVP
+    // MVP bounding box boundary & initial reset state
     const MVP_BBOX = { latMin: -33.875, latMax: -33.125, lonMin: -65.875, lonMax: -64.125 };
-    const PUNTO_INICIAL = { lat: -33.675, lon: -65.460 };
+    const INITIAL_POINT = { lat: -33.675, lon: -65.460 };
     const boundsMVP = [[MVP_BBOX.latMin, MVP_BBOX.lonMin], [MVP_BBOX.latMax, MVP_BBOX.lonMax]];
-    L.rectangle(boundsMVP, { color: "#065f46", weight: 2, fillOpacity: 0.04, dashArray: "6,4" }).addTo(mapa);
+    L.rectangle(boundsMVP, { color: "#065f46", weight: 2, fillOpacity: 0.04, dashArray: "6,4" }).addTo(fieldMap);
 
-    function estaDentroCajaMVP(lat, lon) {
+    function isInsideMVPBox(lat, lon) {
       return lat >= MVP_BBOX.latMin && lat <= MVP_BBOX.latMax && lon >= MVP_BBOX.lonMin && lon <= MVP_BBOX.lonMax;
     }
 
-    function volverAPuntoInicial(mensajeError) {
-      datosLoteCustom = null;
+    function resetToInitialPoint(errorMessage) {
+      customFieldData = null;
       drawnItems.clearLayers();
-      L.marker([PUNTO_INICIAL.lat, PUNTO_INICIAL.lon]).addTo(drawnItems);
-      mapa.setView([PUNTO_INICIAL.lat, PUNTO_INICIAL.lon], 9);
-      inputLat.value = PUNTO_INICIAL.lat.toFixed(4);
-      inputLon.value = PUNTO_INICIAL.lon.toFixed(4);
-      tarjetaTerreno.classList.remove("hidden");
-      tarjetaTerreno.innerHTML = `<p class="text-rose-700 font-medium">${mensajeError}</p>`;
+      L.marker([INITIAL_POINT.lat, INITIAL_POINT.lon]).addTo(drawnItems);
+      fieldMap.setView([INITIAL_POINT.lat, INITIAL_POINT.lon], 9);
+      inputLat.value = INITIAL_POINT.lat.toFixed(4);
+      inputLon.value = INITIAL_POINT.lon.toFixed(4);
+      terrainCard.classList.remove("hidden");
+      terrainCard.innerHTML = `<p class="text-rose-700 font-medium">${errorMessage}</p>`;
     }
 
-    // Capas interactivas del MVP homogéneo (19 estaciones, SISINTA, Susceptibilidad NO_VALIDADA y Pendiente 500m)
-    const capaEstaciones = L.layerGroup().addTo(mapa);
-    const capaSisinta = L.layerGroup();
-    const capaSusceptibilidad = L.layerGroup();
-    const capaPendiente = L.layerGroup();
+    // Interactive homogeneous MVP overlays (19 stations, SISINTA, UNVALIDATED susceptibility, 500m slope)
+    const stationsLayer = L.layerGroup().addTo(fieldMap);
+    const sisintaLayer = L.layerGroup();
+    const susceptibilityLayer = L.layerGroup();
+    const slopeLayer = L.layerGroup();
     const canvasRenderer = L.canvas({ padding: 0.3 });
 
     L.control.layers(null, {
-      "Estaciones terrestres (19)": capaEstaciones,
-      "Perfiles de suelo INTA SISINTA": capaSisinta,
-      "Susceptibilidad topográfica (NO_VALIDADA)": capaSusceptibilidad,
-      "Pendiente SRTM 500m (%)": capaPendiente,
-    }, { collapsed: true }).addTo(mapa);
+      "Ground weather stations (19)": stationsLayer,
+      "INTA SISINTA soil profiles": sisintaLayer,
+      "Topographic susceptibility (UNVALIDATED)": susceptibilityLayer,
+      "SRTM 500m slope (%)": slopeLayer,
+    }, { collapsed: true }).addTo(fieldMap);
 
-    fetch("/api/mapa/capas")
+    fetch("/api/map/layers")
       .then((r) => (r.ok ? r.json() : null))
-      .then((capas) => {
-        if (!capas) return;
-        (capas.estaciones || []).forEach((st) => {
-          const okObs = String(st.estado_validacion).startsWith("OBSERVADO");
-          const limitada = String(st.estado_validacion).includes("LIMITACIONES") || String(st.estado_validacion).includes("meses");
-          const color = !okObs ? "#dc2626" : (limitada ? "#d97706" : "#0284c7");
+      .then((layers) => {
+        if (!layers) return;
+        (layers.stations || []).forEach((st) => {
+          const okObs = String(st.validation_status).startsWith("OBSERVED");
+          const limited = String(st.validation_status).includes("LIMITATIONS") || String(st.validation_status).includes("months");
+          const color = !okObs ? "#dc2626" : (limited ? "#d97706" : "#0284c7");
           L.circleMarker([st.lat, st.lon], {
             radius: 5.5,
             color: color,
@@ -536,37 +536,37 @@
             weight: 1.5,
           })
             .bindPopup(
-              `<strong>${st.nombre}</strong> (${st.estacion_id})<br/>` +
-              `Red: ${st.red}<br/>` +
+              `<strong>${st.name}</strong> (${st.station_id})<br/>` +
+              `Network: ${st.network}<br/>` +
               `Variables: ${st.variables}<br/>` +
-              `Estado: <strong>${st.estado_validacion}</strong>`
+              `Status: <strong>${st.validation_status}</strong>`
             )
-            .addTo(capaEstaciones);
+            .addTo(stationsLayer);
         });
 
-        (capas.sisinta || []).forEach((p) => {
-          const completo = p.estado_completitud === "COMPLETO";
-          const texTxt = (p.arcilla_pct != null || p.limo_pct != null || p.arena_pct != null)
-            ? `Arcilla: ${p.arcilla_pct ?? "-"}% · Limo: ${p.limo_pct ?? "-"}% · Arena: ${p.arena_pct ?? "-"}%`
-            : "Sin granulometría completa";
+        (layers.sisinta || []).forEach((p) => {
+          const complete = p.completeness_status === "COMPLETE" || p.completeness_status === "COMPLETE_DATA";
+          const texTxt = (p.clay_pct != null || p.silt_pct != null || p.sand_pct != null)
+            ? `Clay: ${p.clay_pct ?? "-"}% · Silt: ${p.silt_pct ?? "-"}% · Sand: ${p.sand_pct ?? "-"}%`
+            : "Incomplete particle-size data";
           L.circleMarker([p.lat, p.lon], {
             radius: 4.5,
             color: "#6d28d9",
-            fillColor: completo ? "#7c3aed" : "#a78bfa",
-            fillOpacity: completo ? 0.9 : 0.65,
+            fillColor: complete ? "#7c3aed" : "#a78bfa",
+            fillOpacity: complete ? 0.9 : 0.65,
             weight: 1,
           })
             .bindPopup(
-              `<strong>Perfil SISINTA #${p.no_registro ?? "s/n"}</strong><br/>` +
-              `Horizonte: ${p.prof_sup_cm ?? 0}–${p.prof_inf_cm ?? "?"} cm<br/>` +
+              `<strong>SISINTA Profile #${p.record_no ?? "N/A"}</strong><br/>` +
+              `Horizon: ${p.upper_depth_cm ?? 0}-${p.lower_depth_cm ?? "?"} cm<br/>` +
               `${texTxt}<br/>` +
-              `pH: ${p.ph_agua ?? "-"} · CO: ${p.carbono_organico_pct ?? "-"}% · Agua útil: ${p.agua_util_calc_pct ?? "-"}%<br/>` +
-              `Estado: <strong>${p.estado_completitud}</strong>`
+              `pH: ${p.ph_water ?? "-"} · OC: ${p.organic_carbon_pct ?? "-"}% · Avail. water: ${p.calc_available_water_pct ?? "-"}%<br/>` +
+              `Status: <strong>${p.completeness_status}</strong>`
             )
-            .addTo(capaSisinta);
+            .addTo(sisintaLayer);
         });
 
-        (capas.grilla_500m || []).forEach(([lat, lon, susc, pend]) => {
+        (layers.grid_500m || []).forEach(([lat, lon, susc, slope]) => {
           const suscColor = susc >= 0.6 ? "#dc2626" : (susc >= 0.35 ? "#f59e0b" : "#10b981");
           L.circleMarker([lat, lon], {
             renderer: canvasRenderer,
@@ -576,28 +576,28 @@
             fillOpacity: 0.45,
           })
             .bindPopup(
-              `<strong>Susceptibilidad topográfica: ${susc}</strong><br/>` +
-              `Etiqueta: NO_VALIDADA (índice TWI, no es mapa de inundación)`
+              `<strong>Topographic susceptibility: ${susc}</strong><br/>` +
+              `Label: UNVALIDATED (TWI index, NOT a flood map)`
             )
-            .addTo(capaSusceptibilidad);
+            .addTo(susceptibilityLayer);
 
-          const pendColor = pend >= 3.0 ? "#b91c1c" : (pend >= 1.5 ? "#f59e0b" : "#059669");
+          const slopeColor = slope >= 3.0 ? "#b91c1c" : (slope >= 1.5 ? "#f59e0b" : "#059669");
           L.circleMarker([lat, lon], {
             renderer: canvasRenderer,
             radius: 5,
             stroke: false,
-            fillColor: pendColor,
+            fillColor: slopeColor,
             fillOpacity: 0.45,
           })
-            .bindPopup(`<strong>Pendiente SRTM 500m: ${pend}%</strong>`)
-            .addTo(capaPendiente);
+            .bindPopup(`<strong>SRTM 500m Slope: ${slope}%</strong>`)
+            .addTo(slopeLayer);
         });
       })
       .catch(() => {});
 
     const drawnItems = new L.FeatureGroup();
-    mapa.addLayer(drawnItems);
-    L.marker([-33.675, -65.460]).addTo(drawnItems);
+    fieldMap.addLayer(drawnItems);
+    L.marker([INITIAL_POINT.lat, INITIAL_POINT.lon]).addTo(drawnItems);
 
     const drawControl = new L.Control.Draw({
       draw: {
@@ -610,117 +610,117 @@
       },
       edit: { featureGroup: drawnItems },
     });
-    mapa.addControl(drawControl);
+    fieldMap.addControl(drawControl);
 
-    async function consultarTerrenoMapa(payloadMapa, autoEvaluar = true) {
+    async function queryMapTerrain(mapPayload, autoEvaluate = true) {
       try {
-        tarjetaTerreno.classList.remove("hidden");
-        tarjetaTerreno.innerHTML = "<p class='text-emerald-900 font-medium'>Consultando relieve SRTM, lluvia PIHC, SMN y SMAP...</p>";
-        const res = await fetch("/api/mapa/consultar", {
+        terrainCard.classList.remove("hidden");
+        terrainCard.innerHTML = "<p class='text-emerald-900 font-medium'>Querying SRTM 1 ha relief, NASA POWER climate, station temperatures, and modeled soil moisture...</p>";
+        const res = await fetch("/api/map/query", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payloadMapa),
+          body: JSON.stringify(mapPayload),
         });
         if (!res.ok) {
           const err = await res.json();
-          throw new Error(err.detail || "Error al consultar terreno");
+          throw new Error(err.detail || "Error querying terrain data");
         }
         const info = await res.json();
-        datosLoteCustom = info.datos_lote;
-        autoNapaPendiente = info.autodetectado.napa_pendiente || "sin_napa";
-        autoHumedadEstado = info.autodetectado.humedad_estado || "normal";
+        customFieldData = info.field_data;
+        autoWaterTableSlope = info.auto_detected.water_table_slope || "no_water_table";
+        autoMoistureStatus = info.auto_detected.moisture_status || "normal";
 
-        inputLat.value = info.coordenadas.lat.toFixed(4);
-        inputLon.value = info.coordenadas.lon.toFixed(4);
+        inputLat.value = info.coordinates.lat.toFixed(4);
+        inputLon.value = info.coordinates.lon.toFixed(4);
 
-        const t = info.terreno;
-        const ctx = info.contexto_mvp || {};
-        const sis = ctx.sisinta_cercano || null;
-        const estLluvia = (info.provenance.estaciones_lluvia || []).map((e) => `${e.nombre} (${e.distancia_km} km)`).join(" · ");
+        const t = info.terrain;
+        const ctx = info.mvp_context || {};
+        const sis = ctx.nearest_sisinta || null;
+        const rainSt = (info.provenance.rainfall_stations || []).map((e) => `${e.name} (${e.distance_km} km)`).join(" · ");
         const sisHtml = sis ? `
           <div class="text-[11px] bg-white border border-emerald-200 rounded-lg p-2 text-slate-700 space-y-0.5">
-            <div class="font-semibold text-slate-800">Referencia visual INTA SISINTA más cercana (a ${sis.distancia_km} km · ${sis.estado_completitud}):</div>
-            <div>Horizonte ${sis.prof_sup_cm ?? 0}–${sis.prof_inf_cm ?? "?"} cm · Arcilla ${sis.arcilla_pct ?? "-"}% / Limo ${sis.limo_pct ?? "-"}% / Arena ${sis.arena_pct ?? "-"}% · pH ${sis.ph_agua ?? "-"} · CO ${sis.carbono_organico_pct ?? "-"}%.</div>
-            <div class="text-slate-500">Solo informativo: confirmá la textura real del lote en el paso 2.</div>
+            <div class="font-semibold text-slate-800">Nearest INTA SISINTA visual reference (${sis.distance_km} km away · ${sis.completeness_status}):</div>
+            <div>Horizon ${sis.upper_depth_cm ?? 0}-${sis.lower_depth_cm ?? "?"} cm · Clay ${sis.clay_pct ?? "-"}% / Silt ${sis.silt_pct ?? "-"}% / Sand ${sis.sand_pct ?? "-"}% · pH ${sis.ph_water ?? "-"} · OC ${sis.organic_carbon_pct ?? "-"}%.</div>
+            <div class="text-slate-500">Visual context only: confirm your field's actual soil texture in Step 2.</div>
           </div>` : "";
 
-        tarjetaTerreno.innerHTML = `
+        terrainCard.innerHTML = `
           <div class="flex items-center justify-between gap-2">
-            <span class="font-bold text-emerald-950">Datos detectados del terreno</span>
-            <span class="text-[11px] font-semibold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-md">Autocompletado</span>
+            <span class="font-bold text-emerald-950">Detected terrain parameters</span>
+            <span class="text-[11px] font-semibold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-md">Auto-filled</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-700 tabular-nums">
-            <div><span class="text-slate-500">Superficie:</span> <strong>${t.superficie_ha} ha</strong></div>
-            <div><span class="text-slate-500">Elevación:</span> <strong>${t.elevacion_m} m</strong></div>
-            <div><span class="text-slate-500">Pendiente SRTM:</span> <strong>${t.pendiente_pct}%</strong> (máx ${t.pendiente_max_pct}%)</div>
-            <div><span class="text-slate-500">Lluvia anual:</span> <strong>${t.lluvia_anual_mm} mm</strong></div>
-            <div><span class="text-slate-500">Humedad SMAP:</span> <strong>${t.sm_surface_media} m³/m³</strong></div>
-            <div><span class="text-slate-500">Tmin transición:</span> <strong>${t.tmin_transicion_c} °C</strong></div>
-            ${t.susceptibilidad_topografica != null ? `<div><span class="text-slate-500">Susceptibilidad TWI:</span> <strong>${t.susceptibilidad_topografica}</strong> <span class="text-[10px] text-amber-800">(NO_VALIDADA)</span></div>` : ""}
+            <div><span class="text-slate-500">Area:</span> <strong>${t.area_ha} ha</strong></div>
+            <div><span class="text-slate-500">Elevation:</span> <strong>${t.elevation_m} m</strong></div>
+            <div><span class="text-slate-500">SRTM slope:</span> <strong>${t.slope_pct}%</strong> (max ${t.max_slope_pct}%)</div>
+            <div><span class="text-slate-500">POWER rain (raw):</span> <strong>${t.annual_rainfall_mm} mm</strong></div>
+            <div><span class="text-slate-500">Model moisture:</span> <strong>${t.sm_surface_mean} m³/m³</strong> <span class="text-[10px] text-amber-800">(UNVALIDATED)</span></div>
+            <div><span class="text-slate-500">Transition Tmin:</span> <strong>${t.transition_tmin_c} °C</strong></div>
+            ${t.topographic_susceptibility != null ? `<div><span class="text-slate-500">TWI susceptibility:</span> <strong>${t.topographic_susceptibility}</strong> <span class="text-[10px] text-amber-800">(UNVALIDATED)</span></div>` : ""}
           </div>
           <div class="flex flex-wrap gap-1.5 pt-0.5">
             <span class="text-[11px] bg-white border border-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md font-medium">
-              Relieve/Napa detectada: <strong>${NAPA_LABELS[autoNapaPendiente] || autoNapaPendiente}</strong>
+              Detected relief/table: <strong>${WATER_TABLE_LABELS[autoWaterTableSlope] || autoWaterTableSlope}</strong>
             </span>
             <span class="text-[11px] bg-white border border-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md font-medium">
-              Humedad superficial detectada: <strong>${HUMEDAD_LABELS[autoHumedadEstado] || autoHumedadEstado}</strong>
+              Modeled surface moisture: <strong>${MOISTURE_LABELS[autoMoistureStatus] || autoMoistureStatus}</strong>
             </span>
           </div>
           ${sisHtml}
-          <div class="text-[11px] text-emerald-900"><strong>Estaciones:</strong> ${estLluvia}</div>
-          <div class="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-2"><strong>Aviso de escala:</strong> ${info.advertencia_escala}</div>
+          <div class="text-[11px] text-emerald-900"><strong>Nearest stations:</strong> ${rainSt || "No observed station metadata"}</div>
+          <div class="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-2"><strong>Scale warning:</strong> ${info.scale_warning}</div>
         `;
 
-        if (autoEvaluar) {
+        if (autoEvaluate) {
           form.requestSubmit();
         }
         return true;
       } catch (err) {
-        tarjetaTerreno.innerHTML = `<p class='text-rose-700 font-medium'>Error: ${err.message}</p>`;
+        terrainCard.innerHTML = `<p class='text-rose-700 font-medium'>Error: ${err.message}</p>`;
         return false;
       }
     }
 
-    mapa.on("click", (e) => {
-      if (!estaDentroCajaMVP(e.latlng.lat, e.latlng.lng)) {
-        volverAPuntoInicial("Fuera de cobertura MVP: seleccioná un punto dentro del rectángulo permitido (lat -33.875 a -33.125, lon -65.875 a -64.125). Se restableció el punto inicial.");
+    fieldMap.on("click", (e) => {
+      if (!isInsideMVPBox(e.latlng.lat, e.latlng.lng)) {
+        resetToInitialPoint("Outside MVP coverage: please select a point within the allowed bounding box (lat -33.875 to -33.125, lon -65.875 to -64.125). Reset to initial point.");
         return;
       }
       drawnItems.clearLayers();
       L.marker(e.latlng).addTo(drawnItems);
-      consultarTerrenoMapa({ lat: e.latlng.lat, lon: e.latlng.lng }, true);
+      queryMapTerrain({ lat: e.latlng.lat, lon: e.latlng.lng }, true);
     });
 
-    mapa.on(L.Draw.Event.CREATED, (e) => {
+    fieldMap.on(L.Draw.Event.CREATED, (e) => {
       if (e.layerType === "polygon") {
         const coords = e.layer.getLatLngs()[0].map((ll) => [ll.lat, ll.lng]);
-        if (!coords.every(([lat, lon]) => estaDentroCajaMVP(lat, lon))) {
-          volverAPuntoInicial("Fuera de cobertura MVP: todo el polígono debe quedar dentro del rectángulo permitido. Se restableció el punto inicial.");
+        if (!coords.every(([lat, lon]) => isInsideMVPBox(lat, lon))) {
+          resetToInitialPoint("Outside MVP coverage: the entire polygon must stay within the allowed bounding box. Reset to initial point.");
           return;
         }
         drawnItems.clearLayers();
         drawnItems.addLayer(e.layer);
-        consultarTerrenoMapa({ poligono: coords }, true);
+        queryMapTerrain({ polygon: coords }, true);
       } else if (e.layerType === "marker") {
         const ll = e.layer.getLatLng();
-        if (!estaDentroCajaMVP(ll.lat, ll.lng)) {
-          volverAPuntoInicial("Fuera de cobertura MVP: seleccioná un punto dentro del rectángulo permitido. Se restableció el punto inicial.");
+        if (!isInsideMVPBox(ll.lat, ll.lng)) {
+          resetToInitialPoint("Outside MVP coverage: please select a point within the allowed bounding box. Reset to initial point.");
           return;
         }
         drawnItems.clearLayers();
         drawnItems.addLayer(e.layer);
-        consultarTerrenoMapa({ lat: ll.lat, lon: ll.lng }, true);
+        queryMapTerrain({ lat: ll.lat, lon: ll.lng }, true);
       }
     });
 
-    document.querySelectorAll(".btn-salto").forEach((btn) => {
+    document.querySelectorAll(".btn-jump").forEach((btn) => {
       btn.addEventListener("click", () => {
         const lat = parseFloat(btn.dataset.lat);
         const lon = parseFloat(btn.dataset.lon);
-        mapa.setView([lat, lon], 11);
+        fieldMap.setView([lat, lon], 11);
         drawnItems.clearLayers();
         L.marker([lat, lon]).addTo(drawnItems);
-        consultarTerrenoMapa({ lat, lon }, true);
+        queryMapTerrain({ lat, lon }, true);
       });
     });
 
@@ -729,301 +729,301 @@
         const lat = parseFloat(inputLat.value);
         const lon = parseFloat(inputLon.value);
         if (!isNaN(lat) && !isNaN(lon)) {
-          if (!estaDentroCajaMVP(lat, lon)) {
-            volverAPuntoInicial("Fuera de cobertura MVP: las coordenadas deben estar dentro de lat [-33.875, -33.125] y lon [-65.875, -64.125]. Se restableció el punto inicial.");
+          if (!isInsideMVPBox(lat, lon)) {
+            resetToInitialPoint("Outside MVP coverage: coordinates must stay within lat [-33.875, -33.125] and lon [-65.875, -64.125]. Reset to initial point.");
             return;
           }
-          mapa.setView([lat, lon], 12);
+          fieldMap.setView([lat, lon], 12);
           drawnItems.clearLayers();
           L.marker([lat, lon]).addTo(drawnItems);
-          consultarTerrenoMapa({ lat, lon }, true);
+          queryMapTerrain({ lat, lon }, true);
         }
       });
     });
 
-    const SEMAFORO_ESTILOS = {
-      recomendado: {
-        borde: "border-l-emerald-600",
+    const TRAFFIC_LIGHT_STYLES = {
+      recommended: {
+        border: "border-l-emerald-600",
         badge: "bg-emerald-50 text-emerald-800 border border-emerald-200",
         dot: "bg-emerald-500",
-        texto: "Recomendado",
+        text: "Recommended",
       },
-      precaucion: {
-        borde: "border-l-amber-500",
+      caution: {
+        border: "border-l-amber-500",
         badge: "bg-amber-50 text-amber-800 border border-amber-200",
         dot: "bg-amber-500",
-        texto: "Precaución",
+        text: "Caution",
       },
-      no_recomendado: {
-        borde: "border-l-rose-600",
+      not_recommended: {
+        border: "border-l-rose-600",
         badge: "bg-rose-50 text-rose-800 border border-rose-200",
         dot: "bg-rose-500",
-        texto: "Alerta / No recomendado",
+        text: "Alert / Not recommended",
       },
     };
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const submitBtn = form.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.innerText : "Evaluar";
+      const originalBtnText = submitBtn ? submitBtn.innerText : "Evaluate";
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = "Evaluando rotaciones...";
+        submitBtn.innerText = "Evaluating rotations...";
       }
 
       try {
-        const esManual = modoManualCheck.checked;
+        const isManual = manualModeCheck.checked;
 
-        // Si está en modo mapa y todavía no consultó datos del mapa, consultar la coordenada actual del pin
-        if (!esManual && !datosLoteCustom) {
+        // In map mode, if terrain hasn't been queried yet, query the current pin coordinate first
+        if (!isManual && !customFieldData) {
           const lat = parseFloat(inputLat.value);
           const lon = parseFloat(inputLon.value);
-          const ok = await consultarTerrenoMapa({ lat, lon }, false);
+          const ok = await queryMapTerrain({ lat, lon }, false);
           if (!ok) return;
         }
 
-        const sistema = document.getElementById("sistema_productivo").value;
-        const humedadManual = esManual
-          ? document.querySelector('#bloque-manual input[name="humedad_estado"]:checked').value
-          : autoHumedadEstado;
-        const napaManual = esManual
-          ? document.querySelector('#bloque-manual input[name="napa_pendiente"]:checked').value
-          : autoNapaPendiente;
-        const lluviaManualVal = esManual && document.getElementById("lluvia_manual_mm").value
-          ? parseFloat(document.getElementById("lluvia_manual_mm").value)
+        const system = document.getElementById("production_system").value;
+        const moistureVal = isManual
+          ? document.querySelector('#manual-block input[name="moisture_status"]:checked').value
+          : autoMoistureStatus;
+        const waterTableVal = isManual
+          ? document.querySelector('#manual-block input[name="water_table_slope"]:checked').value
+          : autoWaterTableSlope;
+        const manualRainVal = isManual && document.getElementById("manual_rainfall_mm").value
+          ? parseFloat(document.getElementById("manual_rainfall_mm").value)
           : null;
 
         const payload = {
-          lote_id: esManual ? document.getElementById("lote_manual").value : (datosLoteCustom ? datosLoteCustom.id : "vm_centro"),
-          datos_lote_custom: esManual ? null : datosLoteCustom,
-          lluvia_anual_manual_mm: lluviaManualVal,
-          textura: document.querySelector('input[name="textura"]:checked').value,
-          napa_pendiente: napaManual,
-          regimen_agua: document.querySelector('input[name="regimen_agua"]:checked').value,
-          humedad_estado: humedadManual,
-          sonda_largo_cm: (esManual && humedadManual === "sonda" && document.getElementById("sonda_largo_cm").value) ? parseFloat(document.getElementById("sonda_largo_cm").value) : null,
-          sonda_medicion: (esManual && humedadManual === "sonda" && document.getElementById("sonda_medicion").value) ? parseFloat(document.getElementById("sonda_medicion").value) : null,
-          sonda_10cm: (esManual && humedadManual === "sonda") ? parseFloat(document.getElementById("sonda_10cm").value) : null,
-          sonda_30cm: (esManual && humedadManual === "sonda") ? parseFloat(document.getElementById("sonda_30cm").value) : null,
-          sonda_60cm: (esManual && humedadManual === "sonda") ? parseFloat(document.getElementById("sonda_60cm").value) : null,
-          estado_lote: document.getElementById("estado_lote").value,
-          escenario_lluvia: document.getElementById("escenario_lluvia").value,
-          prioridad: document.querySelector('input[name="prioridad"]:checked').value,
-          horizonte: document.getElementById("horizonte").value,
-          sistema_productivo: sistema,
-          tiene_ganaderia: sistema === "mixto",
-          profundidad_suelo: document.getElementById("profundidad_suelo").value,
-          tolerancia_perdidas: document.getElementById("tolerancia_perdidas").value,
+          field_id: isManual ? document.getElementById("manual_field").value : (customFieldData ? customFieldData.id : "vm_central"),
+          custom_field_data: isManual ? null : customFieldData,
+          manual_annual_rainfall_mm: manualRainVal,
+          texture: document.querySelector('input[name="texture"]:checked').value,
+          water_table_slope: waterTableVal,
+          water_regime: document.querySelector('input[name="water_regime"]:checked').value,
+          moisture_status: moistureVal,
+          probe_depth_cm: (isManual && moistureVal === "probe" && document.getElementById("probe_depth_cm").value) ? parseFloat(document.getElementById("probe_depth_cm").value) : null,
+          probe_reading: (isManual && moistureVal === "probe" && document.getElementById("probe_reading").value) ? parseFloat(document.getElementById("probe_reading").value) : null,
+          probe_10cm: (isManual && moistureVal === "probe") ? parseFloat(document.getElementById("probe_10cm").value) : null,
+          probe_30cm: (isManual && moistureVal === "probe") ? parseFloat(document.getElementById("probe_30cm").value) : null,
+          probe_60cm: (isManual && moistureVal === "probe") ? parseFloat(document.getElementById("probe_60cm").value) : null,
+          field_condition: document.getElementById("field_condition").value,
+          rainfall_scenario: document.getElementById("rainfall_scenario").value,
+          priority: document.querySelector('input[name="priority"]:checked').value,
+          horizon: document.getElementById("horizon").value,
+          production_system: system,
+          has_livestock: system === "mixed",
+          soil_depth: document.getElementById("soil_depth").value,
+          loss_tolerance: document.getElementById("loss_tolerance").value,
         };
 
-        const res = await fetch("/api/evaluar", {
+        const res = await fetch("/api/evaluate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
           const err = await res.json();
-          throw new Error(err.detail || "No se pudo completar la evaluación.");
+          throw new Error(err.detail || "Could not complete the evaluation.");
         }
         const data = await res.json();
 
-        // Pestaña 1: Vista Campo
-        document.getElementById("alerta-lote").innerHTML = `
-          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 block mb-0.5">Diagnóstico principal del lote</span>
-          <span>${data.lote} (${data.suelo}): ${data.alerta_principal}</span>
+        // Tab 1: Field View
+        document.getElementById("field-alert").innerHTML = `
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 block mb-0.5">Primary field diagnosis</span>
+          <span>${data.field} (${data.soil}): ${data.primary_alert}</span>
         `;
 
-        document.getElementById("tarjetas-campo").innerHTML = data.tarjetas
+        document.getElementById("field-cards").innerHTML = data.cards
           .map((t) => {
-            const est = SEMAFORO_ESTILOS[t.semaforo] || SEMAFORO_ESTILOS.precaucion;
-            const rojasHtml = (t.alertas_rojas || []).length
-              ? `<div class="mt-3 bg-rose-50/90 rounded-xl p-3 border border-rose-200"><p class="text-xs font-bold text-rose-900 mb-1">Riesgos críticos a revisar con un profesional</p><ul class="text-xs text-rose-900 list-disc list-inside space-y-1">${t.alertas_rojas.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
+            const st = TRAFFIC_LIGHT_STYLES[t.traffic_light] || TRAFFIC_LIGHT_STYLES.caution;
+            const redHtml = (t.red_alerts || []).length
+              ? `<div class="mt-3 bg-rose-50/90 rounded-xl p-3 border border-rose-200"><p class="text-xs font-bold text-rose-900 mb-1">Critical risks to review with an agronomist</p><ul class="text-xs text-rose-900 list-disc list-inside space-y-1">${t.red_alerts.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
               : "";
-            const alertasHtml = (t.alertas || []).length
-              ? `<div class="mt-3 bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-xs font-semibold text-slate-700 mb-1">Consideraciones contextuales</p><ul class="text-xs text-slate-600 list-disc list-inside space-y-0.5">${t.alertas.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
+            const alertsHtml = (t.alerts || []).length
+              ? `<div class="mt-3 bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-xs font-semibold text-slate-700 mb-1">Contextual considerations</p><ul class="text-xs text-slate-600 list-disc list-inside space-y-0.5">${t.alerts.map((a) => `<li>${a}</li>`).join("")}</ul></div>`
               : "";
             return `
-              <article class="bg-white rounded-2xl border border-slate-200 border-l-4 ${est.borde} p-4 sm:p-5 shadow-sm">
+              <article class="bg-white rounded-2xl border border-slate-200 border-l-4 ${st.border} p-4 sm:p-5 shadow-sm">
                 <div class="flex items-start justify-between gap-3">
                   <div>
-                    <h3 class="font-bold text-base text-slate-900">${t.nombre}</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">${t.secuencia} · ${t.horizonte_label}</p>
+                    <h3 class="font-bold text-base text-slate-900">${t.name}</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">${t.sequence} · ${t.horizon_label}</p>
                   </div>
-                  <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${est.badge}">
-                    <span class="w-2 h-2 rounded-full ${est.dot}"></span>
-                    ${est.texto}
+                  <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${st.badge}">
+                    <span class="w-2 h-2 rounded-full ${st.dot}"></span>
+                    ${st.text}
                   </span>
                 </div>
-                <p class="mt-3 text-sm text-slate-700 leading-relaxed">${t.resumen}</p>
+                <p class="mt-3 text-sm text-slate-700 leading-relaxed">${t.summary}</p>
                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs bg-emerald-50/60 p-3 rounded-xl border border-emerald-100">
-                  <div><strong class="text-emerald-950 block mb-0.5">Cuándo rotar</strong><span class="text-slate-700">${t.cuando_rotar}</span></div>
-                  <div><strong class="text-emerald-950 block mb-0.5">Cosecha / secado</strong><span class="text-slate-700">${t.criterio_terminacion}</span></div>
+                  <div><strong class="text-emerald-950 block mb-0.5">When to rotate</strong><span class="text-slate-700">${t.when_to_rotate}</span></div>
+                  <div><strong class="text-emerald-950 block mb-0.5">Harvest / termination</strong><span class="text-slate-700">${t.termination_criterion}</span></div>
                 </div>
-                ${rojasHtml}
-                ${alertasHtml}
+                ${redHtml}
+                ${alertsHtml}
               </article>
             `;
           })
           .join("");
 
-        document.getElementById("lista-evaluar").innerHTML = (data.puntos_evaluar || [])
+        document.getElementById("check-list").innerHTML = (data.field_check_points || [])
           .map((d) => `<li>${d}</li>`)
           .join("");
 
-        // Pestaña 2: Vista Técnica
-        const dt = data.detalle_tecnico;
-        const p = data.pesos_aplicados;
-        document.getElementById("metricas-tecnicas").innerHTML = `
-          <h3 class="font-bold text-slate-900 text-sm mb-3">Parámetros ambientales y ponderación aplicada</h3>
+        // Tab 2: Technical View
+        const td = data.technical_details;
+        const w = data.applied_weights;
+        document.getElementById("technical-metrics").innerHTML = `
+          <h3 class="font-bold text-slate-900 text-sm mb-3">Environmental parameters &amp; applied dimension weights</h3>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-sm tabular-nums">
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Lluvia proyectada</span><strong>${dt.lluvia_anual_proyectada_mm} mm/año</strong></div>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Humedad efectiva</span><strong>${dt.humedad_efectiva_m3_m3} m³/m³</strong></div>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Incertidumbre</span><strong>±${dt.incertidumbre_pct}%</strong></div>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Pico térmico</span><strong>${dt.pico_termico_c} °C</strong></div>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Meses suelo desnudo</span><strong>${dt.meses_suelo_desnudo} meses</strong></div>
-            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Fuente humedad</span><strong class="text-xs">${dt.fuente_humedad}</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Projected rainfall</span><strong>${td.projected_annual_rainfall_mm} mm/yr</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Effective moisture</span><strong>${td.effective_moisture_m3_m3} m³/m³</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Uncertainty</span><strong>±${td.uncertainty_pct}%</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Thermal peak</span><strong>${td.thermal_peak_c} °C</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Bare soil months</span><strong>${td.bare_soil_months} mo</strong></div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200"><span class="block text-xs text-slate-500">Moisture source</span><strong class="text-xs">${td.moisture_source}</strong></div>
           </div>
           <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600 tabular-nums">
-            <strong>Pesos por dimensión:</strong> Agua/Suelo ${Math.round(p.agua_suelo * 100)}% · Sostenibilidad ${Math.round(p.produccion_sostenibilidad * 100)}% · Clima ${Math.round(p.clima_temperatura * 100)}% · Mercado ${Math.round(p.negocio_mercado * 100)}% · Sanidad ${Math.round(p.sanidad_agricola * 100)}%
+            <strong>Dimension weights:</strong> Water/Soil ${Math.round(w.water_soil * 100)}% · Sustainability ${Math.round(w.production_sustainability * 100)}% · Climate ${Math.round(w.climate_temperature * 100)}% · Market ${Math.round(w.business_market * 100)}% · Health ${Math.round(w.agricultural_health * 100)}%
           </div>
         `;
 
-        const fao = data.balance_fao56 || {};
-        const cultivosHtml = (fao.demanda_cultivos_mm || [])
+        const fao = data.fao56_balance || {};
+        const cropsHtml = (fao.crop_demands_mm || [])
           .map((c) => {
-            const badge = c.estado_orientativo === "por_debajo_rango"
+            const badge = c.indicative_status === "below_range"
               ? "bg-amber-100 text-amber-900"
-              : c.estado_orientativo === "en_rango"
+              : c.indicative_status === "in_range"
                 ? "bg-emerald-100 text-emerald-900"
                 : "bg-sky-100 text-sky-900";
-            const label = c.estado_orientativo === "por_debajo_rango"
-              ? "Lluvia < ETc"
-              : c.estado_orientativo === "en_rango"
-                ? "En rango"
-                : "Lluvia > ETc";
+            const label = c.indicative_status === "below_range"
+              ? "Rain < ETc"
+              : c.indicative_status === "in_range"
+                ? "In range"
+                : "Rain > ETc";
             return `<div class="bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 flex items-center justify-between gap-2 text-xs tabular-nums">
-              <div><strong class="text-slate-800">${c.cultivo}:</strong> <span class="text-slate-600">${c.min_mm}–${c.max_mm} ${c.unidad}</span></div>
+              <div><strong class="text-slate-800">${c.crop}:</strong> <span class="text-slate-600">${c.min_mm}-${c.max_mm} ${c.unit}</span></div>
               <span class="px-2 py-0.5 rounded-full font-semibold ${badge}">${label}</span>
             </div>`;
           })
           .join("");
 
-        document.getElementById("balance-fao56").innerHTML = `
-          <h3 class="font-bold text-slate-900 text-sm">Balance Hídrico Orientativo (FAO-56) y Límites de SMAP</h3>
-          <p class="text-xs text-slate-600">Referencia comparando la lluvia anual proyectada (<strong>${fao.lluvia_proyectada_mm ?? dt.lluvia_anual_proyectada_mm} mm</strong>) contra requerimientos orientativos por cultivo:</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${cultivosHtml}</div>
-          <div class="text-xs text-amber-950 bg-amber-50 border border-amber-200 rounded-xl p-3"><strong>Nota metodológica FAO-56:</strong> ${fao.advertencia_fao56 || ""}</div>
-          <div class="text-xs text-sky-950 bg-sky-50 border border-sky-200 rounded-xl p-3"><strong>Alcance de SMAP (0–5 cm):</strong> ${fao.advertencia_smap || ""}</div>
+        document.getElementById("fao56-balance").innerHTML = `
+          <h3 class="font-bold text-slate-900 text-sm">Indicative Water Balance (FAO-56) &amp; SMAP Scope</h3>
+          <p class="text-xs text-slate-600">Comparison of projected annual rainfall (<strong>${fao.projected_rainfall_mm ?? td.projected_annual_rainfall_mm} mm</strong>) against indicative crop water requirements:</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${cropsHtml}</div>
+          <div class="text-xs text-amber-950 bg-amber-50 border border-amber-200 rounded-xl p-3"><strong>FAO-56 methodological note:</strong> ${fao.fao56_warning || ""}</div>
+          <div class="text-xs text-sky-950 bg-sky-50 border border-sky-200 rounded-xl p-3"><strong>SMAP (0-5 cm) scope:</strong> ${fao.smap_warning || ""}</div>
         `;
 
-        const mvpBox = document.getElementById("contexto-mvp-ampliado");
-        const mvp = data.contexto_mvp;
-        if (mvp && (mvp.clima_historica_celda || (mvp.gaez_cultivos || []).length || mvp.sisinta_cercano)) {
+        const mvpBox = document.getElementById("extended-mvp-context");
+        const mvp = data.mvp_context;
+        if (mvp && (mvp.historical_cell_climate || (mvp.gaez_crops || []).length || mvp.nearest_sisinta)) {
           mvpBox.classList.remove("hidden");
-          const ch = mvp.clima_historica_celda;
-          const enso = ch && ch.enso_ultimo ? `${ch.enso_ultimo.fase_enso} (ONI ${ch.enso_ultimo.oni_anomalia_c} °C en ${ch.enso_ultimo.anio_mes})` : null;
-          const climaHtml = ch ? `
+          const ch = mvp.historical_cell_climate;
+          const enso = ch && ch.latest_enso ? `${ch.latest_enso.enso_phase} (ONI ${ch.latest_enso.oni_anomaly_c} °C in ${ch.latest_enso.year_month})` : null;
+          const climateHtml = ch ? `
             <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-2.5">
               <div class="flex items-center justify-between gap-2">
-                <h3 class="font-bold text-slate-900 text-sm">Clima histórico de la celda, ETo FAO-56 y ventana real de heladas</h3>
-                <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">${ch.origen}</span>
+                <h3 class="font-bold text-slate-900 text-sm">Historical cell climate, FAO-56 ETo &amp; observed frost window</h3>
+                <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">${ch.origin}</span>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs tabular-nums">
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Precip. media (1991–2025)</span><strong>${ch.precip_anual_media_mm} mm</strong></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">ETo FAO-56 anual media</span><strong>${ch.eto_anual_media_mm} mm</strong></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Balance histórico (P - ETo)</span><strong>${ch.balance_p_eto_medio_mm} mm</strong></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Primera helada otoño</span><strong>${ch.primera_helada_otono_media ?? "-"}</strong></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Última helada primavera</span><strong>${ch.ultima_helada_primavera_media ?? "-"}</strong></div>
-                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Días libres de heladas</span><strong>${ch.dias_libres_heladas_medio ?? "-"} días</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Mean precip. (1991-2025)</span><strong>${ch.mean_annual_precip_mm} mm</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Annual FAO-56 ETo</span><strong>${ch.mean_annual_eto_mm} mm</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Mean P - ETo balance</span><strong>${ch.mean_p_eto_balance_mm} mm</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">First autumn frost</span><strong>${ch.mean_first_autumn_frost ?? "-"}</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Last spring frost</span><strong>${ch.mean_last_spring_frost ?? "-"}</strong></div>
+                <div class="bg-slate-50 p-2 rounded-lg border border-slate-200"><span class="block text-slate-500">Frost-free days</span><strong>${ch.mean_frost_free_days ?? "-"} days</strong></div>
               </div>
-              ${enso ? `<p class="text-xs text-slate-600"><strong>ENSO NOAA más reciente:</strong> ${enso} · Días medios de estrés térmico (>35 °C): <strong>${ch.dias_estres_termico_medio} días/año</strong>.</p>` : ""}
+              ${enso ? `<p class="text-xs text-slate-600"><strong>Latest NOAA ENSO:</strong> ${enso} · Mean heat-stress days (&gt;35 °C): <strong>${ch.mean_heat_stress_days} days/yr</strong>.</p>` : ""}
             </div>` : "";
 
-          const gaez = mvp.gaez_cultivos || [];
+          const gaez = mvp.gaez_crops || [];
           const gaezHtml = gaez.length ? `
             <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-2.5">
               <div class="flex items-center justify-between gap-2">
-                <h3 class="font-bold text-slate-900 text-sm">Aptitud y rendimiento alcanzable FAO GAEZ v4 (1981–2010)</h3>
-                <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">${mvp.gaez_origen || "REGIONAL_GAEZ_V4_SIN_CODEBOOK"}</span>
+                <h3 class="font-bold text-slate-900 text-sm">FAO GAEZ v4 suitability &amp; attainable yield (1981-2010)</h3>
+                <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">${mvp.gaez_origin || "REGIONAL_GAEZ_V4_NO_CODEBOOK"}</span>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs tabular-nums">
-                ${gaez.map((g) => `<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200"><strong class="text-slate-900 block">${g.cultivo}</strong><span class="text-slate-600">Clase aptitud: ${g.clase_aptitud ?? "-"} (1=mejor)</span><span class="block text-slate-700 font-medium">Rinde: ${g.rendimiento_alcanzable_kg_ha ?? "-"} kg/ha</span></div>`).join("")}
+                ${gaez.map((g) => `<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200"><strong class="text-slate-900 block">${g.crop}</strong><span class="text-slate-600">Suitability class: ${g.suitability_class ?? "-"} (1=best)</span><span class="block text-slate-700 font-medium">Yield: ${g.attainable_yield_kg_ha ?? "-"} kg/ha</span></div>`).join("")}
               </div>
-              <p class="text-[11px] text-slate-500">Referencia regional a escala 1/12° sin codebook local; no altera el puntaje base de la rúbrica.</p>
+              <p class="text-[11px] text-slate-500">Regional 1/12° scale reference without a local codebook; does not alter the base rubric score.</p>
             </div>` : "";
 
-          mvpBox.innerHTML = climaHtml + gaezHtml;
+          mvpBox.innerHTML = climateHtml + gaezHtml;
         } else {
           mvpBox.classList.add("hidden");
           mvpBox.innerHTML = "";
         }
 
-        const faltantes = data.dimensiones_faltantes || [];
-        document.getElementById("dimensiones-faltantes").innerHTML = `
-          <h3 class="font-bold text-amber-950 text-sm">Dimensiones faltantes y supuestos del modelo</h3>
-          <ul class="text-xs text-amber-950/90 list-disc list-inside space-y-1">${faltantes.map((f) => `<li>${f}</li>`).join("")}</ul>
+        const missing = data.missing_dimensions || [];
+        document.getElementById("missing-dimensions").innerHTML = `
+          <h3 class="font-bold text-amber-950 text-sm">Missing dimensions &amp; model assumptions</h3>
+          <ul class="text-xs text-amber-950/90 list-disc list-inside space-y-1">${missing.map((f) => `<li>${f}</li>`).join("")}</ul>
         `;
 
-        document.getElementById("problematicas-tecnicas").innerHTML = (data.analisis_tecnico || [])
+        document.getElementById("technical-issues").innerHTML = (data.technical_analysis || [])
           .map((item) => `
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-              <h4 class="font-bold text-sm text-slate-900">${item.titulo}</h4>
-              <p class="mt-1 text-sm text-slate-600 leading-relaxed">${item.detalle}</p>
+              <h4 class="font-bold text-sm text-slate-900">${item.title}</h4>
+              <p class="mt-1 text-sm text-slate-600 leading-relaxed">${item.detail}</p>
             </div>
           `)
           .join("");
 
-        document.getElementById("tarjetas-tecnicas").innerHTML = data.tarjetas
+        document.getElementById("technical-cards").innerHTML = data.cards
           .map((t) => {
-            const est = SEMAFORO_ESTILOS[t.semaforo] || SEMAFORO_ESTILOS.precaucion;
-            const dimsHtml = Object.values(t.dimensiones || {})
-              .map((d) => `<div class="bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs tabular-nums"><strong>${d.nombre}:</strong> ${d.promedio_1_5}/5 (${d.score_100}%)</div>`)
+            const st = TRAFFIC_LIGHT_STYLES[t.traffic_light] || TRAFFIC_LIGHT_STYLES.caution;
+            const dimsHtml = Object.values(t.dimensions || {})
+              .map((d) => `<div class="bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs tabular-nums"><strong>${d.name}:</strong> ${d.avg_1_5}/5 (${d.score_100}%)</div>`)
               .join("");
             return `
-              <article class="bg-white rounded-2xl border border-slate-200 border-l-4 ${est.borde} p-4 sm:p-5 shadow-sm space-y-3">
+              <article class="bg-white rounded-2xl border border-slate-200 border-l-4 ${st.border} p-4 sm:p-5 shadow-sm space-y-3">
                 <div class="flex items-center justify-between gap-2">
-                  <h3 class="font-bold text-base text-slate-900">${t.nombre}</h3>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${est.badge} tabular-nums">
-                    <span class="w-2 h-2 rounded-full ${est.dot}"></span>
-                    Score final: ${t.score}/100
+                  <h3 class="font-bold text-base text-slate-900">${t.name}</h3>
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${st.badge} tabular-nums">
+                    <span class="w-2 h-2 rounded-full ${st.dot}"></span>
+                    Final score: ${t.score}/100
                   </span>
                 </div>
-                <p class="text-xs text-slate-600 tabular-nums">Base 5 dimensiones: <strong>${t.score_base}</strong> | Ajuste contextual: <strong>${t.ajuste_contextual >= 0 ? "+" : ""}${t.ajuste_contextual}</strong>${t.demanda_hidrica_mm ? ` | Demanda hídrica orientativa: <strong>${t.demanda_hidrica_mm}</strong>` : ""}</p>
+                <p class="text-xs text-slate-600 tabular-nums">5-dimension base: <strong>${t.base_score}</strong> | Contextual adjustment: <strong>${t.contextual_adjustment >= 0 ? "+" : ""}${t.contextual_adjustment}</strong>${t.water_demand_mm ? ` | Indicative water demand: <strong>${t.water_demand_mm}</strong>` : ""}</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">${dimsHtml}</div>
               </article>
             `;
           })
           .join("");
 
-        // Pestaña 3: Fuentes de Respaldo
-        const fuentes = data.fuentes_respaldo || [];
-        document.getElementById("lista-fuentes-dedicadas").innerHTML = fuentes.length > 0
-          ? fuentes
-              .map((f) => `
+        // Tab 3: Supporting Sources
+        const sources = data.supporting_sources || [];
+        document.getElementById("dedicated-sources-list").innerHTML = sources.length > 0
+          ? sources
+              .map((s) => `
                 <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
                   <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded-md">${f.institucion}</span>
-                    <span class="text-[11px] text-slate-500 font-medium">${f.rotacion || ""}</span>
+                    <span class="text-[11px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded-md">${s.institution}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">${s.rotation || ""}</span>
                   </div>
                   <h4 class="font-bold text-sm text-slate-900 mt-1">
-                    <a href="${f.url}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-800 underline">
-                      ${f.titulo}
+                    <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-800 underline">
+                      ${s.title}
                     </a>
                   </h4>
-                  <p class="text-xs text-slate-600 leading-relaxed">${f.aporte}</p>
+                  <p class="text-xs text-slate-600 leading-relaxed">${s.contribution}</p>
                 </div>
               `)
               .join("")
-          : '<p class="text-xs text-slate-500">No hay fuentes registradas para esta consulta.</p>';
+          : '<p class="text-xs text-slate-500">No bibliographic sources recorded for this query.</p>';
 
         placeholder.classList.add("hidden");
-        resultados.classList.remove("hidden");
+        resultsPanel.classList.remove("hidden");
         if (window.innerWidth < 1024) {
-          resultados.scrollIntoView({ behavior: "smooth" });
+          resultsPanel.scrollIntoView({ behavior: "smooth" });
         }
       } catch (err) {
-        console.error("Error al evaluar:", err);
-        alert("Ocurrió un error al procesar la evaluación: " + (err.message || err));
+        console.error("Evaluation error:", err);
+        alert("An error occurred while processing the evaluation: " + (err.message || err));
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;

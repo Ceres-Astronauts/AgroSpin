@@ -1,0 +1,108 @@
+{
+  "id": "field-shift-mvp-climate-soil-release",
+  "date": "2026-11-15",
+  "bbox_epsg4326": {
+    "lon_min": -65.875,
+    "lon_max": -64.125,
+    "lat_min": -33.875,
+    "lat_max": -33.125
+  },
+  "data_cutoff": "2026-11-01",
+  "crs": "EPSG:4326",
+  "timezone": "local day UTC-3 (ground); POWER UTC day",
+  "files": {
+    "climate_annual_grid_1991_2026.csv": {
+      "bytes": 188635,
+      "sha256": "be8f3e77c4fa744b75fe240f4bbf2259a59bb0dce8afffef670d15dc66b10a06"
+    },
+    "climate_daily_grid_1991_2026.csv": {
+      "bytes": 58517342,
+      "sha256": "b124a0b75148981c7b901ac9c9977d43b8f71b503861b4d71afd8925d6e24ecf"
+    },
+    "climate_daily_grid_1991_2026.parquet": {
+      "bytes": 7420444,
+      "sha256": "fbd2d3697f6781cac88b8b5d044d3cd1ae00b2479327999df133ef4c80fb8156"
+    },
+    "climate_monthly_grid_1991_2026.csv": {
+      "bytes": 2074315,
+      "sha256": "0a1a3936a8dd2162d4546df7c579c72e1dc658ae79c70bc836e92a5614eb606d"
+    },
+    "climate_monthly_grid_1991_2026.parquet": {
+      "bytes": 394357,
+      "sha256": "b211883084ef015e7908b46b52af27762d82ff83532b784e76965fed15f8a717"
+    },
+    "climate_zone_daily_1991_2026.csv": {
+      "bytes": 1069724,
+      "sha256": "a84809da95672cf2278e8a1e4f26da19e4cb5214c129c4754b685dc7288ff00c"
+    },
+    "column_dictionary.csv": {
+      "bytes": 3677,
+      "sha256": "10772c6fd53daef54d80fae12d608be35a996ecd4e673256f85e304a929b59ed"
+    },
+    "enso_oni_monthly.csv": {
+      "bytes": 24337,
+      "sha256": "760a2fbb470c0789ecd1d1be7222a819233fcff1d0aedcfe43cd712ba9e7a755"
+    },
+    "ground_stations.csv": {
+      "bytes": 2790,
+      "sha256": "8619678679dc1d664f751da134ab2055957d727fbd8434b3a9ab8b0aeb3368f6"
+    },
+    "mvp_requirements_coverage.csv": {
+      "bytes": 2289,
+      "sha256": "ec36157f38c36bb4f5716937c1248f814b11c1f72c47df51627c6b356e68a181"
+    },
+    "soil_1ha_grid.parquet": {
+      "bytes": 50080545,
+      "sha256": "51233421ff40a2b15490e593fc94a33f39afb00c0bc8d3989125e83f93554bba"
+    },
+    "soil_500m_grid.csv": {
+      "bytes": 7998710,
+      "sha256": "8a5f960e7c93880248fc2e6ed3d6e3da4229d4778009edd9e9b56d9212b2ede6"
+    },
+    "soil_gaez_crops_1981_2010.csv": {
+      "bytes": 607011,
+      "sha256": "a325eca86c46e4ca5833ae93a3f917876bb8d05904de6361c268fb581175c8fd"
+    },
+    "soil_moisture_monthly_grid_1991_2026.csv": {
+      "bytes": 2746637,
+      "sha256": "0f742c7d9cdd59285f31e95db03d4d3b7d0e861ceb498a3be306d3080674f8e7"
+    },
+    "soil_sisinta_profiles_box.csv": {
+      "bytes": 28595,
+      "sha256": "89b5da8ffc0b2529c41b63402a35fe522fb960a9062a03b54dfb1f8655dc3a4e"
+    }
+  },
+  "rows": {
+    "climate_daily": 418848,
+    "climate_monthly": 13792,
+    "climate_annual": 1152,
+    "climate_zone": 13089,
+    "soil_1ha": 1352847,
+    "soil_500m": 54600,
+    "gaez": 5280,
+    "sisinta_box": 257,
+    "soil_moisture_monthly": 13792,
+    "ground_stations": 19,
+    "oni": 429
+  },
+  "power_units": {
+    "T2M": "C",
+    "T2M_MAX": "C",
+    "T2M_MIN": "C",
+    "PRECTOTCORR": "mm/day",
+    "RH2M": "%",
+    "WS10M": "m/s",
+    "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+    "PS": "kPa"
+  },
+  "radiation_factor_to_mj": 1.0,
+  "decisions": [
+    "climate-closed-2026-11-15",
+    "soil-closed-mvp-2026-11-15",
+    "soil-moisture-balance-model-2026-11-15",
+    "topographic-susceptibility-2026-11-15",
+    "homogeneous-soil-schema-2026-11-15",
+    "smap-32-out-of-mvp-soil-closeout-2026-11-15",
+    "gldas-discarded-mvp-2026-11-15"
+  ]
+}

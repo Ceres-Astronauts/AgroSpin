@@ -1,0 +1,20 @@
+station_id,name,lat,lon,network,variables,from_date,to_date,validation_status,mvp_box
+REM_12,Fraga,-33.50133,-65.79225,REM San Luis,"temperature, humidity, wind, precipitation",2012-02-15,2026-11-01,OBSERVED_REM,INSIDE
+REM_13,Justo Daract,-33.85085,-65.17382,REM San Luis,"temperature, humidity, wind, precipitation",2014-11-26,2026-11-01,OBSERVED_REM,INSIDE
+REM_17,La Esquina,-33.14587,-65.37258,REM San Luis,"temperature, humidity, wind, precipitation",2012-02-29,2026-11-01,OBSERVED_REM,INSIDE
+REM_19,La Punilla,-33.14373,-65.0837,REM San Luis,"temperature, humidity, wind, precipitation",2012-03-06,2026-11-01,OBSERVED_REM,INSIDE
+REM_42,Villa Mercedes,-33.678586,-65.504645,REM San Luis,"temperature, humidity, wind, precipitation",2015-01-01,2026-11-01,OBSERVED_REM,INSIDE
+REM_49,Coronel Alzogaray,-33.46051,-65.42903,REM San Luis,"temperature, humidity, wind, precipitation",2011-12-27,2026-11-01,OBSERVED_REM_WITH_LIMITATIONS,INSIDE
+REM_60,Villa Reynolds,-33.725452,-65.385817,REM San Luis,"temperature, humidity, wind, precipitation",2015-01-01,2026-11-01,OBSERVED_REM,INSIDE
+REM_88,AgroZAL,-33.6450639,-65.3794056,REM San Luis,"temperature, humidity, wind, precipitation",2015-01-01,2026-11-01,REJECTED_CALIBRATION,INSIDE
+SMN_87448,Villa Reynolds Aero,-33.7167,-65.3667,SMN,"tmax, tmin (365 days); GSOD 2000-2025 (third-party)",2025-11-01,2026-10-31,OBSERVED_SMN,INSIDE
+SMN_87453,Rio Cuarto Aero,-33.0833,-64.2667,SMN,"tmax, tmin (365 days)",2025-11-01,2026-10-31,OUT_OF_BOX_REFERENCE,OUTSIDE
+PIHC_30492,Achiras,-33.172002,-64.998617,APRHI PIHC,daily precipitation,2016-01-01,2026-10-31,OBSERVED_PIHC (28 months with data),INSIDE
+PIHC_30109,Rio Cuarto BioagroindustriaCba,-33.1612,-64.357,APRHI PIHC,daily precipitation,2016-01-01,2026-10-31,OBSERVED_PIHC (127 months with data),INSIDE
+PIHC_30349,Bell Ville Aerodromo,-32.659054,-62.700417,APRHI PIHC,daily precipitation,2016-01-01,2026-10-31,OBSERVED_PIHC (82 months with data),OUTSIDE
+METEOSTAT_87467,Marcos Juarez,-32.7,-62.15,Meteostat (third-party),"tmean,tmin,tmax,precip",1973-01-01,2026-03-07,THIRD_PARTY_OUT_OF_BOX_REFERENCE,OUTSIDE
+IDECOR_34111,Coronel Moldes,-33.62545,-64.623942,IDECOR/BCCBA,monthly precipitation 2024,2024-01-01,2024-12-31,OBSERVED_IDECOR_2024,INSIDE
+IDECOR_94007,Chajan,-33.670781,-65.090722,IDECOR/BCCBA,monthly precipitation 2024,2024-01-01,2024-12-31,OBSERVED_IDECOR_2024,INSIDE
+IDECOR_94014,Washington,-33.874381,-64.685819,IDECOR/BCCBA,monthly precipitation 2024,2024-01-01,2024-12-31,OBSERVED_IDECOR_2024,INSIDE
+IDECOR_94058,La Carolina del Potosi,-33.197514,-64.725545,IDECOR/BCCBA,monthly precipitation 2024,2024-01-01,2024-12-31,OBSERVED_IDECOR_2024,INSIDE
+IDECOR_94100,Los Jagueles,-33.3691,-64.5828,IDECOR/BCCBA,monthly precipitation 2024,2024-01-01,2024-12-31,OBSERVED_IDECOR_2024,INSIDE

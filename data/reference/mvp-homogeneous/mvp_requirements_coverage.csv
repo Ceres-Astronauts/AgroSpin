@@ -1,0 +1,17 @@
+excel_requirement,table,columns,coverage,note
+Temperature patterns,climate_daily/monthly/annual_grid,"tmean/tmax/tmin, gdd_base10",COVERED,POWER (reanalysis) + REM observed in climate_zone_daily
+Heat stress,climate_daily/monthly/annual_grid,"heat_stress (tmax>35), heat_stress_days",COVERED,
+Precipitation,"climate_monthly/annual_grid, daily_rain_grid","precip_mm, precip_oct_mar_mm, rainy_days",COVERED,"Ground: REM, PIHC, IDECOR; grid: POWER"
+Frost risk,climate_annual_grid,"first_autumn_frost, last_spring_frost, frost_free_days_season",COVERED,Agro threshold 3 C and 0 C
+Extreme precipitation,climate_daily/monthly_grid + soil_1ha_grid,"heavy_rain_20mm, heavy_rain_days, slope_pct, topographic_susceptibility",PARTIAL,POWER smooths point extremes
+Soil moisture,"soil_moisture_monthly_grid, soil_1ha_grid",mean_moisture_m3_m3,PARTIAL,Model UNVALIDATED in daily correlation; 32-pt SMAP outside MVP
+Evapotranspiration (ETo),climate_daily/monthly/annual_grid,"eto_mm, p_eto_balance_mm",COVERED,FAO-56 PM from POWER; Kc/ETc require crop calendar (not included)
+Vegetation stress,-,-,NONE,Curated Sentinel-2 reflectance outside tracked delivery; NDVI not computed in this delivery
+Long-term water trends,"climate_monthly_grid, enso_oni_monthly","oni_anomaly_c, enso_phase, p_eto_balance_mm",PARTIAL,ENSO included; water-table depth not included
+Water use efficiency,climate + GAEZ,"eto_mm, cropland_attainable_yield",PARTIAL,Crop efficiency requires Kc and actual field yield
+Texture,soil_sisinta_profiles_box,clay_pct/silt_2_50_pct/total_sand_pct,COVERED,Profiles inside MVP box; many lack total_sand_pct
+Field capacity / PWP / available water,soil_sisinta_profiles_box,"field_capacity_water_pct, pwp_water_pct, calc_available_water_pct",PARTIAL,Few profiles have all lab tests
+Slope and elevation,"soil_1ha_grid, soil_500m_grid","slope_pct, elevation_m",COVERED,SRTM 30 m aggregated to 1 ha
+Drainage / waterlogging,soil_1ha_grid,topographic_susceptibility,PARTIAL,UNVALIDATED topographic index; not a flood map
+Crop suitability and yield,soil_gaez_crops_1981_2010,"cropland_suitability_class, cropland_attainable_yield",PARTIAL,1/12-degree scale; no codebook published
+Forage value / N fixation / organic matter / market / pests,-,-,NONE,Non-environmental variables; outside this delivery
