@@ -11,9 +11,8 @@ Todas las funciones devuelven dicts/listas listos para Pydantic/JSON. Cada regis
 columna `origen` o `etiqueta`: OBSERVADO_* (medido), ESTIMADO_* (reanálisis/modelo), REFERENCIA_*.
 No mezclar categorías en un mismo promedio sin declararlo.
 
-Archivos grandes que NO están en el repo (quedan en el almacén de datos):
-    clima_diario_grilla_1991_2026.csv (56 MB)  -> el Parquet equivalente sí está aquí
-    suelo_1ha_grilla.parquet (48 MB)           -> usar suelo_500m_grilla.csv, o apuntar BASE_DATOS al almacén
+Todos los archivos de la entrega están en esta carpeta (incluidos clima diario CSV 56 MB y
+suelo 1 ha Parquet 48 MB). BASE_DATOS es solo un respaldo si se clona sin ellos.
 """
 from __future__ import annotations
 

@@ -14,11 +14,11 @@ No se mezclan categorías: un ESTIMADO nunca se presenta como OBSERVADO.
 | `clima_mensual_grilla_1991_2026.csv` | 13.792 | Lluvia, temperatura, ETo, balance hídrico, heladas, estrés térmico y ENSO por mes y por punto (32 puntos de 0,25°) | **Principal** |
 | `clima_anual_grilla_1991_2026.csv` | 1.152 | Resumen por año y punto: ventana libre de heladas, lluvia oct‑mar, ETo, grados‑día | Sí |
 | `clima_zona_diario_1991_2026.csv` | 13.089 | Una serie diaria para toda la caja (temperatura ponderada por estaciones en tierra + lluvia y ETo medias) | Sí |
-| `clima_diario_grilla_1991_2026.csv` / `.parquet` | 418.848 | Serie diaria completa por punto, con ETo FAO‑56, heladas, estrés, GDD | CSV 56 MB: usar Sheets/BigQuery o filtrar |
+| `clima_diario_grilla_1991_2026.csv` / `.parquet` | 418.848 | Serie diaria completa por punto, con ETo FAO‑56, heladas, estrés, GDD | CSV 56 MB: cargar vía Google Sheets/BigQuery, o filtrar por punto |
 | `enso_oni_mensual.csv` | 429 | Índice ONI y fase Niño/Niña/Neutro por mes (NOAA) | Sí |
 | `humedad_suelo_mensual_grilla_1991_2026.csv` | 13.792 | Nivel medio mensual de humedad de suelo del modelo de balance — **NO validada en correlación** | Sí, con la advertencia |
 | `suelo_500m_grilla.csv` | 54.600 | Relieve, pendiente, susceptibilidad topográfica y humedad media agregados a ~500 m | **Principal (mapa)** |
-| `suelo_1ha_grilla.parquet` | 1.352.847 | Lo mismo a 1 ha (100 m). Para el stack, no para Looker | No (48 MB parquet) |
+| `suelo_1ha_grilla.parquet` | 1.352.847 | Lo mismo a 1 ha (100 m). Para el stack, no para Looker | No (Parquet; para el stack) |
 | `suelo_gaez_cultivos_1981_2010.csv` | 5.280 | Aptitud y rendimiento alcanzable FAO GAEZ v4 por cultivo (maíz, soja, girasol, sorgo, trigo, maní, alfalfa, cebada), celdas de 1/12° | Sí |
 | `suelo_sisinta_perfiles_caja.csv` | 257 | Horizontes de perfiles de suelo INTA SISINTA dentro de la caja: textura, pH, carbono, agua útil | Sí |
 | `estaciones_terrestres.csv` | 19 | Catálogo de estaciones en tierra (REM, SMN, PIHC, IDECOR, Meteostat) con coordenadas y veredicto de validación | Sí (mapa) |
@@ -49,11 +49,11 @@ Claves de unión: `punto_id` (clima, humedad), `anio_mes` (mensual ↔ ENSO), `l
 
 ```python
 import pandas as pd
-BASE = "<ruta>/entrega-mvp"               # p. ej. data/reference/mvp-homogeneo en el repo field-shift
+BASE = "data/reference/mvp-homogeneo"      # en el repo field-shift (incluye los archivos grandes)
 
 clima_d = pd.read_parquet(f"{BASE}/clima_diario_grilla_1991_2026.parquet")
 clima_m = pd.read_parquet(f"{BASE}/clima_mensual_grilla_1991_2026.parquet")
-suelo   = pd.read_parquet(f"{BASE}/suelo_1ha_grilla.parquet")           # solo en el almacén de datos
+suelo   = pd.read_parquet(f"{BASE}/suelo_1ha_grilla.parquet")
 gaez    = pd.read_csv(f"{BASE}/suelo_gaez_cultivos_1981_2010.csv")
 hum_m   = pd.read_csv(f"{BASE}/humedad_suelo_mensual_grilla_1991_2026.csv")
 
