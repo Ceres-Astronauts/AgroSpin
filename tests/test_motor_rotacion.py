@@ -247,6 +247,34 @@ class TestMotorRotacion(unittest.TestCase):
         self.assertIn("limoso", suelo["capacidad_retencion"].lower())
         self.assertGreaterEqual(len(suelo["riesgos_suelo"]), 2)
 
+    def test_profundidad_superficial_y_tolerancia_baja(self) -> None:
+        res_superficial = simular_escenarios(
+            datos_lote={"nombre": "Lote Somero"},
+            regimen_agua="secano",
+            napa_pendiente="sin_napa",
+            profundidad_efectiva_cm=60.0,
+            tolerancia_perdidas="baja",
+        )
+        res_profundo = simular_escenarios(
+            datos_lote={"nombre": "Lote Profundo"},
+            regimen_agua="secano",
+            napa_pendiente="sin_napa",
+            profundidad_efectiva_cm=150.0,
+            tolerancia_perdidas="alta",
+        )
+        dg_sup = next(r for r in res_superficial["comparativa_rotaciones"] if r["id"] == "doble_golpe")
+        dg_prof = next(r for r in res_profundo["comparativa_rotaciones"] if r["id"] == "doble_golpe")
+        self.assertLess(dg_sup["puntaje_idoneidad"], dg_prof["puntaje_idoneidad"])
+        self.assertTrue(any("60 cm < 80 cm" in a for a in dg_sup["alertas_escenario"]))
+        self.assertTrue(any("Tolerancia baja a pérdidas" in a for a in dg_sup["alertas_escenario"]))
+
+        diag = res_superficial["diagnostico_lote"]
+        self.assertIn("balance_fao56", diag)
+        self.assertEqual(len(diag["balance_fao56"]["demanda_cultivos_mm"]), 6)
+        self.assertIn("advertencia_fao56", diag["balance_fao56"])
+        self.assertIn("advertencia_smap", diag["balance_fao56"])
+        self.assertGreaterEqual(len(diag["dimensiones_faltantes"]), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

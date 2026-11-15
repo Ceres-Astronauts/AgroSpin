@@ -14,7 +14,8 @@ REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from src.decision.motor_rotacion import simular_escenarios  # noqa: E402
+from src.decision.mapa_datos import consultar_terreno  # noqa: E402
+from src.decision.motor_rotacion import cargar_rubrica, simular_escenarios  # noqa: E402
 
 LOTES_DEFAULT = REPOSITORY_ROOT / "data" / "lotes_piloto.json"
 STATIC_DIR = pathlib.Path(__file__).resolve().parent / "static"
@@ -46,6 +47,16 @@ class EvaluacionRequest(BaseModel):
     horizonte: Literal["corto", "mediano", "largo"] = "mediano"
     sistema_productivo: Literal["agricola", "mixto", "contratista"] = "agricola"
     tiene_ganaderia: bool = False
+    profundidad_suelo: Literal["superficial", "media", "profunda"] = "media"
+    tolerancia_perdidas: Literal["baja", "moderada", "alta"] = "baja"
+    lluvia_anual_manual_mm: Optional[float] = Field(default=None, ge=50.0, le=3000.0)
+    datos_lote_custom: Optional[Dict[str, Any]] = None
+
+
+class MapaConsultaRequest(BaseModel):
+    lat: Optional[float] = None
+    lon: Optional[float] = None
+    poligono: Optional[List[List[float]]] = None
 
 
 def _cargar_lotes() -> List[Dict[str, Any]]:
@@ -177,14 +188,32 @@ def listar_lotes() -> Dict[str, Any]:
     return {"lotes": resumen}
 
 
+@app.post("/api/mapa/consultar")
+def consultar_mapa(req: MapaConsultaRequest) -> Dict[str, Any]:
+    try:
+        return consultar_terreno(lat=req.lat, lon=req.lon, poligono=req.poligono)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
 @app.post("/api/evaluar")
 def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
-    lotes = _cargar_lotes()
-    lote = next((x for x in lotes if x.get("id") == req.lote_id), lotes[0] if lotes else None)
-    if not lote:
-        raise HTTPException(status_code=404, detail="No se encontró el lote seleccionado.")
-
-    datos_lote = dict(lote)
+    if req.datos_lote_custom:
+        datos_lote = dict(req.datos_lote_custom)
+    else:
+        lotes = _cargar_lotes()
+        lote = next((x for x in lotes if x.get("id") == req.lote_id), lotes[0] if lotes else None)
+        if not lote:
+            raise HTTPException(status_code=404, detail="No se encontró el lote seleccionado.")
+        datos_lote = dict(lote)
+        if req.lluvia_anual_manual_mm is not None:
+            lluvia_base = datos_lote.get("lluvia_gpm_mm") or [1.0] * 12
+            suma_base = sum(lluvia_base) or 12.0
+            factor = req.lluvia_anual_manual_mm / suma_base
+            datos_lote["lluvia_gpm_mm"] = [round(v * factor, 2) for v in lluvia_base]
+            datos_lote["origen_lluvia"] = "INGRESO_MANUAL"
     if req.estado_lote == "desnudo":
         datos_lote["ndvi_sentinel2"] = [0.15] * 12
     elif req.estado_lote == "pastura":
@@ -207,6 +236,9 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
     else:
         lecturas_sonda = _HUMEDAD_PRESETS[req.humedad_estado]
 
+    _PROFUNDIDAD_MAP = {"superficial": 60.0, "media": 100.0, "profunda": 150.0}
+    profundidad_efectiva_cm = _PROFUNDIDAD_MAP.get(req.profundidad_suelo, 100.0)
+
     sim = simular_escenarios(
         datos_lote=datos_lote,
         prioridad_usuario=req.prioridad,
@@ -221,6 +253,8 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         sistema_productivo=req.sistema_productivo,
         profundidad_sonda_cm=profundidad_sonda_cm,
         medicion_sonda_directa=medicion_sonda_directa,
+        profundidad_efectiva_cm=profundidad_efectiva_cm,
+        tolerancia_perdidas=req.tolerancia_perdidas,
     )
 
     diag = sim["diagnostico_lote"]
@@ -235,6 +269,7 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
                 "nombre": item["nombre"],
                 "secuencia": item["secuencia"],
                 "horizonte_label": item["horizonte_label"],
+                "demanda_hidrica_mm": item.get("demanda_hidrica_mm"),
                 "semaforo": semaforo,
                 "score": score,
                 "score_base": item["score_base_dimensiones"],
@@ -258,6 +293,10 @@ def evaluar_lote(req: EvaluacionRequest) -> Dict[str, Any]:
         "analisis_tecnico": _analisis_tecnico_detallado(diag, req),
         "fuentes_respaldo": _recopilar_fuentes_respaldo(sim["comparativa_rotaciones"]),
         "pesos_aplicados": diag["pesos_aplicados"],
+        "balance_fao56": diag.get("balance_fao56"),
+        "dimensiones_faltantes": diag.get("dimensiones_faltantes", []),
+        "profundidad_efectiva_cm": diag.get("profundidad_efectiva_cm"),
+        "tolerancia_perdidas": diag.get("tolerancia_perdidas"),
         "detalle_tecnico": {
             "lluvia_anual_proyectada_mm": diag["lluvia_anual_proyectada_mm"],
             "humedad_efectiva_m3_m3": diag["estado_hidrico"]["humedad_efectiva"],

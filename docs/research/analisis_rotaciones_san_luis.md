@@ -292,11 +292,11 @@
 
 ***Idoneidad en el mercado***
 
-***Variable / Columna \| Método 1: Doble Golpe (Trigo ➔ Soja 2ª / Maíz 2ª)*** 
+***Variable / Columna \| Método 1: Doble Golpe (Trigo → Soja 2ª / Maíz 2ª)*** 
 
-***\| Método 2: Bomba Biológica (Alfalfa Plurianual ➔ Maíz Tardío)*** 
+***\| Método 2: Bomba Biológica (Alfalfa Plurianual → Maíz Tardío)*** 
 
- ***Método 3: Resiliencia Hídrica – Enfoque Defensivo (Sorgo ➔ Vicia \+ Centeno ➔ Girasol)*** 
+ ***Método 3: Resiliencia Hídrica – Enfoque Defensivo (Sorgo → Vicia \+ Centeno → Girasol)*** 
 
 ***\| Idoneidad en el mercado \| Valoración: Óptima***
 
