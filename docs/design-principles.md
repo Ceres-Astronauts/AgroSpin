@@ -40,7 +40,7 @@ The project is public and should prefer public, well-documented sources.
 
 Secrets, private information, and proprietary material do not belong in the repository.
 
-The required Field Shift runtime must also be reproducible end-to-end with open-source software. Commercial desktop applications, proprietary database engines, vendor-specific mapping SDKs, or paid cloud services may not become mandatory dependencies for validation, demonstration, or operation. See [`docs/decisions/open-source-runtime-stack-2026-11-02.md`](decisions/open-source-runtime-stack-2026-11-02.md).
+The required AgroSpin runtime must also be reproducible end-to-end with open-source software. Commercial desktop applications, proprietary database engines, vendor-specific mapping SDKs, or paid cloud services may not become mandatory dependencies for validation, demonstration, or operation. See [`docs/decisions/open-source-runtime-stack-2026-11-02.md`](decisions/open-source-runtime-stack-2026-11-02.md).
 
 ## 8. Provenance before convenience
 
@@ -54,13 +54,13 @@ The system should communicate uncertainty, missing data, coarse resolution, conf
 
 ## 10. No artificial precision
 
-Field Shift must not imply greater spatial, temporal, agronomic, or predictive precision than the underlying evidence supports.
+AgroSpin must not imply greater spatial, temporal, agronomic, or predictive precision than the underlying evidence supports.
 
 ## 11. Challenge-first
 
 The agricultural decision problem remains the primary objective.
 
-Reusable framework capabilities are valuable only insofar as they improve the quality, explainability, learning, or maintainability of Field Shift.
+Reusable framework capabilities are valuable only insofar as they improve the quality, explainability, learning, or maintainability of AgroSpin.
 
 ## 12. Build only what earns its complexity
 

@@ -1,6 +1,6 @@
 # Serving Contracts by Data Shape
 
-Field Shift keeps scientific meaning independent from visualization technology. These serving contracts define the minimum shape and metadata that transformed data must preserve before it is consumed by dashboards, notebooks, GIS tools, the product UI, or the local assistant.
+AgroSpin keeps scientific meaning independent from visualization technology. These serving contracts define the minimum shape and metadata that transformed data must preserve before it is consumed by dashboards, notebooks, GIS tools, the product UI, or the local assistant.
 
 They complement the decision-relevant observation contract and canonical observation schema; they do not replace them.
 

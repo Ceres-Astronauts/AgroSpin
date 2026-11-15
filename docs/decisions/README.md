@@ -1,4 +1,4 @@
-# Field Shift Public Decisions
+# AgroSpin Public Decisions
 
 This directory records public product decisions that affect reproducibility, source selection, runtime architecture, or interaction boundaries.
 

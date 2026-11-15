@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how operational knowledge enters, changes, and leaves the Field Shift context layer.
+This document defines how operational knowledge enters, changes, and leaves the AgroSpin context layer.
 
 ## No silent promotion
 

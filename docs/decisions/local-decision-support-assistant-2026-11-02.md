@@ -2,16 +2,16 @@
 
 ## Decision
 
-Field Shift should include an optional local conversational assistant that helps a farmer, company, analyst, or advisor describe a real agricultural situation, structure needs and constraints, locate relevant Field Shift evidence, identify missing information, and understand candidate strategies and trade-offs.
+AgroSpin should include an optional local conversational assistant that helps a farmer, company, analyst, or advisor describe a real agricultural situation, structure needs and constraints, locate relevant AgroSpin evidence, identify missing information, and understand candidate strategies and trade-offs.
 
-The assistant is **not** the agronomic decision engine. It does not create scientific truth, invent field conditions, or replace validated rules. Its role is to make Field Shift easier to query and understand.
+The assistant is **not** the agronomic decision engine. It does not create scientific truth, invent field conditions, or replace validated rules. Its role is to make AgroSpin easier to query and understand.
 
 ## Product contracts
 
 Two product-domain contracts now define the interaction boundary:
 
 - [`CLIENT-CASE-001`](../contracts/client-case.md) — explicit durable agricultural/client case state;
-- [`ASSIST-TOOLS-001`](../contracts/assistant-tools.md) — bounded Field Shift evidence and decision functions available to the assistant.
+- [`ASSIST-TOOLS-001`](../contracts/assistant-tools.md) — bounded AgroSpin evidence and decision functions available to the assistant.
 
 A farmer/company is not represented as an internal framework seat. The public product must remain independent from internal context/framework repositories.
 
@@ -27,7 +27,7 @@ A company near Villa Mercedes may provide:
 - water, economic, machinery, or operational constraints;
 - priorities such as reducing drought risk while preserving productivity.
 
-The assistant converts that conversation into `CLIENT-CASE-001`, asks for materially missing information, queries validated/curated evidence through `ASSIST-TOOLS-001`, invokes deterministic Field Shift decision functions only when prerequisites are satisfied, and explains:
+The assistant converts that conversation into `CLIENT-CASE-001`, asks for materially missing information, queries validated/curated evidence through `ASSIST-TOOLS-001`, invokes deterministic AgroSpin decision functions only when prerequisites are satisfied, and explains:
 
 - what evidence is available for the location;
 - the spatial and temporal scale of that evidence;
@@ -47,7 +47,7 @@ Conversational assistant
   - selects explicit product tools
   - explains results
         ↓
-Validated / curated Field Shift evidence
+Validated / curated AgroSpin evidence
         ↓
 Deterministic indicators and decision engine
         ↓
@@ -72,7 +72,7 @@ Candidate implementation direction:
 
 - `llama.cpp` for replaceable local model inference;
 - a small explicit Python orchestration loop rather than a mandatory agent framework;
-- DuckDB for structured Field Shift data queries;
+- DuckDB for structured AgroSpin data queries;
 - SQLite for Client Case/session persistence and lightweight lexical knowledge search (`FTS5`);
 - optional compact multilingual embeddings + CPU vector search only if lexical retrieval proves insufficient;
 - Streamlit as a possible MVP interaction surface.
@@ -84,8 +84,8 @@ The exact language model is not yet selected. A design target is to support mode
 The assistant must:
 
 - preserve provenance, quality status, spatial/temporal support, and limitations;
-- distinguish user-declared facts from Field Shift observations and derived evidence;
-- distinguish canonical Field Shift evidence from external discovery results;
+- distinguish user-declared facts from AgroSpin observations and derived evidence;
+- distinguish canonical AgroSpin evidence from external discovery results;
 - return explicit unknowns when evidence is insufficient;
 - never treat model confidence as evidence;
 - never silently turn coarse regional observations into parcel measurements;
