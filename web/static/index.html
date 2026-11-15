@@ -210,6 +210,44 @@
               <button type="button" class="btn-jump text-xs bg-white hover:bg-emerald-50 hover:border-emerald-400 text-slate-700 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm transition" data-lat="-33.858" data-lon="-65.182">Justo Daract</button>
             </div>
 
+            <!-- Recuadro intuitivo de selección de capas del mapa -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50/90 p-3 space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Map Layers &amp; Sensor Overlays</span>
+                <span class="text-[10px] text-slate-500 font-medium">Toggle thematic layers</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
+                  <input type="checkbox" id="chk-layer-stations" checked class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500 shrink-0"></span>
+                    Weather Stations (19)
+                  </span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
+                  <input type="checkbox" id="chk-layer-sisinta" class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                    SISINTA Soil Profiles
+                  </span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
+                  <input type="checkbox" id="chk-layer-susceptibility" class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
+                    <span class="w-2.5 h-2.5 rounded-full bg-violet-500 shrink-0"></span>
+                    Topographic Susceptibility
+                  </span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 cursor-pointer transition select-none">
+                  <input type="checkbox" id="chk-layer-slope" class="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600" />
+                  <span class="flex items-center gap-1.5 font-medium text-slate-800 text-[11px] leading-tight">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+                    SRTM 500m Slope (%)
+                  </span>
+                </label>
+              </div>
+            </div>
+
             <div id="field-map" class="w-full rounded-xl border border-slate-200 overflow-hidden z-0 shadow-sm" style="height: 290px;"></div>
 
             <div class="grid grid-cols-2 gap-2.5">
@@ -808,6 +846,47 @@
       "Topographic susceptibility (UNVALIDATED)": susceptibilityLayer,
       "SRTM 500m slope (%)": slopeLayer,
     }, { collapsed: true }).addTo(fieldMap);
+
+    // Sincronización intuitiva del recuadro superior de capas
+    const chkStations = document.getElementById("chk-layer-stations");
+    const chkSisinta = document.getElementById("chk-layer-sisinta");
+    const chkSusceptibility = document.getElementById("chk-layer-susceptibility");
+    const chkSlope = document.getElementById("chk-layer-slope");
+
+    function sincronizarCapasRecuadro() {
+      if (chkStations) chkStations.checked = fieldMap.hasLayer(stationsLayer);
+      if (chkSisinta) chkSisinta.checked = fieldMap.hasLayer(sisintaLayer);
+      if (chkSusceptibility) chkSusceptibility.checked = fieldMap.hasLayer(susceptibilityLayer);
+      if (chkSlope) chkSlope.checked = fieldMap.hasLayer(slopeLayer);
+    }
+
+    if (chkStations) {
+      chkStations.addEventListener("change", (e) => {
+        if (e.target.checked) fieldMap.addLayer(stationsLayer);
+        else fieldMap.removeLayer(stationsLayer);
+      });
+    }
+    if (chkSisinta) {
+      chkSisinta.addEventListener("change", (e) => {
+        if (e.target.checked) fieldMap.addLayer(sisintaLayer);
+        else fieldMap.removeLayer(sisintaLayer);
+      });
+    }
+    if (chkSusceptibility) {
+      chkSusceptibility.addEventListener("change", (e) => {
+        if (e.target.checked) fieldMap.addLayer(susceptibilityLayer);
+        else fieldMap.removeLayer(susceptibilityLayer);
+      });
+    }
+    if (chkSlope) {
+      chkSlope.addEventListener("change", (e) => {
+        if (e.target.checked) fieldMap.addLayer(slopeLayer);
+        else fieldMap.removeLayer(slopeLayer);
+      });
+    }
+
+    fieldMap.on("overlayadd", sincronizarCapasRecuadro);
+    fieldMap.on("overlayremove", sincronizarCapasRecuadro);
 
     fetch("/api/map/layers")
       .then((r) => (r.ok ? r.json() : null))
