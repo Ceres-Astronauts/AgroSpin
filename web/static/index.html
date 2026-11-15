@@ -175,7 +175,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       <!-- Left panel: Field input form -->
-      <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
+      <section class="order-2 lg:order-1 lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
         <div class="border-b border-slate-100 pb-4">
           <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Field configuration</span>
           <h2 class="text-lg font-bold text-slate-900 mt-0.5">Inputs to evaluate your rotation</h2>
@@ -272,11 +272,11 @@
             <div class="grid grid-cols-2 gap-2.5">
               <div>
                 <label for="input-lat" class="block text-[11px] font-medium text-slate-500 mb-1">Latitude (EPSG:4326)</label>
-                <input type="number" step="0.0001" min="-33.875" max="-33.125" id="input-lat" value="-33.6750" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
+                <input type="number" step="0.0001" min="-33.875" max="-33.125" id="input-lat" value="" placeholder="e.g. -33.6750" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
               </div>
               <div>
                 <label for="input-lon" class="block text-[11px] font-medium text-slate-500 mb-1">Longitude (EPSG:4326)</label>
-                <input type="number" step="0.0001" min="-65.875" max="-64.125" id="input-lon" value="-65.4600" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
+                <input type="number" step="0.0001" min="-65.875" max="-64.125" id="input-lon" value="" placeholder="e.g. -65.4600" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs tabular-nums focus:bg-white focus:border-emerald-600 focus:outline-none" />
               </div>
             </div>
 
@@ -517,7 +517,7 @@
       </section>
 
       <!-- Right panel: Tabbed results -->
-      <section class="lg:col-span-7 space-y-4">
+      <section class="order-1 lg:order-2 lg:col-span-7 space-y-4">
         <div id="results-placeholder" class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500 space-y-2">
           <div class="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mx-auto mb-3">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -844,10 +844,9 @@
     function resetToInitialPoint(errorMessage) {
       customFieldData = null;
       drawnItems.clearLayers();
-      L.marker([INITIAL_POINT.lat, INITIAL_POINT.lon]).addTo(drawnItems);
-      fieldMap.setView([INITIAL_POINT.lat, INITIAL_POINT.lon], 9);
-      inputLat.value = INITIAL_POINT.lat.toFixed(4);
-      inputLon.value = INITIAL_POINT.lon.toFixed(4);
+      fieldMap.setView([-33.50, -65.00], 9);
+      inputLat.value = "";
+      inputLon.value = "";
       terrainCard.classList.remove("hidden");
       terrainCard.innerHTML = `<p class="text-rose-700 font-medium">${errorMessage}</p>`;
     }
@@ -977,7 +976,6 @@
 
     const drawnItems = new L.FeatureGroup();
     fieldMap.addLayer(drawnItems);
-    L.marker([INITIAL_POINT.lat, INITIAL_POINT.lon]).addTo(drawnItems);
 
     const drawControl = new L.Control.Draw({
       draw: {
@@ -1063,7 +1061,7 @@
 
     fieldMap.on("click", (e) => {
       if (!isInsideMVPBox(e.latlng.lat, e.latlng.lng)) {
-        resetToInitialPoint("Outside MVP coverage: please select a point within the allowed bounding box (lat -33.875 to -33.125, lon -65.875 to -64.125). Reset to initial point.");
+        resetToInitialPoint("Outside MVP coverage: please select a point within the allowed bounding box (lat -33.875 to -33.125, lon -65.875 to -64.125). Selection cleared.");
         return;
       }
       drawnItems.clearLayers();
@@ -1075,7 +1073,7 @@
       if (e.layerType === "polygon") {
         const coords = e.layer.getLatLngs()[0].map((ll) => [ll.lat, ll.lng]);
         if (!coords.every(([lat, lon]) => isInsideMVPBox(lat, lon))) {
-          resetToInitialPoint("Outside MVP coverage: the entire polygon must stay within the allowed bounding box. Reset to initial point.");
+          resetToInitialPoint("Outside MVP coverage: the entire polygon must stay within the allowed bounding box. Selection cleared.");
           return;
         }
         drawnItems.clearLayers();
@@ -1084,7 +1082,7 @@
       } else if (e.layerType === "marker") {
         const ll = e.layer.getLatLng();
         if (!isInsideMVPBox(ll.lat, ll.lng)) {
-          resetToInitialPoint("Outside MVP coverage: please select a point within the allowed bounding box. Reset to initial point.");
+          resetToInitialPoint("Outside MVP coverage: please select a point within the allowed bounding box. Selection cleared.");
           return;
         }
         drawnItems.clearLayers();
@@ -1110,7 +1108,7 @@
         const lon = parseFloat(inputLon.value);
         if (!isNaN(lat) && !isNaN(lon)) {
           if (!isInsideMVPBox(lat, lon)) {
-            resetToInitialPoint("Outside MVP coverage: coordinates must stay within lat [-33.875, -33.125] and lon [-65.875, -64.125]. Reset to initial point.");
+            resetToInitialPoint("Outside MVP coverage: coordinates must stay within lat [-33.875, -33.125] and lon [-65.875, -64.125]. Selection cleared.");
             return;
           }
           fieldMap.setView([lat, lon], 12);
@@ -1154,10 +1152,15 @@
       try {
         const isManual = manualModeCheck.checked;
 
-        // In map mode, if terrain hasn't been queried yet, query the current pin coordinate first
+        // In map mode, if terrain hasn't been queried yet, query the entered coordinate first
         if (!isManual && !customFieldData) {
           const lat = parseFloat(inputLat.value);
           const lon = parseFloat(inputLon.value);
+          if (isNaN(lat) || isNaN(lon)) {
+            terrainCard.classList.remove("hidden");
+            terrainCard.innerHTML = "<p class='text-rose-700 font-medium'>Please select a field on the map, enter valid coordinates, or enable manual entry.</p>";
+            return;
+          }
           const ok = await queryMapTerrain({ lat, lon }, false);
           if (!ok) return;
         }
