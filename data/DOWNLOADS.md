@@ -124,4 +124,4 @@ SoilGrids must remain labeled as modeled/predicted context, not as field measure
 6. FAO reference material for crop-water modeling.
 7. SoilGrids only if measured/local soil evidence remains incomplete.
 
-Supporting NASA sources such as HLS, GPM IMERG, ECOSTRESS, and GRACE/GRACE-FO are intentionally not part of the first download set. See `context/source-fitness.md` for the rationale and current ratings.
+Supporting NASA sources such as HLS, GPM IMERG, ECOSTRESS, and GRACE/GRACE-FO are intentionally not part of the first download set. See `docs/data-sources/evaluation.md` and `docs/data-sources/fitness.yml` for the public source assessment and limits.

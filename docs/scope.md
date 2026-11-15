@@ -69,12 +69,6 @@ These layers must not collapse into a single opaque AI output.
 
 ## Challenge-first narrative
 
-The public project narrative should remain:
+`Agricultural problem -> Farmer decision -> NASA and local evidence -> Comparative method -> Working demonstration`
 
-`Challenge -> Field Shift -> architecture -> reusable framework capabilities`
-
-and not:
-
-`framework -> NASA challenge as a test case`
-
-The agricultural problem is the product. The framework exists to make the product more traceable, reusable, and capable of controlled learning.
+Supporting tools remain secondary to the agricultural decision and the evidence.

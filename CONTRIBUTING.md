@@ -23,9 +23,9 @@ Avoid speculative architecture. Add structure when a concrete requirement, datas
 
 `docs/` is primarily human-oriented explanatory documentation.
 
-`context/` is the canonical operational context: structured, explicit knowledge intended to be understandable by humans and reliably consumable by software, analytical tooling, and AI agents.
+`data/sources/` and `data/manifests/` describe source identity and provenance, and `docs/contracts/` contains public data and decision contracts.
 
-These layers must complement each other. Do not maintain duplicate canonical facts in multiple places when a reference is sufficient.
+Keep product documentation self-contained; link to established public evidence rather than duplicate scientific claims.
 
 ## Data and evidence
 
@@ -49,15 +49,9 @@ Human contributors remain responsible for validating factual claims, scientific 
 
 Field Shift follows a human-first, AI-optimized approach: AI should reduce reconstruction and repetitive work, not become a prerequisite for understanding the project.
 
-## Learning governance
+## Scientific decision changes
 
-New patterns, hypotheses, or inferred relationships should enter the learning lifecycle as candidates. They must not silently modify active knowledge or decision rules.
-
-The intended lifecycle is:
-
-`candidate -> shadow -> validated -> promoted | rejected`
-
-Promotion into active knowledge requires explicit validation.
+Agronomic hypotheses and decision-rule changes require evidence, reproducible tests, uncertainty disclosure, and human review before becoming active.
 
 ## Security and privacy
 
@@ -80,7 +74,7 @@ Use environment variables and local credential mechanisms. Commit only safe exam
 Prefer small, conceptually coherent commits. Conventional-style prefixes are encouraged, for example:
 
 - `docs:` documentation
-- `feat:` product or framework capability
+- `feat:` product capability
 - `feat(context):` canonical context capability
 - `feat(sources):` source registry changes
 - `feat(learning):` learning lifecycle changes

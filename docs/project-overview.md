@@ -8,6 +8,8 @@ Field Shift is an open-source agronomic decision-support prototype under develop
 
 ## 1. Project Implementation Maturity
 
+**Historical status warning:** The implementation table below reflects an earlier acquisition/design phase and must be reconciled before presentation. See the [current MVP data summary](../README.md). The interactive simulator exists, but its ranking is not field-validated.
+
 Field Shift maintains transparent labeling of implementation status across each functional subsystem:
 
 | Subsystem | Maturity Status | Implementation Scope & Evidence |
@@ -83,8 +85,8 @@ Field Shift execution is validated against a defined workstation compatibility e
 ### Installation & Verification
 ```bash
 # Clone the repository
-git clone https://github.com/Ceres-Astronauts/field-shift.git
-cd field-shift
+git clone https://github.com/Ceres-Astronauts/AgroSpin.git
+cd AgroSpin
 
 # Synchronize reproducible virtual environment
 uv sync --frozen
@@ -98,7 +100,7 @@ uv run python scripts/verify_environment.py
 ## 6. Repository Structure
 
 ```text
-field-shift/
+AgroSpin/
 ├── data/
 │   ├── manifests/         # Authoritative acquisition receipts & data manifests
 │   ├── schemas/           # JSON schemas for observations & acquisitions
@@ -108,7 +110,6 @@ field-shift/
 │   ├── contracts/         # Data contracts and decision evaluation schemas
 │   ├── data-sources/      # Transparent source evaluation matrix and reviews
 │   └── methodology/       # Agronomic assumptions and operational model
-├── learning/              # Governed candidate → shadow → validation → promotion/rejection lifecycle
 ├── notebooks/             # Reproducible scientific walkthrough notebooks
 ├── presentation/          # NASA presentation decks and visual demo assets
 ├── scripts/               # Environment verification and reproducibility tools
