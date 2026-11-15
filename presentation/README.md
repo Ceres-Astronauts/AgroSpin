@@ -14,7 +14,7 @@ The public story should remain challenge-first:
 6. Explainability, uncertainty, and limitations
 7. Impact and future learning
 
-The reusable framework is supporting architecture, not the protagonist.
+The agricultural decision and its evidence are the focus of the presentation.
 
 ## Evidence rule
 

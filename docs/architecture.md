@@ -4,7 +4,7 @@
 
 Field Shift is a standalone, open-source agricultural decision-support product. It is designed to combine environmental evidence that has passed source-specific validation, local soil/crop context, farmer/company priorities, transparent indicators, and explicit decision rules to compare crop-rotation strategies under drought and climate variability.
 
-The public product does **not** depend at runtime on the team's internal AI/context framework, private seats, or program-control repositories.
+The public product must run on publicly documented dependencies and datasets with inspectable evidence and decision rules.
 
 ```text
 INTERNAL DEVELOPMENT CONTEXT != PRODUCT RUNTIME

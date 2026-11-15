@@ -85,4 +85,4 @@ def clima_lote(lat, lon, desde="2015-01-01"):
 - **SISINTA**: 257 horizontes de 198 perfiles dentro de la caja. Solo 9 horizontes tienen textura completa y ensayos de capacidad de campo/PMP; el resto está marcado `SIN_DATO_COMPLETO`.
 - **Córdoba** tiene menos observación en tierra que San Luis: la lluvia de Achiras (28 meses con datos) y la temperatura de Bell Ville (sin estación) son las limitaciones principales.
 
-Decisiones y trazabilidad completa: repositorio `field-shift-context`, carpeta `reference/decisions/` (ver `manifest.json` → `decisiones`).
+Public provenance resources: [`manifest.json`](manifest.json), [`SHA256SUMS`](SHA256SUMS), [`../../sources/`](../../sources/), and [`../../../docs/contracts/`](../../../docs/contracts/). Historical decision IDs in the manifest are not themselves scientific validation.

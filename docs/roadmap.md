@@ -10,9 +10,7 @@ Status: in progress / largely complete
 - English as canonical language
 - human-first / AI-optimized principles
 - security and contribution policy
-- canonical context layer
 - NASA source registry
-- governed learning lifecycle
 - transparent decision contract
 
 ## Phase 1 — Core data validation
@@ -50,14 +48,12 @@ Only after the core loop works:
 - use GPM where it adds value beyond POWER
 - use GRACE / GRACE-FO only for broad hydrologic context
 
-## Phase 5 — Learning demonstration
+## Phase 5 — Evidence and product validation
 
-- create at least one realistic learning candidate
-- evaluate it in shadow mode
-- show how evidence can support promotion or rejection
-- demonstrate that active behavior remains unchanged until approval
-
-The goal is to demonstrate governed learning, not autonomous uncontrolled self-modification.
+- reconcile the simulator outputs against available evidence
+- distinguish prototype scores from field-validated recommendations
+- test reproducibility and schema compatibility
+- disclose unresolved assumptions and limitations
 
 ## Phase 6 — NASA presentation
 

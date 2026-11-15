@@ -1,55 +1,41 @@
-# Field Shift — estado público del MVP
+# Field Shift — NASA Space Apps Challenge 2026 MVP
 
-Field Shift es un asistente de decisión para comparar rotaciones de cultivo en condiciones de agua y clima cambiantes. No es un visor de satélites.
+Field Shift is an agricultural decision-support prototype for comparing crop-rotation alternatives under water stress and climate variability. It is **not just a satellite data viewer**.
 
-Zona del MVP: lon −65,875 a −64,125 · lat −33,875 a −33,125 (Villa Mercedes, San Luis – sur de Córdoba). Corte de datos: 2026‑11‑01.
+**MVP area:** 65.875°W–64.125°W, 33.875°S–33.125°S (Villa Mercedes, San Luis, and southern Córdoba, Argentina). **Data cutoff:** 2026-11-01.
 
-## Datos del MVP: entrega de clima histórico + suelo (2026‑11‑15)
+## Climate and soil evidence
 
-Conjunto homogéneo listo para ingestar en **Google Looker Studio** y en el stack (Python · Pandas · Parquet/CSV · FastAPI · Leaflet), en EPSG:4326.
-Está completo en [`data/reference/mvp-homogeneo/`](data/reference/mvp-homogeneo/) (125 MB, sin almacenamiento externo):
+The published datasets live in [`data/reference/mvp-homogeneo/`](data/reference/mvp-homogeneo/), with CSV/Parquet tables, a data dictionary, manifest, and checksums. Filenames and machine-readable field identifiers have not yet been translated because application consumers depend on the current schema.
 
-| Tabla | Qué contiene |
+| Dataset | Decision-relevant information |
 |---|---|
-| `clima_mensual_grilla_1991_2026` / `clima_anual_grilla_1991_2026` | Lluvia, temperatura, ETo FAO‑56, balance P−ETo, heladas (<3 °C y ≤0 °C), estrés térmico (>35 °C), grados‑día, ventana libre de heladas, fase ENSO — 32 puntos de 0,25°, 1991–2026 |
-| `clima_diario_grilla_1991_2026` (CSV y Parquet) | Serie diaria completa por punto |
-| `clima_zona_diario_1991_2026` | Serie única de la zona, temperatura ponderada por estaciones en tierra (REM San Luis) |
-| `enso_oni_mensual` | Índice ONI (NOAA) y fase Niño/Niña/Neutro |
-| `suelo_1ha_grilla` (Parquet) / `suelo_500m_grilla` (CSV) | Relieve SRTM, pendiente, susceptibilidad topográfica, humedad media |
-| `suelo_gaez_cultivos_1981_2010` | Aptitud y rendimiento alcanzable FAO GAEZ v4 para 8 cultivos |
-| `suelo_sisinta_perfiles_caja` | Horizontes de perfiles INTA SISINTA dentro de la zona (textura, pH, carbono, agua útil) |
-| `humedad_suelo_mensual_grilla_1991_2026` | Nivel medio mensual de humedad de suelo (modelo) — **no validada en correlación** |
-| `estaciones_terrestres` | 19 estaciones en tierra con coordenadas y veredicto de validación |
-| `README.md`, `diccionario_columnas.csv`, `cobertura_necesidades_mvp.csv`, `cargar_mvp.py` | Instrucciones de uso (Looker y stack), unidades, qué necesidad del negocio cubre cada tabla, cargador Python |
+| `clima_mensual_grilla_1991_2026`, `clima_anual_grilla_1991_2026` | Historical regional rainfall, temperature, FAO-56 ETo, P−ETo, frost, heat-stress days, and growing degree days across 32 grid points |
+| `clima_diario_grilla_1991_2026`, `clima_zona_diario_1991_2026` | Daily climate series and a study-area aggregate |
+| `enso_oni_mensual` | NOAA ONI and ENSO phase |
+| `suelo_1ha_grilla`, `suelo_500m_grilla` | SRTM-derived elevation, slope, topographic susceptibility, and modeled mean soil moisture |
+| `suelo_gaez_cultivos_1981_2010` | FAO GAEZ v4 historical crop suitability and attainable-yield reference |
+| `suelo_sisinta_perfiles_caja` | INTA SISINTA profile horizons and available soil properties |
+| `humedad_suelo_mensual_grilla_1991_2026` | Modeled mean monthly soil moisture, **not validated for daily correlation** |
+| `estaciones_terrestres` | 19 ground weather station entries with locations and quality labels |
 
-Cada fila lleva una columna `origen`: **OBSERVADO** (medido en tierra), **ESTIMADO** (reanálisis o modelo) o **REFERENCIA** (fuera de la zona o de terceros). No se mezclan.
-Integridad: `sha256sum -c SHA256SUMS` dentro de la carpeta.
+The `origen` field differentiates ground observations (`OBSERVADO_*`), estimates (`ESTIMADO_*`), and references (`REFERENCIA_*`). These must not be conflated. Verify the dataset files using `sha256sum -c SHA256SUMS` from the dataset directory.
 
-## Qué está verificado
-| Componente | Estado | Evidencia |
-|---|---|---|
-| Clima diario y mensual (NASA POWER, 32 puntos, 1991–2026) | Completo; temperatura contrastada con estaciones REM en tierra (r ≈ 0,97) | `data/reference/mvp-homogeneo/README.md`; decisiones en `field-shift-context` |
-| Estaciones en tierra (REM San Luis, SMN, PIHC, IDECOR) | Validadas con veredicto por estación; lluvia de Córdoba con huecos documentados | `estaciones_terrestres.csv` |
-| Relieve y pendiente (SRTMGL1 30 m → 1 ha y 500 m) | Verificado; 85 celdas con pendiente atípica marcadas, no borradas | `suelo_1ha_grilla.parquet`, `manifest.json` |
-| Perfiles de suelo (INTA SISINTA) | 198 perfiles en la zona; solo 9 horizontes con textura y capacidad de campo completas | `suelo_sisinta_perfiles_caja.csv` |
-| Aptitud por cultivo (FAO GAEZ v4, 1981–2010) | Recorte íntegro de la fuente; sin codebook local | `suelo_gaez_cultivos_1981_2010.csv` |
-| Catálogo de cultivos | Coeficientes Kc y profundidad de raíz con cita FAO‑56; lo que falta marcado `NO_VERIFICADO` | [`docs/challenge/crop-catalog.yml`](docs/challenge/crop-catalog.yml) |
+## Scientific and product limitations
 
-## Qué está limitado, y por qué
-- **Humedad de suelo:** el modelo de balance (calibrado con SMAP de 3 puntos) cumple RMSE y sesgo pero no la correlación diaria (0,48–0,50 contra 0,60). Se entrega solo el nivel medio mensual, etiquetado `NO_VALIDADA_CORRELACION`. SMAP de 32 puntos y GLDAS quedaron fuera del MVP.
-- **Susceptibilidad topográfica:** es un índice del relieve (TWI + depresiones). **No es un mapa de inundación** ni está validado con eventos.
-- **Las escalas son regionales.** POWER es grilla de 0,25°; GAEZ de 1/12°. No representan una parcela. El relieve (1 ha) y los perfiles de suelo sí son locales.
-- **Córdoba tiene menos observación en tierra** que San Luis (Achiras: 28 meses de lluvia; Bell Ville: sin estación de temperatura).
-- **No hay ranking ni recomendación de rotación.** Falta la validación de campo (E2) y el cruce con Kc/calendario por cultivo.
+- NASA POWER regional climatology was compared with San Luis REM temperature data (reported correlation about **0.97**); this does **not** establish accuracy for individual parcels.
+- SRTM-derived terrain includes flagged anomalous slopes. The topographic susceptibility index is **not a validated flood map**.
+- The area includes 198 INTA SISINTA soil profiles (257 horizons), but only nine horizons have sufficiently complete texture and field-capacity information.
+- GAEZ v4 crop suitability/yield data describe a historical 1981–2010 regional reference; local codebook coverage is incomplete.
+- The soil-moisture balance model did **not** meet the daily correlation acceptance threshold (about 0.48–0.50 versus 0.60). Published monthly means carry the `NO_VALIDADA_CORRELACION` warning.
+- Regional data, including POWER and GAEZ, cannot be presented as direct parcel measurements merely because they are resampled.
+- The repository contains an **interactive rotation-comparison simulator with scoring logic**, but the scores and rankings are **prototype outputs, not field-validated agronomic recommendations**.
 
-## Cómo se evalúa cada resultado
-Cada dato lleva su fuente, su nivel de evidencia y sus límites. Un valor sin validación no se presenta como resultado científico.
+## Public project documentation
 
-## Qué no incluye este repositorio
-Datos crudos de las fuentes, credenciales y rutas locales. La trazabilidad completa (decisiones, validaciones, snapshots) está en el repositorio `field-shift-context`.
+- [MVP data guide](data/reference/mvp-homogeneo/README.md), [manifest](data/reference/mvp-homogeneo/manifest.json), and [checksums](data/reference/mvp-homogeneo/SHA256SUMS)
+- [NASA and local data source specifications](data/sources/README.md)
+- [Data methodology](data/ARCHITECTURE.md) and [decision/evidence contracts](docs/contracts/README.md)
+- [Crop catalog](docs/challenge/crop-catalog.yml), [project overview](docs/project-overview.md), and [NASA presentation](presentation/README.md)
 
----
-
-Documentación general del proyecto (contexto, arquitectura y decisiones): [docs/project-overview.md](docs/project-overview.md).
-
-Notas técnicas del challenge: [docs/challenge/](docs/challenge/).
+This public repository provides the product code, reference datasets, scientific metadata, and documentation. It does not contain private operations data, credentials, or original upstream raw archives.
