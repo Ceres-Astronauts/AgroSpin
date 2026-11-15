@@ -269,7 +269,7 @@ def simular_escenarios(
     meses_desnudos = sum(1 for ndvi in ndvi_series if ndvi < 0.25)
 
     temps = datos_lote.get("temp_superficial_ecostress_c", [35.0])
-    temp_max_verano = max(temps)
+    temp_max_verano = max(temps) if temps else 35.0
     # Temperatura mínima satelital (de lote o promedio histórico de referencia 9.0 °C en transición)
     tmin_satelital = datos_lote.get("temp_min_satelital_c", 3.8)
     analisis_heladas = calibrar_minima_termica(tmin_satelital)
