@@ -1,6 +1,6 @@
 # Source Review — 2026-10-30
 
-This review records the first explicit decision-fitness assessment for Field Shift data and knowledge sources.
+This review records the first explicit decision-fitness assessment for AgroSpin data and knowledge sources.
 
 ## Main findings
 

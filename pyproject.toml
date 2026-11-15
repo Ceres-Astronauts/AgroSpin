@@ -1,5 +1,5 @@
 [project]
-name = "field-shift"
+name = "agrospin"
 version = "0.1.0"
 description = "Evidence-driven agricultural decision support using NASA Earth observation data and local agronomic context."
 readme = "README.md"

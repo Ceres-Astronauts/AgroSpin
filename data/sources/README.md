@@ -1,6 +1,6 @@
 # Source Registry
 
-This directory contains canonical product metadata for external data sources considered by Field Shift.
+This directory contains canonical product metadata for external data sources considered by AgroSpin.
 
 ## Authority rule
 
@@ -10,7 +10,7 @@ Third-party discovery resources may accelerate research but are not scientific a
 
 ## Separate status dimensions
 
-Field Shift does not use one overloaded source status.
+AgroSpin does not use one overloaded source status.
 
 ### Metadata status
 
@@ -40,7 +40,7 @@ A failed historical access path does not automatically mean the source is unavai
 
 ### Observation/role validation status
 
-Describes whether the acquired content has passed the checks required for its intended Field Shift role. Typical states include:
+Describes whether the acquired content has passed the checks required for its intended AgroSpin role. Typical states include:
 
 ```text
 pending_pipeline_validation

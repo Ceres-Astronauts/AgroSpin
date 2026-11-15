@@ -2,7 +2,7 @@
 
 This review asks a different question from basic source quality:
 
-> If the core Field Shift stack already works, what additional decision value does each source add?
+> If the core AgroSpin stack already works, what additional decision value does each source add?
 
 ## Results
 
@@ -18,7 +18,7 @@ This review asks a different question from basic source quality:
 
 ## HLS
 
-HLS is strong science-ready surface-reflectance data at 30 m. Its main Field Shift value would be vegetation-condition or land-surface-response analysis. It is not currently required to reconstruct crop history because INTA already provides a national crop-classification product tailored to Argentina.
+HLS is strong science-ready surface-reflectance data at 30 m. Its main AgroSpin value would be vegetation-condition or land-surface-response analysis. It is not currently required to reconstruct crop history because INTA already provides a national crop-classification product tailored to Argentina.
 
 For a southern-hemisphere prototype, HLS Version 2 known issues require explicit coordinate-reference-system checks. Cloud, shadow, scale-factor, and geolocation QA also remain mandatory.
 

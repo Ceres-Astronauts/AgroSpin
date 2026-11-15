@@ -1,6 +1,6 @@
 # Data Architecture
 
-Field Shift keeps external data reproducible, auditable, and separate from source code.
+AgroSpin keeps external data reproducible, auditable, and separate from source code.
 
 ## Local data lifecycle
 

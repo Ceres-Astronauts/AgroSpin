@@ -2,9 +2,11 @@
   <img src="logo2.png" alt="AgroSpin" width="320">
 </p>
 
-# AgroSpin (Field Shift) — NASA Space Apps Challenge 2026 MVP
+# AgroSpin — NASA Space Apps Challenge 2026 MVP
 
-Field Shift is an agricultural decision-support prototype for comparing crop-rotation alternatives under water stress and climate variability. It is **not just a satellite data viewer**.
+**NASA challenge:** Field Shift: Adapting Farms with NASA Data.
+
+AgroSpin is an agricultural decision-support prototype for comparing crop-rotation alternatives under water stress and climate variability. It is **not just a satellite data viewer**.
 
 **MVP area:** 65.875°W–64.125°W, 33.875°S–33.125°S (Villa Mercedes, San Luis, and southern Córdoba, Argentina). **Data cutoff:** 2026-11-01.
 
@@ -34,6 +36,13 @@ The `origin` field differentiates ground observations (`OBSERVED_*`), estimates 
 - The soil-moisture balance model did **not** meet the daily correlation acceptance threshold (about 0.48–0.50 versus 0.60). Published monthly means carry the `UNVALIDATED_CORRELATION` warning.
 - Regional data, including POWER and GAEZ, cannot be presented as direct parcel measurements merely because they are resampled.
 - The repository contains an **interactive rotation-comparison simulator with scoring logic**, but the scores and rankings are **prototype outputs, not field-validated agronomic recommendations**.
+
+
+### Interpretation of numeric uncertainty and scenario adjustments
+
+The current rotation simulator uses fixed uncertainty labels (including **±28%**) and scoring adjustments to handle missing or sparse field-scale evidence in the study area. **These are engineering heuristics and scenario parameters**, not statistically estimated confidence intervals, calibrated prediction errors, or universally valid agronomic thresholds. The value ±28% does not have a demonstrated sampling distribution or independently validated coverage probability. It must be presented as an **illustrative uncertainty flag**, not as a probability or measured error bound.
+
+Likewise, the simulator's weighted scores represent a prototype comparative rubric. Field data gaps explain why heuristics were introduced, but do not by themselves justify their numerical magnitudes. Independent soil samples and agronomic field validation are needed before such numbers can support operational decisions.
 
 ## Public project documentation
 

@@ -1,6 +1,6 @@
 # Data Manifests
 
-Field Shift uses two related manifest layers.
+AgroSpin uses two related manifest layers.
 
 ## 1. Retrieval plan manifests
 

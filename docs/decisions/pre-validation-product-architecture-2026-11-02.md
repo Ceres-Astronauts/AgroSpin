@@ -2,13 +2,13 @@
 
 ## Decision
 
-Before source validation and normalization begin, Field Shift freezes the product boundaries and data-consumption contracts that validation and transformation must satisfy.
+Before source validation and normalization begin, AgroSpin freezes the product boundaries and data-consumption contracts that validation and transformation must satisfy.
 
 This decision freezes **architecture and invariants**, not scientific conclusions or final physical schemas.
 
 ## Product boundary
 
-`field-shift` is the standalone public solution.
+`AgroSpin` is the standalone public solution.
 
 It must run without:
 
@@ -114,7 +114,7 @@ These are semantic contracts. Physical schemas may evolve during validation as l
 
 ## Open-source runtime baseline
 
-Field Shift must be demonstrable end-to-end with open-source software.
+AgroSpin must be demonstrable end-to-end with open-source software.
 
 Baseline candidates include:
 
@@ -169,7 +169,7 @@ private registries and governance internals
 
 ## Location semantics
 
-Field Shift is location-aware but must not create false parcel precision.
+AgroSpin is location-aware but must not create false parcel precision.
 
 - coordinates identify a query target;
 - hectares do not define geometry;

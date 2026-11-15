@@ -1,6 +1,6 @@
 # Decision-Relevant Data Contract
 
-Field Shift admits data into the decision pipeline only when it has a defined role, explicit quality state, and traceable transformation.
+AgroSpin admits data into the decision pipeline only when it has a defined role, explicit quality state, and traceable transformation.
 
 ## Required metadata for every observation
 

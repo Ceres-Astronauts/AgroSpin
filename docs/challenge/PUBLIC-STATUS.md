@@ -1,6 +1,6 @@
-# Field Shift — Public MVP Status (Draft)
+# AgroSpin — Public MVP Status (Draft)
 
-Field Shift is a decision-support assistant for comparing crop rotations under changing water and climate conditions. It is not a standalone satellite viewer.
+AgroSpin is a decision-support assistant for comparing crop rotations under changing water and climate conditions. It is not a standalone satellite viewer.
 
 ## What Is Verified
 

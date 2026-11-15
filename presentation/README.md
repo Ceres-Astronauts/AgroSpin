@@ -9,7 +9,7 @@ The public story should remain challenge-first:
 1. Agricultural problem
 2. Farmer decision
 3. NASA and local evidence
-4. Field Shift decision-support approach
+4. AgroSpin decision-support approach
 5. Demonstration
 6. Explainability, uncertainty, and limitations
 7. Impact and future learning

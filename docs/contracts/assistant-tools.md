@@ -38,7 +38,7 @@ INVALID_INPUT
 NOT_IMPLEMENTED
 ```
 
-Tool failure must be explicit. The assistant must not fill a missing result from model knowledge and present it as Field Shift evidence.
+Tool failure must be explicit. The assistant must not fill a missing result from model knowledge and present it as AgroSpin evidence.
 
 ## Baseline tools
 
@@ -67,7 +67,7 @@ This operation never claims that a point represents exact field boundaries.
 
 ### `get_available_evidence`
 
-Purpose: list Field Shift evidence relevant to the current target and decision question.
+Purpose: list AgroSpin evidence relevant to the current target and decision question.
 
 Input:
 
@@ -136,7 +136,7 @@ This is not free-form LLM generation. Every returned candidate must have a gover
 
 ### `evaluate_rotation`
 
-Purpose: invoke the deterministic Field Shift decision engine for one candidate under one Client Case.
+Purpose: invoke the deterministic AgroSpin decision engine for one candidate under one Client Case.
 
 Input includes:
 
@@ -183,6 +183,6 @@ The model may not:
 
 ## Runtime independence
 
-These are normal Field Shift product APIs/functions. They must not depend on internal team context, agent-session state, or private framework repositories at runtime.
+These are normal AgroSpin product APIs/functions. They must not depend on internal team context, agent-session state, or private framework repositories at runtime.
 
 The exact transport is deliberately open. MVP functions may be direct Python calls; later implementations may expose the same contracts through a local API without changing scientific ownership.

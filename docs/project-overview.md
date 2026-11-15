@@ -1,8 +1,10 @@
-# Field Shift
+# AgroSpin
+
+**NASA challenge:** Field Shift: Adapting Farms with NASA Data.
 
 > **Data-driven crop rotation decisions under climate variability using NASA Earth Observations and local agricultural intelligence.**
 
-Field Shift is an open-source agronomic decision-support prototype under development for the NASA Space Apps Challenge. It assists farmers, agronomists, and land managers in evaluating resilient crop rotation sequences that mitigate drought risks and sustain long-term soil productivity.
+AgroSpin is an open-source agronomic decision-support prototype under development for the NASA Space Apps Challenge. It assists farmers, agronomists, and land managers in evaluating resilient crop rotation sequences that mitigate drought risks and sustain long-term soil productivity.
 
 ---
 
@@ -10,7 +12,7 @@ Field Shift is an open-source agronomic decision-support prototype under develop
 
 **Historical status warning:** The implementation table below reflects an earlier acquisition/design phase and must be reconciled before presentation. See the [current MVP data summary](../README.md). The interactive simulator exists, but its ranking is not field-validated.
 
-Field Shift maintains transparent labeling of implementation status across each functional subsystem:
+AgroSpin maintains transparent labeling of implementation status across each functional subsystem:
 
 | Subsystem | Maturity Status | Implementation Scope & Evidence |
 |---|---|---|
@@ -44,7 +46,7 @@ Target / Planned Output: Actionable Decision Recommendations & Interactive Demon
 
 ## 3. NASA Earth Observation Core
 
-Field Shift builds its environmental baseline on authoritative NASA Earth science data:
+AgroSpin builds its environmental baseline on authoritative NASA Earth science data:
 
 1. **NASA POWER (Prediction of Worldwide Energy Resources):**
    - **Daily Agroclimatology (AG):** Provides 35 years (1991–2025) of continuous meteorological history:
@@ -65,13 +67,13 @@ Field Shift builds its environmental baseline on authoritative NASA Earth scienc
 
 ## 4. Prototype Anchor: Villa Mercedes, San Luis
 
-To ground the methodology in real-world agriculture, Field Shift anchors its MVP on the **EEA INTA San Luis Experimental Field** (Villa Mercedes, San Luis, Argentina: `-33.6500, -65.3667`, EPSG:4326). This semi-arid, climate-sensitive agricultural zone exhibits pronounced rainfall variability and water-limited crop yields, making it an ideal proving ground for rotation resilience modeling.
+To ground the methodology in real-world agriculture, AgroSpin anchors its MVP on the **EEA INTA San Luis Experimental Field** (Villa Mercedes, San Luis, Argentina: `-33.6500, -65.3667`, EPSG:4326). This semi-arid, climate-sensitive agricultural zone exhibits pronounced rainfall variability and water-limited crop yields, making it an ideal proving ground for rotation resilience modeling.
 
 ---
 
 ## 5. Validated Runtime Compatibility Envelope
 
-Field Shift execution is validated against a defined workstation compatibility envelope:
+AgroSpin execution is validated against a defined workstation compatibility envelope:
 
 - **Tested Environments:** controlled Linux x86_64 workstations (CachyOS, glibc 2.38+)
 - **Expected but Not Yet Validated:** Other modern Linux x86_64 distributions
@@ -121,4 +123,4 @@ AgroSpin/
 
 ## 7. License & Open Source Governance
 
-Field Shift is open-source software licensed under the [MIT License](../LICENSE). See [CONTRIBUTING.md](../CONTRIBUTING.md) and [SECURITY.md](../SECURITY.md).
+AgroSpin is open-source software licensed under the [MIT License](../LICENSE). See [CONTRIBUTING.md](../CONTRIBUTING.md) and [SECURITY.md](../SECURITY.md).

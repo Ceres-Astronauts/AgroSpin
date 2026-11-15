@@ -2,7 +2,7 @@
 
 ## Decision
 
-Field Shift must be installable, runnable, inspectable, and demonstrable end-to-end without requiring commercial software licenses or proprietary runtime services.
+AgroSpin must be installable, runnable, inspectable, and demonstrable end-to-end without requiring commercial software licenses or proprietary runtime services.
 
 The scientific and analytical core must remain independent from the visualization technology. Validation rules, transformations, indicators, provenance, and decision logic belong in version-controlled code, schemas, and reproducible datasets rather than existing only inside dashboards.
 
@@ -27,7 +27,7 @@ PostgreSQL/PostGIS is deferred until a validated requirement exists for centrali
 
 ## Not baseline dependencies
 
-Field Shift must not require Power BI, Tableau, ArcGIS, Oracle Database, Microsoft SQL Server, proprietary mapping SDKs, or cloud-only commercial BI/analytics services in order to reproduce, validate, demonstrate, or operate the project.
+AgroSpin must not require Power BI, Tableau, ArcGIS, Oracle Database, Microsoft SQL Server, proprietary mapping SDKs, or cloud-only commercial BI/analytics services in order to reproduce, validate, demonstrate, or operate the project.
 
 This does not prohibit a contributor from using proprietary software personally when available; it prohibits making that software a required part of the reproducible project path.
 
@@ -42,7 +42,7 @@ raw evidence
   -> replaceable visualization / decision interface
 ```
 
-Visualization requirements may constrain what the data pipeline must preserve, but visualization software must not define the scientific meaning of Field Shift data.
+Visualization requirements may constrain what the data pipeline must preserve, but visualization software must not define the scientific meaning of AgroSpin data.
 
 ## Complexity gate
 

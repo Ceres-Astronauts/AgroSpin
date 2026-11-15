@@ -1,11 +1,16 @@
-# Field Shift — MVP Delivery: Historical Climate + Soil (Homogeneous Data)
+# AgroSpin — MVP Delivery: Historical Climate + Soil (Homogeneous Data)
 
 Geographic bounding box: lon −65.875 to −64.125 · lat −33.875 to −33.125 (Villa Mercedes, San Luis – southern Cordoba).
 Data cutoff: 2026-11-01. CRS: EPSG:4326 (lat/lon). Delivery date: 2026-11-15.
 
-All datasets here are derived from validated, curated records. Every row carries an `origin` column indicating whether the value is
-**OBSERVED** (ground-measured), **ESTIMATED** (reanalysis or model), or **REFERENCE** (outside the bounding box or third-party).
-Categories are never mixed: an ESTIMATED value is never labeled as OBSERVED.
+The datasets in this directory are versioned, processed outputs with documented source lineage and integrity checks. **Publication, curation, a successful download, or a passing checksum do not by themselves constitute scientific or agronomic validation.** Validation depends on the variable and intended use:
+
+- **Acquisition and integrity:** file presence, row counts, schema checks and SHA-256 hashes support reproducibility and transport integrity; they do not prove field accuracy.
+- **Analytical checks:** individual variables or methods may pass plausibility, bias, RMSE, or ground-station comparisons while retaining other failed or pending checks.
+- **Scientific and decision fitness:** independent validation of representative soil conditions, crop-specific assumptions, spatial support, and rotation effects remains separate from data acquisition and processing.
+- **Explicitly unvalidated products:** monthly modeled soil moisture is published for qualified exploratory context even though its **daily correlation validation failed** (about 0.48–0.50 against a 0.60 target). The terrain-susceptibility index is not validated against flood events. These layers must not be presented as measured parcel conditions or decision-ready agronomic evidence.
+
+Every row includes an `origin` column distinguishing **OBSERVED** (ground-measured), **ESTIMATED** (reanalysis or model) and **REFERENCE** (third-party or outside-box reference). These provenance classes are **not** validation grades. An ESTIMATED value must never be represented as OBSERVED.
 
 ## Folder Contents
 

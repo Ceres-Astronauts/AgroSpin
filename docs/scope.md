@@ -2,7 +2,7 @@
 
 ## Product objective
 
-Field Shift is a decision-support system for comparing crop-rotation strategies under changing water, climate, soil, and farm-priority conditions.
+AgroSpin is a decision-support system for comparing crop-rotation strategies under changing water, climate, soil, and farm-priority conditions.
 
 The product must remain focused on a practical agricultural decision rather than becoming a generic Earth-observation dashboard.
 
@@ -57,7 +57,7 @@ Each feature and recommendation should preserve the effective spatial and tempor
 
 ## Decision-support rule
 
-Field Shift should distinguish between:
+AgroSpin should distinguish between:
 
 - **observation** — what a source measured or estimated
 - **indicator** — a derived signal used by the system
