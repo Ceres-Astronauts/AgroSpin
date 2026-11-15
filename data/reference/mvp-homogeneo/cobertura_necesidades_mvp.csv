@@ -1,0 +1,17 @@
+necesidad_excel,tabla,columnas,cobertura,nota
+Patrones de temperatura,clima_diario/mensual/anual_grilla,"tmean/tmax/tmin, gdd_base10",CUBIERTO,POWER (reanalisis) + REM observado en clima_zona
+Estres termico,clima_diario/mensual/anual_grilla,"estres_termico (tmax>35), dias_estres_termico",CUBIERTO,
+Precipitaciones,"clima_mensual/anual_grilla, lluvia_diaria_agregada_cordoba","precip_mm, precip_oct_mar_mm, dias_con_lluvia",CUBIERTO,"Tierra: REM, PIHC, IDECOR; grilla: POWER"
+Riesgo de heladas,clima_anual_grilla,"primera_helada_otono, ultima_helada_primavera, dias_libres_heladas_campana",CUBIERTO,umbral agro 3 C y 0 C
+Precipitaciones extremas,clima_diario/mensual_grilla + suelo_1ha,"lluvia_intensa_20mm, dias_lluvia_intensa, pendiente_pct, susceptibilidad",PARCIAL,POWER suaviza extremos puntuales
+Humedad del suelo,"humedad_suelo_mensual_grilla, suelo_1ha",humedad_media_m3_m3,PARCIAL,Modelo NO validado en correlacion; SMAP 32 pts fuera del MVP
+Evaporacion (ETo),clima_diario/mensual/anual_grilla,"eto_mm, balance_p_eto_mm",CUBIERTO,FAO-56 PM con POWER; Kc/ETc requieren calendario de cultivo (no incluido)
+Estres de la vegetacion,-,-,NO,Sentinel-2 curado (reflectancia) existe en curated/raster; NDVI no calculado en esta entrega
+Tendencias hidricas a largo plazo,"clima_mensual_grilla, enso_oni_mensual","oni_anomalia_c, fase_enso, balance_p_eto_mm",PARCIAL,ENSO si; napas no
+Uso del agua,clima + GAEZ,"eto_mm, rendimiento_alcanzable_*",PARCIAL,Eficiencia por cultivo requiere Kc y rendimiento real
+Textura,suelo_sisinta_perfiles_caja,arcilla/limo/arena,CUBIERTO,perfiles dentro de la caja; muchos sin arena_tot
+Capacidad de campo / PMP / agua util,suelo_sisinta_perfiles_caja,"agua_cap_campo_pct, agua_pmp_pct, agua_util_calc_pct",PARCIAL,pocos perfiles con esos ensayos
+Pendiente y altitud,"suelo_1ha_grilla, suelo_500m_grilla","pendiente_pct, elevacion_m",CUBIERTO,SRTM 30 m agregado a 1 ha
+Drenaje / anegamiento,suelo_1ha_grilla,susceptibilidad_topografica,PARCIAL,indice topografico NO validado; no es mapa de inundacion
+Aptitud y rendimiento por cultivo,suelo_gaez_cultivos_1981_2010,"clase_aptitud, rendimiento_alcanzable",PARCIAL,escala 1/12 grado; sin codebook
+Valor forrajero / fijacion N / materia organica / mercado / plagas,-,-,NO,no son datos ambientales; fuera de esta entrega
