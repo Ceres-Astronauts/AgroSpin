@@ -54,35 +54,88 @@ def cargar_rubrica() -> Dict[str, Any]:
 def calibrar_humedad_suelo(
     humedad_smap_superficial: float,
     lecturas_sonda_cm: Optional[Dict[str, float]] = None,
+    profundidad_sonda_cm: Optional[float] = None,
+    medicion_sonda_directa: Optional[float] = None,
 ) -> Dict[str, Any]:
     """
     SMAP L4 mide humedad superficial (~0-5 cm, sm_surface) con mayor incertidumbre en suelos arenosos.
-    Si se dispone de nodo terrestre (ESP32 con sensores capacitivos a 10, 30 y 60 cm) o estimación
-    de perfil, se pondera la zona radicular efectiva y se reduce la incertidumbre.
+    Si se dispone de medición con sonda a profundidad específica (profundidad_sonda_cm y medicion_sonda_directa)
+    o de perfil multiprofundidad (10, 30 y 60 cm), se pondera la zona radicular efectiva y se reduce la incertidumbre.
     """
-    if not lecturas_sonda_cm:
+    # Caso 1: Sonda puntual con largo/profundidad configurado por el usuario
+    if profundidad_sonda_cm is not None and medicion_sonda_directa is not None:
+        p_cm = float(profundidad_sonda_cm)
+        med = float(medicion_sonda_directa)
+        
+        # Ponderación según profundidad de inserción radicular
+        if p_cm <= 15:
+            # Sonda superficial (0-15 cm): alta correlación con evaporación directa
+            peso_sonda = 0.65
+            peso_smap = 0.35
+            estrato = "superficial (0–15 cm)"
+            incertidumbre = 12
+        elif p_cm <= 45:
+            # Sonda media / estrato radicular principal (15-45 cm): máxima representatividad de agua útil
+            peso_sonda = 0.80
+            peso_smap = 0.20
+            estrato = f"estrato radicular medio ({round(p_cm)} cm)"
+            incertidumbre = 6
+        elif p_cm <= 90:
+            # Sonda profunda (45-90 cm): reserva de fondo para cultivos de verano y especies rústicas
+            peso_sonda = 0.85
+            peso_smap = 0.15
+            estrato = f"perfil subsuperficial ({round(p_cm)} cm)"
+            incertidumbre = 5
+        else:
+            # Sonda muy profunda (>90 cm): agua freática o reserva profunda de ciclo completo
+            peso_sonda = 0.88
+            peso_smap = 0.12
+            estrato = f"profundidad profunda ({round(p_cm)} cm)"
+            incertidumbre = 5
+
+        humedad_calibrada = (peso_sonda * med) + (peso_smap * humedad_smap_superficial)
+        desvio = round((humedad_calibrada - humedad_smap_superficial) * 100, 1)
+
         return {
-            "humedad_efectiva": round(humedad_smap_superficial, 3),
-            "fuente": "Solo Satélite NASA SMAP (0-5 cm)",
-            "incertidumbre_pct": 28,
-            "nota": "Dato superficial satelital. Se recomienda contrastar con perfil profundo o calicata/sonda en lote.",
+            "humedad_efectiva": round(humedad_calibrada, 3),
+            "fuente": f"Fusión Sonda {round(p_cm)} cm + Satélite SMAP",
+            "incertidumbre_pct": incertidumbre,
+            "profundidad_sonda_cm": round(p_cm, 1),
+            "medicion_sonda_directa": round(med, 3),
+            "estrato_radicular": estrato,
+            "nota": f"Sonda local a {round(p_cm)} cm ({med:.2f} m³/m³, {estrato}). Desvío respecto a satélite superficial: {desvio:+.1f}%.",
         }
 
-    perfil_real = (
-        0.20 * lecturas_sonda_cm.get("10cm", 0.15)
-        + 0.45 * lecturas_sonda_cm.get("30cm", 0.20)
-        + 0.35 * lecturas_sonda_cm.get("60cm", 0.22)
-    )
-    humedad_calibrada = 0.75 * perfil_real + 0.25 * humedad_smap_superficial
-    desvio = round((humedad_calibrada - humedad_smap_superficial) * 100, 1)
+    # Caso 2: Perfil multi-nivel convencional (10, 30 y 60 cm)
+    if lecturas_sonda_cm:
+        perfil_real = (
+            0.20 * lecturas_sonda_cm.get("10cm", 0.15)
+            + 0.45 * lecturas_sonda_cm.get("30cm", 0.20)
+            + 0.35 * lecturas_sonda_cm.get("60cm", 0.22)
+        )
+        humedad_calibrada = 0.75 * perfil_real + 0.25 * humedad_smap_superficial
+        desvio = round((humedad_calibrada - humedad_smap_superficial) * 100, 1)
 
+        return {
+            "humedad_efectiva": round(humedad_calibrada, 3),
+            "fuente": "Fusión Híbrida (NASA SMAP + Perfil 10/30/60 cm)",
+            "incertidumbre_pct": 7,
+            "profundidad_sonda_cm": 60.0,
+            "medicion_sonda_directa": None,
+            "estrato_radicular": "perfil radicular integrado (0–60 cm)",
+            "nota": f"Desvío corregido respecto a satélite superficial: {desvio:+.1f}%.",
+        }
+
+    # Caso 3: Solo satélite sin sonda in-situ
     return {
-        "humedad_efectiva": round(humedad_calibrada, 3),
-        "fuente": "Fusión Híbrida (NASA SMAP + Perfil 10/30/60 cm)",
-        "incertidumbre_pct": 7,
-        "nota": f"Desvío corregido respecto a satélite superficial: {desvio:+.1f}%.",
+        "humedad_efectiva": round(humedad_smap_superficial, 3),
+        "fuente": "Solo Satélite NASA SMAP (0-5 cm)",
+        "incertidumbre_pct": 28,
+        "profundidad_sonda_cm": None,
+        "medicion_sonda_directa": None,
+        "estrato_radicular": "superficial estricto (0–5 cm)",
+        "nota": "Dato superficial satelital. Se recomienda contrastar con sonda in-situ en el lote.",
     }
-
 
 
 def calibrar_minima_termica(tmin_satelital: float) -> Dict[str, Any]:
@@ -192,6 +245,8 @@ def simular_escenarios(
     estado_lote: str = "rastrojo",
     horizonte: str = "mediano",
     sistema_productivo: str = "agricola",
+    profundidad_sonda_cm: Optional[float] = None,
+    medicion_sonda_directa: Optional[float] = None,
 ) -> Dict[str, Any]:
     """
     Simula y compara las 3 estrategias de rotación reales de la rúbrica para un lote de San Luis.
@@ -222,7 +277,7 @@ def simular_escenarios(
     smap_series = datos_lote.get("humedad_suelo_smap", [0.18])
     smap_media = sum(smap_series) / len(smap_series) if smap_series else 0.18
 
-    humedad_info = calibrar_humedad_suelo(smap_media, lecturas_sonda)
+    humedad_info = calibrar_humedad_suelo(smap_media, lecturas_sonda, profundidad_sonda_cm, medicion_sonda_directa)
     humedad_efectiva = humedad_info["humedad_efectiva"]
 
     suelo_eval = evaluar_suelo_lote(
@@ -270,6 +325,18 @@ def simular_escenarios(
 
         # Reglas contextuales por método y condiciones reales del lote
         if m_id == "doble_golpe":
+            # Si el productor tiene sonda superficial (<=20 cm) y la humedad es deficiente, alerta riesgo de implantación de doble cultivo
+            if profundidad_sonda_cm and profundidad_sonda_cm <= 25 and humedad_efectiva < 0.16:
+                ajuste -= 8.0
+                alertas_escenario.append(
+                    f"Sonda a {round(profundidad_sonda_cm)} cm indica cama de siembra seca ({humedad_efectiva} m³/m³): riesgo severo de emergencia despareja en doble cultivo."
+                )
+            elif profundidad_sonda_cm and profundidad_sonda_cm >= 40 and humedad_efectiva >= 0.22 and regimen_agua != "riego":
+                ajuste += 4.0
+                alertas_escenario.append(
+                    f"Sonda a {round(profundidad_sonda_cm)} cm confirma recarga subsuperficial ({humedad_efectiva} m³/m³), dando mayor sostén al llenado de grano."
+                )
+
             if regimen_agua == "secano" and napa_pendiente != "napa_cercana":
                 if escenario_lluvia == "seco" or humedad_efectiva < 0.16 or lluvia_proyectada < 620:
                     ajuste -= 22.0
@@ -296,6 +363,18 @@ def simular_escenarios(
                 )
 
         elif m_id == "bomba_biologica":
+            # Si el productor midió con sonda en profundidad (>50 cm) y detecta humedad alta, valida el uso de raíces profundas
+            if profundidad_sonda_cm and profundidad_sonda_cm >= 50 and humedad_efectiva >= 0.22:
+                ajuste += 8.0
+                alertas_escenario.append(
+                    f"Sonda a {round(profundidad_sonda_cm)} cm confirma buena recarga profunda ({humedad_efectiva} m³/m³): ideal para implantación de raíces profundas (alfalfa/pasturas)."
+                )
+            elif profundidad_sonda_cm and profundidad_sonda_cm >= 50 and humedad_efectiva < 0.14:
+                ajuste -= 6.0
+                alertas_escenario.append(
+                    f"Sonda a {round(profundidad_sonda_cm)} cm detecta estrato profundo seco ({humedad_efectiva} m³/m³): atrasar siembra o asegurar reserva freática."
+                )
+
             if napa_pendiente in ("napa_cercana", "pendiente_anegamiento"):
                 ajuste += 15.0
                 alertas_escenario.append(
@@ -314,6 +393,13 @@ def simular_escenarios(
                 )
 
         elif m_id == "resiliencia_hidrica":
+            # Si la sonda se colocó a profundidad intermedia o profunda (>=30 cm) y la humedad es limitante, el sorgo/girasol es la mejor opción
+            if profundidad_sonda_cm and profundidad_sonda_cm >= 30 and humedad_efectiva < 0.18:
+                ajuste += 6.0
+                alertas_escenario.append(
+                    f"Sonda a {round(profundidad_sonda_cm)} cm reporta perfil ajustado ({humedad_efectiva} m³/m³): rusticidad y raíces exploratorias de sorgo/girasol brindan alta seguridad."
+                )
+
             if regimen_agua == "secano" and (escenario_lluvia == "seco" or humedad_efectiva < 0.18 or textura == "franco_arenoso"):
                 ajuste += 10.0
                 alertas_escenario.append(
