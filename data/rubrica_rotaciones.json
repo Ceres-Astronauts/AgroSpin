@@ -1,0 +1,453 @@
+{
+  "version": "2026-11-14",
+  "zona_referencia": "Villa Mercedes / Centro-Este y Cuenca del Morro, San Luis, Argentina",
+  "metodos": [
+    {
+      "id": "doble_golpe",
+      "nombre": "Doble Golpe Productivo (Trigo de Invierno → Soja 2ª / Maíz Tardío)",
+      "secuencia": "Trigo (Otoño-Invierno) → Soja de segunda o Maíz tardío (Verano)",
+      "horizonte": "corto",
+      "horizonte_label": "Corto plazo (1 año / ciclo anual intensivo)",
+      "apta_ganaderia": false,
+      "requiere_maquinaria_especial": false,
+      "resumen_campo": "Busca dos cosechas comerciales en el mismo año manteniendo el suelo cubierto en invierno frente a vientos de agosto-septiembre, pero exige muchísima agua y ventanas de siembra muy justas.",
+      "cuando_rotar": "Aplicar únicamente si los datos de humedad edáfica inicial y pronóstico estival son favorables (o bajo riego / napa cercana no salinizada). Rotar inmediatamente tras la trilla invernal.",
+      "criterio_terminacion": "Cosechar trigo tempranamente (incluso con secado artificial si es necesario) para no retrasar la siembra de 2ª; cada semana de atraso en diciembre penaliza el rinde estival por heladas tempranas de otoño.",
+      "dimensiones": {
+        "clima_temperatura": {
+          "nombre": "Clima y Temperatura",
+          "criterios": [
+            {
+              "nombre": "Patrones de temperatura",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "En Villa Mercedes las heladas agrometeorológicas (<3 °C) van en promedio de marzo a noviembre. Esperar la cosecha del trigo retrasa la siembra de 2ª, exponiendo el llenado a heladas tempranas de otoño (desde abril)."
+            },
+            {
+              "nombre": "Estrés térmico",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "Veranos con máximas medias de 30–33 °C. El trigo sufre golpes de calor primaverales en llenado y, en secano, el segundo cultivo combina calor estival con déficit hídrico."
+            },
+            {
+              "nombre": "Riesgo de heladas",
+              "puntuacion": 1,
+              "valoracion": "No favorable",
+              "justificacion": "Mayor exposición acumulada en Villa Mercedes: heladas tardías (octubre-noviembre) sobre espigazón de trigo y heladas tempranas de otoño sobre llenado de soja/maíz de segunda."
+            },
+            {
+              "nombre": "Riesgos climáticos extremos",
+              "puntuacion": 1,
+              "valoracion": "No favorable",
+              "justificacion": "Expone dos cosechas comerciales al pico de tormentas graniceras, vientos fuertes (vuelco/desgrane en trigo y quebrado en maíz 2ª) y anegamientos estivales."
+            }
+          ]
+        },
+        "agua_suelo": {
+          "nombre": "Agua y Suelo",
+          "criterios": [
+            {
+              "nombre": "Precipitaciones",
+              "puntuacion": 1,
+              "valoracion": "No favorable",
+              "justificacion": "La sequía invernal de San Luis (75–80% de lluvias en octubre-marzo) limita al trigo en secano y deja el perfil agotado para la siembra de 2ª. Solo viable con riego o años muy húmedos al este (650–700 mm)."
+            },
+            {
+              "nombre": "Humedad del suelo",
+              "puntuacion": 1,
+              "valoracion": "No favorable",
+              "justificacion": "En suelos franco-arenosos, el trigo consume el agua útil otoñal entregando un perfil seco en noviembre/diciembre. Únicamente favorable bajo riego complementario o napa freática cercana no salinizada (1,5–3 m)."
+            },
+            {
+              "nombre": "Evaporación (Evapotranspiración)",
+              "puntuacion": 3,
+              "valoracion": "Moderadamente favorable",
+              "justificacion": "El rastrojo de trigo frena la evaporación directa en verano, pero la demanda evapotranspirativa acumulada de dos cultivos cosechados supera la oferta pluviométrica de secano."
+            },
+            {
+              "nombre": "Tendencias hídricas a largo plazo",
+              "puntuacion": 1,
+              "valoracion": "Nada favorable",
+              "justificacion": "Con dos cosechas anuales las reservas profundas no logran recuperarse. Ante ciclos secos (La Niña), aumenta fuertemente el riesgo de pérdida total."
+            },
+            {
+              "nombre": "Uso del agua",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "Exige mucha agua en una provincia semiárida; si las lluvias no coinciden exactamente con el período crítico, ambos cultivos deprimen su rendimiento."
+            }
+          ]
+        },
+        "produccion_sostenibilidad": {
+          "nombre": "Producción y Sostenibilidad",
+          "criterios": [
+            {
+              "nombre": "Estrés de la vegetación",
+              "puntuacion": 1,
+              "valoracion": "No favorable",
+              "justificacion": "En secano somete al trigo a déficit invernal y al cultivo de 2ª a estrés hídrico y oxidativo sobre un perfil agotado."
+            },
+            {
+              "nombre": "Valor forrajero",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "Orientado casi exclusivamente a venta de grano; solo el maíz tardío ofrece picado de emergencia, sin aportar volumen forrajero estable."
+            },
+            {
+              "nombre": "Potencial de fijación de nitrógeno",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "Balance negativo: trigo y maíz extraen mucho N, y la soja de segunda exporta en grano más N del que fija, generando alta dependencia de fertilizantes."
+            },
+            {
+              "nombre": "Mejora de la materia orgánica",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "El rastrojo de soja se degrada rápido y la doble extracción anual genera desgaste estructural progresivo en suelos arenosos."
+            }
+          ]
+        },
+        "sanidad_agricola": {
+          "nombre": "Sanidad Agrícola",
+          "criterios": [
+            {
+              "nombre": "Plagas y enfermedades",
+              "puntuacion": 2,
+              "valoracion": "Poco favorable",
+              "justificacion": "Sin corte biológico invernal ('puente verde') persisten cortadoras y bicho bolita; pulgones en trigo seco y máxima presión estival de cogollera (Spodoptera) y chicharrita (Dalbulus maidis) en maíz 2ª."
+            }
+          ]
+        },
+        "negocio_mercado": {
+          "nombre": "Negocio y Rentabilidad",
+          "criterios": [
+            {
+              "nombre": "Idoneidad para el mercado",
+              "puntuacion": 5,
+              "valoracion": "Óptima",
+              "justificacion": "Trigo, soja y maíz tienen cotización pública diaria (Matba Rofex), demanda internacional garantizada y red consolidada de acopios en Villa Mercedes hacia puertos."
+            }
+          ]
+        }
+      },
+      "fuentes": [
+        {
+          "institucion": "INTA / CIAg — Peña Zubiate et al.",
+          "titulo": "Recursos físicos y ambientales de los territorios de San Luis",
+          "aporte": "Régimen de heladas en Villa Mercedes (29/03 ± 24d y 09/11 ± 19d) y distribución estival de lluvias (75-80% oct-mar).",
+          "url": "https://www.produccion-animal.com.ar/regiones_ganaderas/39-Recursos_Fisicos_y_ambientales_SL.pdf"
+        },
+        {
+          "institucion": "Matba Rofex",
+          "titulo": "Mercado a Término de Buenos Aires",
+          "aporte": "Cotización pública, liquidez inmediata y cobertura de precios para trigo, soja y maíz.",
+          "url": "https://www.matbarofex.com.ar/"
+        },
+        {
+          "institucion": "RIA - Scielo",
+          "titulo": "Balance de nitrógeno en rotación soja-trigo",
+          "aporte": "Documenta exportación neta de nitrógeno en grano de soja de segunda.",
+          "url": "http://www.scielo.org.ar/scielo.php?script=sci_serial&pid=1669-2314"
+        }
+      ]
+    },
+    {
+      "id": "bomba_biologica",
+      "nombre": "Bomba Biológica Anti-Napa y Anti-Erosión (Alfalfa Plurianual → Maíz Tardío)",
+      "secuencia": "Alfalfa Plurianual (3–4 años) → Maíz Tardío (diciembre)",
+      "horizonte": "largo",
+      "horizonte_label": "Largo plazo (4 a 5 años: pastura perenne + maíz)",
+      "apta_ganaderia": true,
+      "requiere_maquinaria_especial": true,
+      "resumen_campo": "Mantiene el campo verde 3 a 4 años con raíces profundas que frenan la erosión, consumen excesos de agua o napa freática (como en Cuenca del Morro) y dejan nitrógeno natural para un maíz tardío.",
+      "cuando_rotar": "Implantar alfalfa en otoño cuando el lote requiera recuperar nitrógeno, estructura o deprimir napas. Rotar a maíz tardío cuando decaiga la densidad de plantas de alfalfa (año 3–4).",
+      "criterio_terminacion": "Cortar alfalfa en 10% de floración. Terminar la pastura con anticipación a fines de invierno (barbecho primaveral) para recargar el perfil y sembrar maíz tardío en diciembre (floración en febrero).",
+      "dimensiones": {
+        "clima_temperatura": {
+          "nombre": "Clima y Temperatura",
+          "criterios": [
+            {
+              "nombre": "Patrones de temperatura",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "La alfalfa establecida tolera heladas invernales de San Luis; el maíz tardío de única ocupación anual se siembra en ventana óptima estival."
+            },
+            {
+              "nombre": "Estrés térmico",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Raíces profundas sostienen transpiración en verano; al sembrar maíz en diciembre, la floración cae en febrero esquivando los picos de calor de enero."
+            },
+            {
+              "nombre": "Riesgo de heladas",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Alfalfa implantada en otoño resiste heladas invernales; maíz sembrado en diciembre evita heladas tardías de noviembre y llega a madurez antes de abril."
+            },
+            {
+              "nombre": "Riesgos climáticos extremos",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "La alfalfa rebrota desde la corona tras granizo (pierde solo un corte) y no vuelca por viento. Atención puntual a asfixia radicular si hay encharcamiento >48-72 h."
+            }
+          ]
+        },
+        "agua_suelo": {
+          "nombre": "Agua y Suelo",
+          "criterios": [
+            {
+              "nombre": "Precipitaciones",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Consume 600–800 mm/año aprovechando lluvias primavero-estivales y excedentes. Exige cortar pastura con anticipación para recargar perfil antes del maíz."
+            },
+            {
+              "nombre": "Humedad del suelo",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Desempeño destacado donde hay ascenso freático (Cuenca del Morro): abate la napa evitando anegamiento. Deja el perfil seco al salir, requiriendo barbecho primaveral."
+            },
+            {
+              "nombre": "Evaporación (Evapotranspiración)",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Cobertura permanente minimiza evaporación directa y maximiza transpiración continua para controlar ascenso freático."
+            },
+            {
+              "nombre": "Tendencias hídricas a largo plazo",
+              "puntuacion": 5,
+              "valoracion": "Óptima",
+              "justificacion": "Gran estabilizador del campo frente a desbalances hídricos subterráneos, recuperando equilibrio para volver a agricultura."
+            },
+            {
+              "nombre": "Uso del agua",
+              "puntuacion": 5,
+              "valoracion": "Óptima (Uso estratégico)",
+              "justificacion": "Funciona como bomba biológica contra exceso freático y mejora infiltración de lluvias evitando escurrimiento."
+            }
+          ]
+        },
+        "produccion_sostenibilidad": {
+          "nombre": "Producción y Sostenibilidad",
+          "criterios": [
+            {
+              "nombre": "Estrés de la vegetación",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Raíz pivotante profunda sostiene fotosíntesis en baches secos; maíz tardío tras barbecho desarrolla canopia en condiciones benignas."
+            },
+            {
+              "nombre": "Valor forrajero",
+              "puntuacion": 5,
+              "valoracion": "Óptima",
+              "justificacion": "Opción insuperable para ganadería, tambos y fardos de alta proteína durante 3–4 años continuos."
+            },
+            {
+              "nombre": "Potencial de fijación de nitrógeno",
+              "puntuacion": 5,
+              "valoracion": "Óptima",
+              "justificacion": "Fábrica biológica de N atmosférico durante 3–4 años, cubriendo gran parte de los requerimientos del maíz tardío posterior."
+            },
+            {
+              "nombre": "Mejora de la materia orgánica",
+              "puntuacion": 5,
+              "valoracion": "Óptima",
+              "justificacion": "Sin labranza por 3–4 años, sus raíces profundas estructuran el suelo y aportan carbono estable en profundidad."
+            }
+          ]
+        },
+        "sanidad_agricola": {
+          "nombre": "Sanidad Agrícola",
+          "criterios": [
+            {
+              "nombre": "Plagas y enfermedades",
+              "puntuacion": 3,
+              "valoracion": "Moderadamente favorable",
+              "justificacion": "Corta ciclos de plagas anuales y alberga enemigos naturales. Puntos críticos: pulgones e isoca (Colias lesbia) en alfalfa, y gusanos blancos/cortadoras/cogollera al pasar a maíz."
+            }
+          ]
+        },
+        "negocio_mercado": {
+          "nombre": "Negocio y Rentabilidad",
+          "criterios": [
+            {
+              "nombre": "Idoneidad para el mercado",
+              "puntuacion": 5,
+              "valoracion": "Favorable a Óptima",
+              "justificacion": "Maíz tardío con salida asegurada y alfalfa con demanda local (feedlots/tambos) más exportación de fardos compactados vía plataforma AgroZAL en Villa Mercedes."
+            }
+          ]
+        }
+      },
+      "fuentes": [
+        {
+          "institucion": "INTA EEA San Luis / UNSL — Jobbágy et al.",
+          "titulo": "El ascenso de napas en la región pampeana y la Cuenca del Morro",
+          "aporte": "Rol de la alfalfa plurianual como bomba biológica para deprimir napas freáticas.",
+          "url": "https://www.researchgate.net/publication/262637835_El_ascenso_de_napas_en_la_region_pampeana_causas_consecuencias_y_estrategias_de_manejo"
+        },
+        {
+          "institucion": "INTA EEA San Luis — Garay & Colazo (Eds.)",
+          "titulo": "El cultivo de maíz en la provincia de San Luis (Inf. Téc. Nº 188)",
+          "aporte": "Siembra tardía en diciembre para ubicar floración en febrero evitando golpes de calor de enero.",
+          "url": "https://www.researchgate.net/publication/281273477_El_cultivo_de_maiz_en_San_Luis"
+        },
+        {
+          "institucion": "Gobierno de San Luis — AgroZAL",
+          "titulo": "Exportación de alfalfa puntana desde Villa Mercedes",
+          "aporte": "Compactación y logística de exportación de fardos hacia Brasil y Medio Oriente.",
+          "url": "https://agenciasanluis.com/2023/04/18/887460-la-alfalfa-puntana-continua-su-camino-hacia-los-mercados-internacionales/"
+        }
+      ]
+    },
+    {
+      "id": "resiliencia_hidrica",
+      "nombre": "Resiliencia Hídrica / Enfoque Defensivo (Sorgo → Vicia + Centeno → Girasol)",
+      "secuencia": "Sorgo (Verano 1) → Vicia + Centeno (Invierno cobertura) → Girasol (Verano 2)",
+      "horizonte": "mediano",
+      "horizonte_label": "Mediano plazo (2 años: estival – puente invernal – estival)",
+      "apta_ganaderia": true,
+      "requiere_maquinaria_especial": false,
+      "resumen_campo": "Esquema defensivo ideal para suelos arenosos y años secos o variables: cuida cada milímetro de agua con rastrojo protector, aporta nitrógeno gratis con vicia y diversifica cultivos de bajo requerimiento.",
+      "cuando_rotar": "Rotar hacia este esquema cuando la humedad útil a la siembra sea baja o haya pronóstico seco. Sembrar sorgo en primavera estabilizada; implantar vicia + centeno en otoño tras cosecha de sorgo.",
+      "criterio_terminacion": "Cosechar sorgo o picar si hay estrés severo. Secar/rolar vicia + centeno en septiembre/octubre (30–45 días antes de sembrar girasol) para frenar el consumo de agua primaveral.",
+      "dimensiones": {
+        "clima_temperatura": {
+          "nombre": "Clima y Temperatura",
+          "criterios": [
+            {
+              "nombre": "Patrones de temperatura",
+              "puntuacion": 3,
+              "valoracion": "Moderadamente favorable",
+              "justificacion": "Vicia + centeno toleran bien el frío invernal como cobertura. Sorgo exige suelos cálidos para germinar y el girasol requiere siembra oportuna antes de mediados de noviembre."
+            },
+            {
+              "nombre": "Estrés térmico",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "El sorgo tolera mejor altas temperaturas que el maíz, el girasol soporta veranos cálidos y el rastrojo de centeno/vicia amortigua la temperatura superficial del suelo."
+            },
+            {
+              "nombre": "Riesgo de heladas",
+              "puntuacion": 3,
+              "valoracion": "Moderadamente favorable",
+              "justificacion": "Cobertura invernal no sufre daño económico; sorgo es sensible a heladas tardías/tempranas y el rastrojo abundante puede acentuar heladas por radiación en siembras muy tempranas de girasol."
+            },
+            {
+              "nombre": "Riesgos climáticos extremos",
+              "puntuacion": 3,
+              "valoracion": "Moderadamente favorable",
+              "justificacion": "Rastrojo frena erosión eólica en primavera; sorgo tolera anegamiento temporal, pero girasol en floración/llenado es vulnerable a granizo y vuelco por viento."
+            }
+          ]
+        },
+        "agua_suelo": {
+          "nombre": "Agua y Suelo",
+          "criterios": [
+            {
+              "nombre": "Precipitaciones",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Mejor ajustado a ambientes semiáridos (450–600 mm): sorgo y girasol tienen menor requerimiento que maíz/soja. Secado temprano en sep/oct preserva lluvias primaverales."
+            },
+            {
+              "nombre": "Humedad del suelo",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Manejo más eficiente en suelos arenosos sin napa cercana: protege contra evaporación, mejora infiltración y explora humedad profunda sin agotar el perfil si se seca a tiempo."
+            },
+            {
+              "nombre": "Evaporación (Evapotranspiración)",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "El rastrojo persistente de centeno (alta relación C/N) reduce drásticamente la evaporación directa y el sorgo modera transpiración bajo alta demanda atmosférica."
+            },
+            {
+              "nombre": "Tendencias hídricas a largo plazo",
+              "puntuacion": 5,
+              "valoracion": "Óptima",
+              "justificacion": "Efecto 'esponja' progresivo: la acumulación de cobertura mejora infiltración y retención de agua ante ciclos secos futuros."
+            },
+            {
+              "nombre": "Uso del agua",
+              "puntuacion": 5,
+              "valoracion": "Óptima (Uso defensivo)",
+              "justificacion": "Modelo ideal para cuidar el agua en años secos combinando eficiencia fisiológica del sorgo y barrera física del rastrojo."
+            }
+          ]
+        },
+        "produccion_sostenibilidad": {
+          "nombre": "Producción y Sostenibilidad",
+          "criterios": [
+            {
+              "nombre": "Estrés de la vegetación",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Alta plasticidad: sorgo detiene crecimiento ante sequía y rebota tras lluvias; girasol sostiene fotosíntesis con raíz profunda."
+            },
+            {
+              "nombre": "Valor forrajero",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Sorgo doble propósito (grano o silaje/pastoreo diferido) y posible pastoreo de emergencia en vicia + centeno sin perder cobertura base."
+            },
+            {
+              "nombre": "Potencial de fijación de nitrógeno",
+              "puntuacion": 4.5,
+              "valoracion": "Favorable a Óptima",
+              "justificacion": "La vicia fija N atmosférico y, al no cosecharse, el 100% queda disponible en el lote para el girasol reduciendo fertilizantes."
+            },
+            {
+              "nombre": "Mejora de la materia orgánica",
+              "puntuacion": 4.5,
+              "valoracion": "Favorable a Óptima",
+              "justificacion": "Abundante rastrojo de sorgo y centeno de lenta degradación aumenta carbono orgánico y protege estructura en suelos arenosos."
+            }
+          ]
+        },
+        "sanidad_agricola": {
+          "nombre": "Sanidad Agrícola",
+          "criterios": [
+            {
+              "nombre": "Plagas y enfermedades",
+              "puntuacion": 4,
+              "valoracion": "Favorable",
+              "justificacion": "Máxima diversificación funcional (gramínea C4 → mezcla C3 + leguminosa → oleaginosa) corta ciclos de plagas. Precaución: monitorear orugas cortadoras (Agrotis spp.) y bicho bolita tras secar vicia."
+            }
+          ]
+        },
+        "negocio_mercado": {
+          "nombre": "Negocio y Rentabilidad",
+          "criterios": [
+            {
+              "nombre": "Idoneidad para el mercado",
+              "puntuacion": 3,
+              "valoracion": "Moderadamente favorable",
+              "justificacion": "Mercado más cíclico (cupos aceiteros para girasol o consumo local/avícola-porcino para sorgo) y la cobertura invernal implica un costo operativo sin cosecha comercial directa."
+            }
+          ]
+        }
+      },
+      "fuentes": [
+        {
+          "institucion": "INTA EEA San Luis — Colazo, Garay & Veneciano",
+          "titulo": "El cultivo de sorgo en San Luis (Inf. Téc. Nº 183)",
+          "aporte": "Tolerancia térmica/hídrica, ajuste osmótico y perfil sanitario del sorgo en San Luis.",
+          "url": "https://www.researchgate.net/publication/281273449_El_cultivo_de_sorgo_en_San_Luis"
+        },
+        {
+          "institucion": "INTA EEA San Luis — Colazo & Garay",
+          "titulo": "Cultivos de cobertura en San Luis (Inf. Téc. Nº 197)",
+          "aporte": "Fijación de N en vicia + centeno, momento óptimo de secado (sep/oct) y control de erosión.",
+          "url": "https://www.researchgate.net/publication/347510114_Cultivos_de_cobertura_en_San_Luis"
+        },
+        {
+          "institucion": "ASAGIR / INTA",
+          "titulo": "El Cultivo de Girasol — Cuaderno de Actualización Técnica",
+          "aporte": "Exploración radicular profunda, temperatura mínima de implantación (8-10 °C) y riesgos de vuelco/granizo.",
+          "url": "https://www.asagir.org.ar/descargar-archivo-45/archivos-01e3a1a53c235fd1484651587412a506"
+        }
+      ]
+    }
+  ]
+}
